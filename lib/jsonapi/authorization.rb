@@ -1,3 +1,4 @@
+require "jsonapi-resources"
 require "jsonapi/authorization/version"
 require "jsonapi/authorization/pundit_operations_processor"
 require "jsonapi/authorization/resource_policy_authorization"

@@ -1,6 +1,6 @@
 module JSONAPI
   module Authorization
-    class PunditOperationsProcessor < ActiveRecordOperationsProcessor
+    class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
       # set_callback :operation, :before, :log
       [
         :find_operation,
