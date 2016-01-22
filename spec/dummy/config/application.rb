@@ -2,8 +2,6 @@ require File.expand_path('../boot', __FILE__)
 
 require "rails/all"
 
-Bundler.require(*Rails.groups)
-
 class Application < Rails::Application
   config.root = File.expand_path("../..", __FILE__)
   config.cache_classes = true
