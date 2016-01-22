@@ -1,4 +1,9 @@
 language: ruby
+sudo: false
+env:
+  - "RAILS_VERSION=4.1.0"
+  - "RAILS_VERSION=4.2.0"
 rvm:
   - 2.1.2
+
 before_install: gem install bundler -v 1.11.2
