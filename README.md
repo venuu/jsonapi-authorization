@@ -1,5 +1,7 @@
 # JSONAPI::Authorization
 
+[![Gem Version](https://badge.fury.io/rb/jsonapi-authorization.png)](http://badge.fury.io/rb/jsonapi-authorization)
+
 `JSONAPI::Authorization` adds authorization to the [jsonapi-resources][jr] (JR) gem using [Pundit][pundit].
 
 ***PLEASE NOTE:*** This gem currently handles only a subset of operations available in JR. This gem is still considered to be ***alpha quality*** and therefore you shouldn't rely on it on production (yet).
