@@ -1,5 +1,5 @@
 require "jsonapi/authorization/version"
-require "jsonapi/authorization/authorization_operations_processor"
+require "jsonapi/authorization/pundit_operations_processor"
 
 module JSONAPI
   module Authorization
