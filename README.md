@@ -1,6 +1,6 @@
 # JSONAPI::Authorization
 
-[![Gem Version](https://badge.fury.io/rb/jsonapi-authorization.png)](http://badge.fury.io/rb/jsonapi-authorization)
+[![Build Status](https://travis-ci.org/venuu/jsonapi-authorization.svg?branch=master)](https://travis-ci.org/venuu/jsonapi-authorization) [![Gem Version](https://badge.fury.io/rb/jsonapi-authorization.png)](http://badge.fury.io/rb/jsonapi-authorization)
 
 `JSONAPI::Authorization` adds authorization to the [jsonapi-resources][jr] (JR) gem using [Pundit][pundit].
 
