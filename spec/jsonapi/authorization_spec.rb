@@ -1,8 +1,8 @@
 require 'spec_helper'
 
-describe Jsonapi::Authorization do
+describe JSONAPI::Authorization do
   it 'has a version number' do
-    expect(Jsonapi::Authorization::VERSION).not_to be nil
+    expect(JSONAPI::Authorization::VERSION).not_to be nil
   end
 
   it 'does something useful' do

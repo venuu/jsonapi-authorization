@@ -5,7 +5,7 @@ require 'jsonapi/authorization/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "jsonapi-authorization"
-  spec.version       = Jsonapi::Authorization::VERSION
+  spec.version       = JSONAPI::Authorization::VERSION
   spec.authors       = ["Vesa Laakso"]
   spec.email         = ["vesa.laakso@venuu.fi"]
 

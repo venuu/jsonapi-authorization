@@ -1,6 +1,6 @@
 require "jsonapi/authorization/version"
 
-module Jsonapi
+module JSONAPI
   module Authorization
     # Your code goes here...
   end
