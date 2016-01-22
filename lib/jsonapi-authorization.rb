@@ -1,0 +1,1 @@
+require 'jsonapi/authorization'
