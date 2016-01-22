@@ -42,7 +42,7 @@ class AuthorizationOperationsProcessor < ActiveRecordOperationsProcessor
   end
 
   def pundit_user
-    @operation.options[:context][:user_context]
+    @operation.options[:context][:user]
   end
 
   def pundit_record
