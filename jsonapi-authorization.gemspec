@@ -11,6 +11,7 @@ Gem::Specification.new do |spec|
   spec.license       = "MIT"
 
   spec.summary       = "Generic authorization for jsonapi-resources gem"
+  spec.description   = "Adds generic authorization to the jsonapi-resources gem using Pundit."
   spec.homepage      = "https://github.com/venuu/jsonapi-authorization"
 
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
