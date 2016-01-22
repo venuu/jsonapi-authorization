@@ -8,6 +8,7 @@ Gem::Specification.new do |spec|
   spec.version       = JSONAPI::Authorization::VERSION
   spec.authors       = ["Vesa Laakso", "Emil Sågfors"]
   spec.email         = ["laakso.vesa@gmail.com", "emil.sagfors@iki.fi"]
+  spec.license       = "MIT"
 
   spec.summary       = "Generic authorization for jsonapi-resources gem"
   spec.homepage      = "https://github.com/venuu/jsonapi-authorization"
