@@ -5,7 +5,7 @@ module JSONAPI
     module ResourcePolicyAuthorization
       extend ActiveSupport::Concern
 
-      class_methods do
+      module ClassMethods
         def records(options = {})
           ::Pundit.policy_scope!(options[:context][:user], _model_class)
         end
