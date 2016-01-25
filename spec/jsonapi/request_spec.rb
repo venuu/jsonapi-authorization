@@ -4,7 +4,7 @@ describe 'Test request', type: :request do
   fixtures :articles
 
   let(:authorizations) { {} }
-  let(:policy_scope) { [] }
+  let(:policy_scope) { Article.none }
 
   before do
     authorizations.each do |action, retval|
