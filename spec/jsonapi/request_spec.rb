@@ -17,7 +17,7 @@ describe 'Test request', type: :request do
     context 'unauthorized for index?' do
       let(:authorizations) { {index: false} }
 
-      it 'it is forbidden' do
+      it 'returns 403 Forbidden' do
         expect(get('/articles')).to be_forbidden
       end
     end
@@ -40,11 +40,11 @@ describe 'Test request', type: :request do
 
   describe 'GET /articles/:id' do
     context 'unauthorized for show?' do
-      xit 'is forbidden'
+      xit 'returns 403 Forbidden'
     end
 
     context 'unauthorized for index?' do
-      xit 'is forbidden'
+      xit 'returns 403 Forbidden'
     end
 
     context 'Authorized for show? and index?' do
@@ -66,7 +66,7 @@ describe 'Test request', type: :request do
 
   describe 'POST /articles' do
     context 'unauthorized for create?' do
-      xit 'is forbidden'
+      xit 'returns 403 Forbidden'
     end
 
     context 'authorized for create?' do
@@ -76,7 +76,7 @@ describe 'Test request', type: :request do
 
   describe 'POST /articles/:id/relationships/comments' do
     context 'unauthorized for create?' do
-      xit 'is forbidden'
+      xit 'returns 403 Forbidden'
     end
 
     context 'authorized for create?' do
@@ -88,7 +88,7 @@ describe 'Test request', type: :request do
     # TODO: Remember to check for null (removing association)
 
     context 'unauthorized for create?' do
-      xit 'is forbidden'
+      xit 'returns 403 Forbidden'
     end
 
     context 'authorized for create?' do
