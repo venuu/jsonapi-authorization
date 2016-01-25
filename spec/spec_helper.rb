@@ -11,4 +11,6 @@ require "rspec/rails"
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
+
+  config.use_transactional_fixtures = true
 end

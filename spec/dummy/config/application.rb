@@ -25,8 +25,9 @@ class Application < Rails::Application
   config.middleware.delete "ActionDispatch::BestStandardsSupport"
 
   config.secret_key_base = "correct-horse-battery-staple"
+end
 
-  routes.append do
-    get "/" => "test#index"
-  end
+JSONAPI.configure do |config|
+  config.operations_processor = '::JSONAPI::Authorization::Pundit'
+  config.exception_class_whitelist = [Pundit::NotAuthorizedError]
 end
