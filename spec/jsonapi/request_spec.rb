@@ -38,7 +38,7 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'GET /articles/1' do
+  describe 'GET /articles/:id' do
     context 'unauthorized for show?' do
       xit 'is forbidden'
     end
@@ -52,15 +52,15 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'GET /articles/1/relationships' do
+  describe 'GET /articles/:id/relationships' do
     pending
   end
 
-  describe 'GET /articles/1/comments' do
+  describe 'GET /articles/:id/comments' do
     pending
   end
 
-  describe 'GET /articles/1/author' do
+  describe 'GET /articles/:id/author' do
     pending
   end
 
@@ -74,7 +74,7 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'POST /articles/1/relationships/comments' do
+  describe 'POST /articles/:id/relationships/comments' do
     context 'unauthorized for create?' do
       xit 'is forbidden'
     end
@@ -84,7 +84,7 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'PATCH /articles/1/relationships/author' do
+  describe 'PATCH /articles/:id/relationships/author' do
     # TODO: Remember to check for null (removing association)
 
     context 'unauthorized for create?' do
@@ -96,11 +96,11 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'DELETE /articles/1/relationships/comments' do
+  describe 'DELETE /articles/:id/relationships/comments' do
     pending
   end
 
-  describe 'DELETE /articles/1' do
+  describe 'DELETE /articles/:id' do
     pending
   end
 end
