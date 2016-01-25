@@ -5,6 +5,7 @@ module JSONAPI
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
       set_callback :find_operation, :before, :authorize_find
       set_callback :show_operation, :before, :authorize_show
+      set_callback :show_related_resources_operation, :before, :authorize_show_related_resources
       set_callback :create_resource_operation, :before, :authorize_create_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
 
@@ -15,16 +16,25 @@ module JSONAPI
       def authorize_show
         record = @operation.resource_klass.find_by_key(
           operation_resource_id,
-          context: @operation.options[:context]
+          context: operation_context
         )._model
 
         ::Pundit.authorize(pundit_user, record, 'show?')
       end
 
+      def authorize_show_related_resources
+        source_record = @operation.source_klass.find_by_key(
+          @operation.source_id,
+          context: operation_context
+        )._model
+
+        ::Pundit.authorize(pundit_user, source_record, 'show?')
+      end
+
       def authorize_replace_fields
         source_record = @operation.resource_klass.find_by_key(
           @operation.resource_id,
-          context: @operation.options[:context]
+          context: operation_context
         )._model
 
         ::Pundit.authorize(pundit_user, source_record, 'update?')
@@ -45,7 +55,17 @@ module JSONAPI
       private
 
       def pundit_user
-        @operation.options[:context][:user]
+        operation_context[:user]
+      end
+
+      # TODO: Communicate with upstream to fix this nasty hack
+      def operation_context
+        case @operation
+        when JSONAPI::ShowRelatedResourcesOperation
+          @operation.instance_variable_get('@options')[:context]
+        else
+          @operation.options[:context]
+        end
       end
 
       # TODO: Communicate with upstream to fix this nasty hack
@@ -53,6 +73,8 @@ module JSONAPI
         case @operation
         when JSONAPI::ShowOperation
           @operation.id
+        when JSONAPI::ShowRelatedResourcesOperation
+          @operation.source_id
         else
           @operation.resource_id
         end

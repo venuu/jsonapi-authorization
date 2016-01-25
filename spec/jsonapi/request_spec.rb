@@ -91,9 +91,16 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'GET /articles/:id/comments', pending: true do
-    before { get("/articles/#{Article.first.id}/comments") }
+  describe 'GET /articles/:id/comments' do
+    fixtures :comments
     let(:policy_scope) { Article.all }
+    let(:comments_on_article) { Article.first.comments }
+    let(:comments_policy_scope) { comments_on_article.limit(1) }
+
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
+      get("/articles/#{Article.first.id}/comments")
+    end
 
     context 'unauthorized for show?' do
       let(:authorizations) { {show: false} }
@@ -111,7 +118,10 @@ describe 'Test request', type: :request do
         it { is_expected.to be_not_found }
       end
 
-      xit 'displays only comments allowed by CommentPolicy::Scope'
+      it 'displays only comments allowed by CommentPolicy::Scope' do
+        expect(json_data.length).to eq(1)
+        expect(json_data.first["id"]).to eq(comments_policy_scope.first.id.to_s)
+      end
     end
   end
 
