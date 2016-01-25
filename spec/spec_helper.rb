@@ -14,5 +14,7 @@ require "rspec/rails"
 RSpec.configure do |config|
   config.include Rack::Test::Methods
 
+  config.fixture_path = File.expand_path("../fixtures", __FILE__)
+
   config.use_transactional_fixtures = true
 end

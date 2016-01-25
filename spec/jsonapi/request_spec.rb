@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe 'Test request', type: :request do
+  fixtures :articles
+
   let(:authorizations) { {} }
   let(:policy_scope) { [] }
 
@@ -21,15 +23,13 @@ describe 'Test request', type: :request do
     end
 
     context 'Authorized for index?' do
-      let!(:articles) { Array.new(2) { Article.new }.each(&:save) }
-
       let(:authorizations) { {index: true} }
-      let(:policy_scope) { Article.limit(1) }
+      let(:policy_scope) { Article.where(id: Article.first.id) }
 
       it 'returns results limited by policy scope' do
-        response = get('/articles')
-        expect(JSON.parse(response.body)["data"].length).to eq(1)
-        expect(JSON.parse(response.body)["data"].first["id"]).to eq(articles.first.id.to_s)
+        body = JSON.parse(get('/articles').body)
+        expect(body["data"].length).to eq(1)
+        expect(body["data"].first["id"]).to eq(Article.first.id.to_s)
       end
 
       it 'returns 200 OK' do
