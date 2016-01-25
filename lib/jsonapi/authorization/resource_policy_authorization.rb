@@ -23,17 +23,9 @@ module JSONAPI
 
         case relationship
         when JSONAPI::Relationship::ToOne
-          record = record_or_records
-          authorize_record(record)
-          record
+          record_or_records
         when JSONAPI::Relationship::ToMany
-          records = ::Pundit.policy_scope!(context[:user], record_or_records)
-
-          unless context[:action].in?(%w(index show))
-            records.each(&authorize_record)
-          end
-
-          records
+          ::Pundit.policy_scope!(context[:user], record_or_records)
         else
           raise "Unknown relationship type #{relationship.inspect}"
         end
