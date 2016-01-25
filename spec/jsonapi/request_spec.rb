@@ -44,7 +44,7 @@ describe 'Test request', type: :request do
     context 'unauthorized for show?' do
       let(:authorizations) { {show: false} }
 
-      context 'not limited by policy scope', pending: true do
+      context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
       end
 

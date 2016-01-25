@@ -6,6 +6,7 @@ module JSONAPI
       # set_callback :operation, :before, :log
       [
         :find_operation,
+        :show_operation,
         :create_resource_operation,
         :replace_fields_operation
       ].each do |operation|
@@ -54,9 +55,19 @@ module JSONAPI
           @operation.resource_klass._model_class
         else
           @operation.resource_klass.find_by_key(
-            @operation.resource_id,
+            operation_resource_id,
             context: @operation.options[:context]
           )._model
+        end
+      end
+
+      # TODO: Communicate with upstream to fix this nasty hack
+      def operation_resource_id
+        case @operation
+        when JSONAPI::ShowOperation
+          @operation.id
+        else
+          @operation.resource_id
         end
       end
 
