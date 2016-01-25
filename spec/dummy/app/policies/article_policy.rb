@@ -1,7 +1,7 @@
 class ArticlePolicy
   class Scope < Struct.new(:user, :scope)
     def resolve
-      scope
+      raise NotImplementedError
     end
   end
 
@@ -13,6 +13,22 @@ class ArticlePolicy
   end
 
   def index?
-    true
+    raise NotImplementedError
+  end
+
+  def show?
+    raise NotImplementedError
+  end
+
+  def create?
+    raise NotImplementedError
+  end
+
+  def update?
+    raise NotImplementedError
+  end
+
+  def destroy?
+    raise NotImplementedError
   end
 end
