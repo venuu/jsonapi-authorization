@@ -65,6 +65,12 @@ If you want to send a custom response for unauthorized requests, add a `rescue_f
 There is a bug affecting `jsonapi-resources` error whitelisting, see https://github.com/cerebris/jsonapi-resources/pull/573. To make your whitelisting and `rescue_from` to work properly, here is a potential workaround:
 
 ```ruby
+JSONAPI.configure do |config|
+  config.exception_class_whitelist = [Pundit::NotAuthorizedError]
+end
+```
+
+```ruby
 class BaseResourceController < ActionController::Base
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
