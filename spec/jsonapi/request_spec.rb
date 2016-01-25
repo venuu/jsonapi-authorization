@@ -116,7 +116,7 @@ describe 'Test request', type: :request do
   end
 
   describe 'GET /articles/:id/author', pending: true do
-    before { get("/articles/#{Article.first.id}/comments") }
+    before { get("/articles/#{Article.first.id}/author") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show?' do
