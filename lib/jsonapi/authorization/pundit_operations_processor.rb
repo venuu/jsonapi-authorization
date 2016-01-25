@@ -3,7 +3,6 @@ require 'pundit'
 module JSONAPI
   module Authorization
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
-      # set_callback :operation, :before, :log
       [
         :find_operation,
         :show_operation,
@@ -21,24 +20,6 @@ module JSONAPI
           ::Pundit.authorize(pundit_user, rel_model, 'update?')
         end
       end
-
-      # def log
-      #   STDERR.puts "---------------------"
-      #   STDERR.puts @operation.class.inspect
-      #   STDERR.puts @operation.resource_klass
-      #   STDERR.puts action
-      #   STDERR.puts @operation.options.inspect
-      #   STDERR.puts
-      #   STDERR.puts pundit_record.inspect
-      #   STDERR.puts
-      #   STDERR.puts related_models.inspect
-      # rescue => e
-      #   STDERR.puts "Logging failed!"
-      #   STDERR.puts e.inspect
-      # ensure
-      #   STDERR.puts
-      #   STDERR.puts "---------------------"
-      # end
 
       private
 
