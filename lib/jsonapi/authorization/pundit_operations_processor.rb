@@ -3,18 +3,39 @@ require 'pundit'
 module JSONAPI
   module Authorization
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
-      [
-        :find_operation,
-        :show_operation,
-        :create_resource_operation,
-        :replace_fields_operation
-      ].each do |operation|
-        set_callback operation, :before, :authorize
+      set_callback :find_operation, :before, :authorize_find
+      set_callback :show_operation, :before, :authorize_show
+      set_callback :create_resource_operation, :before, :authorize_create_resource
+      set_callback :replace_fields_operation, :before, :authorize_replace_fields
+
+      def authorize_find
+        ::Pundit.authorize(pundit_user, @operation.resource_klass._model_class, 'index?')
       end
 
-      def authorize
-        query = "#{action}?"
-        ::Pundit.authorize(pundit_user, pundit_record, query)
+      def authorize_show
+        record = @operation.resource_klass.find_by_key(
+          operation_resource_id,
+          context: @operation.options[:context]
+        )._model
+
+        ::Pundit.authorize(pundit_user, record, 'show?')
+      end
+
+      def authorize_replace_fields
+        source_record = @operation.resource_klass.find_by_key(
+          @operation.resource_id,
+          context: @operation.options[:context]
+        )._model
+
+        ::Pundit.authorize(pundit_user, source_record, 'update?')
+
+        related_models.each do |rel_model|
+          ::Pundit.authorize(pundit_user, rel_model, 'update?')
+        end
+      end
+
+      def authorize_create_resource
+        ::Pundit.authorize(pundit_user, @operation.resource_klass._model_class, 'create?')
 
         related_models.each do |rel_model|
           ::Pundit.authorize(pundit_user, rel_model, 'update?')
@@ -23,23 +44,8 @@ module JSONAPI
 
       private
 
-      def action
-        @operation.options[:context][:action]
-      end
-
       def pundit_user
         @operation.options[:context][:user]
-      end
-
-      def pundit_record
-        if action.in?(%w(index create))
-          @operation.resource_klass._model_class
-        else
-          @operation.resource_klass.find_by_key(
-            operation_resource_id,
-            context: @operation.options[:context]
-          )._model
-        end
       end
 
       # TODO: Communicate with upstream to fix this nasty hack
