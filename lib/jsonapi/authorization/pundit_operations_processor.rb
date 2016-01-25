@@ -1,3 +1,5 @@
+require 'pundit'
+
 module JSONAPI
   module Authorization
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
@@ -12,10 +14,10 @@ module JSONAPI
 
       def authorize
         query = "#{action}?"
-        Pundit.authorize(pundit_user, pundit_record, query)
+        ::Pundit.authorize(pundit_user, pundit_record, query)
 
         related_models.each do |rel_model|
-          Pundit.authorize(pundit_user, rel_model, 'update?')
+          ::Pundit.authorize(pundit_user, rel_model, 'update?')
         end
       end
 

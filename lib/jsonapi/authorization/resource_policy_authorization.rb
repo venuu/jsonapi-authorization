@@ -1,3 +1,5 @@
+require 'pundit'
+
 module JSONAPI
   module Authorization
     module ResourcePolicyAuthorization
@@ -5,7 +7,7 @@ module JSONAPI
 
       class_methods do
         def records(options = {})
-          Pundit.policy_scope!(options[:context][:user], _model_class)
+          ::Pundit.policy_scope!(options[:context][:user], _model_class)
         end
       end
 
@@ -25,7 +27,7 @@ module JSONAPI
           authorize_record(record)
           record
         when JSONAPI::Relationship::ToMany
-          records = Pundit.policy_scope!(context[:user], record_or_records)
+          records = ::Pundit.policy_scope!(context[:user], record_or_records)
 
           unless context[:action].in?(%w(index show))
             records.each(&authorize_record)
@@ -45,7 +47,7 @@ module JSONAPI
 
       def authorize_record(record)
         query = "#{context[:action]}?"
-        Pundit.authorize(context[:user], record, query)
+        ::Pundit.authorize(context[:user], record, query)
       end
     end
   end
