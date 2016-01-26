@@ -242,30 +242,6 @@ describe 'Test request', type: :request do
 
   ## --- CRUD on relationships ---
 
-  describe 'GET /articles/:id/relationships', pending: 'relationships not yet implemented' do
-    before { get("/articles/#{article.id}/relationships") }
-    let(:policy_scope) { Article.all }
-
-    context 'unauthorized for show?' do
-      let(:authorizations) { {show: false} }
-      it { is_expected.to be_forbidden }
-    end
-
-    context 'authorized for show?' do
-      let(:authorizations) { {show: true} }
-      it { is_expected.to be_ok }
-
-      # If this happens in real life, it's mostly a bug. We want to document the
-      # behaviour in that case anyway, as it might be surprising.
-      context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: article.id) }
-        it { is_expected.to be_not_found }
-      end
-
-      xit 'displays only relationships allowed by policies'
-    end
-  end
-
   describe 'GET /articles/:id/relationships/comments' do
     let(:article) { articles(:article_with_comments) }
     let(:policy_scope) { Article.all }
