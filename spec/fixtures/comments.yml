@@ -1,9 +1,5 @@
 ---
-comment_1_on_article_1:
-  article: article_1
-comment_2_on_article_1:
-  article: article_1
-comment_1_on_article_2:
-  article: article_2
-comment_2_on_article_2:
-  article: article_2
+comment_1:
+  article: article_with_comments
+comment_2:
+  article: article_with_comments

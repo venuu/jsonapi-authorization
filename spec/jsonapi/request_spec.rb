@@ -1,8 +1,9 @@
 require 'spec_helper'
 
 describe 'Test request', type: :request do
-  fixtures :articles
+  fixtures :all
 
+  let(:article) { Article.all.sample }
   let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
 
@@ -26,19 +27,19 @@ describe 'Test request', type: :request do
 
     context 'authorized for index?' do
       let(:authorizations) { {index: true} }
-      let(:policy_scope) { Article.where(id: Article.first.id) }
+      let(:policy_scope) { Article.where(id: article.id) }
 
       it { is_expected.to be_ok }
 
       it 'returns results limited by policy scope' do
         expect(json_data.length).to eq(1)
-        expect(json_data.first["id"]).to eq(Article.first.id.to_s)
+        expect(json_data.first["id"]).to eq(article.id.to_s)
       end
     end
   end
 
   describe 'GET /articles/:id' do
-    before { get("/articles/#{Article.first.id}") }
+    before { get("/articles/#{article.id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show?' do
@@ -49,7 +50,7 @@ describe 'Test request', type: :request do
       end
 
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
@@ -61,14 +62,14 @@ describe 'Test request', type: :request do
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
   end
 
   describe 'GET /articles/:id/relationships', pending: 'relationships not yet implemented' do
-    before { get("/articles/#{Article.first.id}/relationships") }
+    before { get("/articles/#{article.id}/relationships") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show?' do
@@ -83,7 +84,7 @@ describe 'Test request', type: :request do
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
 
@@ -92,14 +93,14 @@ describe 'Test request', type: :request do
   end
 
   describe 'GET /articles/:id/comments' do
-    fixtures :comments
+    let(:article) { articles(:article_with_comments) }
     let(:policy_scope) { Article.all }
-    let(:comments_on_article) { Article.first.comments }
+    let(:comments_on_article) { article.comments }
     let(:comments_policy_scope) { comments_on_article.limit(1) }
 
     before do
       allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-      get("/articles/#{Article.first.id}/comments")
+      get("/articles/#{article.id}/comments")
     end
 
     context 'unauthorized for show?' do
@@ -114,7 +115,7 @@ describe 'Test request', type: :request do
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
 
@@ -126,7 +127,7 @@ describe 'Test request', type: :request do
   end
 
   describe 'GET /articles/:id/author', pending: true do
-    before { get("/articles/#{Article.first.id}/author") }
+    before { get("/articles/#{article.id}/author") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show?' do
@@ -141,7 +142,7 @@ describe 'Test request', type: :request do
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
 
@@ -248,7 +249,7 @@ describe 'Test request', type: :request do
   end
 
   describe 'DELETE /articles/:id' do
-    before { delete("/articles/#{Article.first.id}") }
+    before { delete("/articles/#{article.id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for destroy?' do
@@ -259,7 +260,7 @@ describe 'Test request', type: :request do
       end
 
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
@@ -271,7 +272,7 @@ describe 'Test request', type: :request do
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: Article.first.id) }
+        let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
@@ -280,7 +281,7 @@ describe 'Test request', type: :request do
   ## --- Tricky cases ---
 
   describe 'GET /articles/:id?includes=comments' do
-    before { get("/articles/#{Article.first.id}?includes=comments") }
+    before { get("/articles/#{article.id}?includes=comments") }
     let(:policy_scope) { Article.all }
 
     context 'authorized for show?' do
