@@ -8,6 +8,7 @@ module JSONAPI
       set_callback :show_related_resource_operation, :before, :authorize_show_related_resource
       set_callback :show_related_resources_operation, :before, :authorize_show_related_resources
       set_callback :create_resource_operation, :before, :authorize_create_resource
+      set_callback :remove_resource_operation, :before, :authorize_remove_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
 
       def authorize_find
@@ -66,6 +67,15 @@ module JSONAPI
         related_models.each do |rel_model|
           ::Pundit.authorize(pundit_user, rel_model, 'update?')
         end
+      end
+
+      def authorize_remove_resource
+        record = @operation.resource_klass.find_by_key(
+          operation_resource_id,
+          context: operation_context
+        )._model
+
+        ::Pundit.authorize(pundit_user, record, 'destroy?')
       end
 
       private
