@@ -11,12 +11,6 @@ module JSONAPI
         end
       end
 
-      included do
-        [:remove].each do |action|
-          set_callback action, :before, :authorize
-        end
-      end
-
       def records_for(association_name)
         record_or_records = @model.public_send(association_name)
         relationship = self.class._relationships[association_name]
@@ -29,17 +23,6 @@ module JSONAPI
         else
           raise "Unknown relationship type #{relationship.inspect}"
         end
-      end
-
-      private
-
-      def authorize
-        authorize_record(@model)
-      end
-
-      def authorize_record(record)
-        query = "#{context[:action]}?"
-        ::Pundit.authorize(context[:user], record, query)
       end
     end
   end
