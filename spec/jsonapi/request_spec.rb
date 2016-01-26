@@ -126,8 +126,17 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'GET /articles/:id/author', pending: true do
+  describe 'GET /articles/:id/author' do
+    let(:user_authorizations) { {} }
+    before do
+      user_authorizations.each do |action, retval|
+        allow_any_instance_of(UserPolicy).to receive("#{action}?").and_return(retval)
+      end
+    end
+
     before { get("/articles/#{article.id}/author") }
+
+    let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show?' do
@@ -137,17 +146,32 @@ describe 'Test request', type: :request do
 
     context 'authorized for show?' do
       let(:authorizations) { {show: true} }
-      it { is_expected.to be_ok }
+
+      context 'authorized for show? on author record' do
+        let(:user_authorizations) { {show: true} }
+        it { is_expected.to be_ok }
+      end
+
+      context 'unauthorized for show? on author record' do
+        let(:user_authorizations) { {show: false} }
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'article has no author' do
+        let(:article) { articles(:article_without_author) }
+
+        it { is_expected.to be_ok }
+
+        it 'responds with null data' do
+          expect(json_data).to eq(nil)
+        end
+      end
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope' do
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
-      end
-
-      context 'unauthorized for show? on author record' do
-        it { is_expected.to be_forbidden }
       end
     end
   end

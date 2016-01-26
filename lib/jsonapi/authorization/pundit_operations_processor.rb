@@ -5,6 +5,7 @@ module JSONAPI
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
       set_callback :find_operation, :before, :authorize_find
       set_callback :show_operation, :before, :authorize_show
+      set_callback :show_related_resource_operation, :before, :authorize_show_related_resource
       set_callback :show_related_resources_operation, :before, :authorize_show_related_resources
       set_callback :create_resource_operation, :before, :authorize_create_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
@@ -20,6 +21,21 @@ module JSONAPI
         )._model
 
         ::Pundit.authorize(pundit_user, record, 'show?')
+      end
+
+      def authorize_show_related_resource
+        source_resource = @operation.source_klass.find_by_key(
+          @operation.source_id,
+          context: operation_context
+        )
+        source_record = source_resource._model
+        ::Pundit.authorize(pundit_user, source_record, 'show?')
+
+        related_resource = source_resource.public_send(@operation.relationship_type)
+        if related_resource.present?
+          related_record = related_resource._model
+          ::Pundit.authorize(pundit_user, related_record, 'show?')
+        end
       end
 
       def authorize_show_related_resources
