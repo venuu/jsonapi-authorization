@@ -21,6 +21,8 @@ describe 'Test request', type: :request do
     header 'Content-Type', 'application/vnd.api+json'
   end
 
+  ## --- CRUD on resources ---
+
   describe 'GET /articles' do
     before { get('/articles') }
 
@@ -72,18 +74,40 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'GET /articles/:id/relationships', pending: 'relationships not yet implemented' do
-    before { get("/articles/#{article.id}/relationships") }
-    let(:policy_scope) { Article.all }
+  describe 'POST /articles' do
+    before { post("/articles", '{ "data": { "type": "articles" } }') }
 
-    context 'unauthorized for show?' do
-      let(:authorizations) { {show: false} }
+    context 'unauthorized for create?' do
+      let(:authorizations) { {create: false} }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show?' do
-      let(:authorizations) { {show: true} }
-      it { is_expected.to be_ok }
+    context 'authorized for create?' do
+      let(:authorizations) { {create: true} }
+      it { is_expected.to be_successful }
+    end
+  end
+
+  describe 'DELETE /articles/:id' do
+    before { delete("/articles/#{article.id}") }
+    let(:policy_scope) { Article.all }
+
+    context 'unauthorized for destroy?' do
+      let(:authorizations) { {destroy: false} }
+
+      context 'not limited by policy scope' do
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+    end
+
+    context 'authorized for destroy?' do
+      let(:authorizations) { {destroy: true} }
+      it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
@@ -91,10 +115,10 @@ describe 'Test request', type: :request do
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
-
-      xit 'displays only relationships allowed by policies'
     end
   end
+
+  ## --- CRUD on related resources ---
 
   describe 'GET /articles/:id/comments' do
     let(:article) { articles(:article_with_comments) }
@@ -180,17 +204,29 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'POST /articles' do
-    before { post("/articles", '{ "data": { "type": "articles" } }') }
+  ## --- CRUD on relationships ---
 
-    context 'unauthorized for create?' do
-      let(:authorizations) { {create: false} }
+  describe 'GET /articles/:id/relationships', pending: 'relationships not yet implemented' do
+    before { get("/articles/#{article.id}/relationships") }
+    let(:policy_scope) { Article.all }
+
+    context 'unauthorized for show?' do
+      let(:authorizations) { {show: false} }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for create?' do
-      let(:authorizations) { {create: true} }
-      it { is_expected.to be_successful }
+    context 'authorized for show?' do
+      let(:authorizations) { {show: true} }
+      it { is_expected.to be_ok }
+
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+
+      xit 'displays only relationships allowed by policies'
     end
   end
 
@@ -272,36 +308,6 @@ describe 'Test request', type: :request do
 
       xcontext 'authorized for update? on all the comments' do
         it { is_expected.to be_successful }
-      end
-    end
-  end
-
-  describe 'DELETE /articles/:id' do
-    before { delete("/articles/#{article.id}") }
-    let(:policy_scope) { Article.all }
-
-    context 'unauthorized for destroy?' do
-      let(:authorizations) { {destroy: false} }
-
-      context 'not limited by policy scope' do
-        it { is_expected.to be_forbidden }
-      end
-
-      context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: article.id) }
-        it { is_expected.to be_not_found }
-      end
-    end
-
-    context 'authorized for destroy?' do
-      let(:authorizations) { {destroy: true} }
-      it { is_expected.to be_successful }
-
-      # If this happens in real life, it's mostly a bug. We want to document the
-      # behaviour in that case anyway, as it might be surprising.
-      context 'limited by policy scope' do
-        let(:policy_scope) { Article.where.not(id: article.id) }
-        it { is_expected.to be_not_found }
       end
     end
   end
