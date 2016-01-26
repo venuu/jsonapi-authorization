@@ -88,6 +88,42 @@ describe 'Test request', type: :request do
     end
   end
 
+  describe 'PATCH /articles/:id' do
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "id": "#{article.id}",
+          "type": "articles"
+        }
+      }
+      EOS
+    end
+
+    before { patch("/articles/#{article.id}", json) }
+    let(:policy_scope) { Article.all }
+
+    context 'authorized for update? on article' do
+      let(:authorizations) { {update: true} }
+      it { is_expected.to be_successful }
+
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+    end
+
+    context 'unauthorized for update? on article' do
+      let(:authorizations) { {update: false} }
+      it { is_expected.to be_forbidden }
+
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+    end
+  end
+
   describe 'DELETE /articles/:id' do
     before { delete("/articles/#{article.id}") }
     let(:policy_scope) { Article.all }
@@ -255,6 +291,32 @@ describe 'Test request', type: :request do
       end
 
       xcontext 'authorized for update? on comment' do
+        it { is_expected.to be_created }
+      end
+    end
+  end
+
+  describe 'PATCH /articles/:id/relationships/comments' do
+    context 'unauthorized for update? on article' do
+      let(:authorizations) { {update: false} }
+
+      xcontext 'unauthorized for update? on comments' do
+        it { is_expected.to be_forbidden }
+      end
+
+      xcontext 'authorized for update? on comments' do
+        it { is_expected.to be_forbidden }
+      end
+    end
+
+    context 'authorized for update? on article' do
+      let(:authorizations) { {update: true} }
+
+      xcontext 'unauthorized for update? on comments' do
+        it { is_expected.to be_forbidden }
+      end
+
+      xcontext 'authorized for update? on comments' do
         it { is_expected.to be_created }
       end
     end
