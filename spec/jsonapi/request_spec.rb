@@ -17,6 +17,10 @@ describe 'Test request', type: :request do
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
 
+  before do
+    header 'Content-Type', 'application/vnd.api+json'
+  end
+
   describe 'GET /articles' do
     before { get('/articles') }
 
