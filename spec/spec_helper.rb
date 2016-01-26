@@ -17,4 +17,7 @@ RSpec.configure do |config|
   config.fixture_path = File.expand_path("../fixtures", __FILE__)
 
   config.use_transactional_fixtures = true
+
+  config.example_status_persistence_file_path =
+    File.expand_path("../../tmp/rspec-example-statuses.txt", __FILE__)
 end
