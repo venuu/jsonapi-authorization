@@ -180,8 +180,8 @@ describe 'Test request', type: :request do
     end
   end
 
-  describe 'POST /articles', pending: true do
-    before { post("/articles", '{ "data": { "type": "articles" } }') }
+  describe 'POST /articles' do
+    before { post("/articles", '{ "data": { "type": "articles" } }') }
 
     context 'unauthorized for create?' do
       let(:authorizations) { {create: false} }
@@ -190,7 +190,7 @@ describe 'Test request', type: :request do
 
     context 'authorized for create?' do
       let(:authorizations) { {create: true} }
-      it { is_expected.to be_created }
+      it { is_expected.to be_successful }
     end
   end
 
