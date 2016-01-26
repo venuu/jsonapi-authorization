@@ -266,6 +266,90 @@ describe 'Test request', type: :request do
     end
   end
 
+  describe 'GET /articles/:id/relationships/comments' do
+    let(:article) { articles(:article_with_comments) }
+    let(:policy_scope) { Article.all }
+    let(:comments_on_article) { article.comments }
+    let(:comments_policy_scope) { comments_on_article.limit(1) }
+
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
+    end
+    before { get("/articles/#{article.id}/relationships/comments") }
+
+    context 'unauthorized for show? on article' do
+      let(:authorizations) { {show: false} }
+      xit { is_expected.to be_forbidden }
+    end
+
+    context 'authorized for show? on article' do
+      let(:authorizations) { {show: true} }
+      it { is_expected.to be_ok }
+
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by ArticlePolicy::Scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+
+      it 'displays only comments allowed by CommentPolicy::Scope' do
+        expect(json_data.length).to eq(1)
+        expect(json_data.first["id"]).to eq(comments_policy_scope.first.id.to_s)
+      end
+    end
+  end
+
+  describe 'GET /articles/:id/relationships/author' do
+    let(:user_authorizations) { {} }
+    before do
+      user_authorizations.each do |action, retval|
+        allow_any_instance_of(UserPolicy).to receive("#{action}?").and_return(retval)
+      end
+    end
+
+    before { get("/articles/#{article.id}/relationships/author") }
+
+    let(:article) { articles(:article_with_author) }
+    let(:policy_scope) { Article.all }
+
+    context 'unauthorized for show? on article' do
+      let(:authorizations) { {show: false} }
+      xit { is_expected.to be_forbidden }
+    end
+
+    context 'authorized for show? on article' do
+      let(:authorizations) { {show: true} }
+
+      context 'authorized for show? on author record' do
+        let(:user_authorizations) { {show: true} }
+        it { is_expected.to be_ok }
+      end
+
+      context 'unauthorized for show? on author record' do
+        let(:user_authorizations) { {show: false} }
+        xit { is_expected.to be_forbidden }
+      end
+
+      context 'article has no author' do
+        let(:article) { articles(:article_without_author) }
+
+        it { is_expected.to be_ok }
+
+        it 'responds with null data' do
+          expect(json_data).to eq(nil)
+        end
+      end
+
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
+      end
+    end
+  end
+
   describe 'POST /articles/:id/relationships/comments', pending: true do
     context 'unauthorized for update? on article' do
       let(:authorizations) { {update: false} }
@@ -369,6 +453,34 @@ describe 'Test request', type: :request do
       end
 
       xcontext 'authorized for update? on all the comments' do
+        it { is_expected.to be_successful }
+      end
+    end
+  end
+
+  describe 'DELETE /articles/:id/relationships/author' do
+    before { delete("/articles/#{article.id}/relationships/author") }
+
+    context 'unauthorized for update? on article' do
+      let(:authorizations) { {update: false} }
+
+      xcontext 'unauthorized for update? on the author' do
+        it { is_expected.to be_forbidden }
+      end
+
+      xcontext 'authorized for update? on the author' do
+        it { is_expected.to be_forbidden }
+      end
+    end
+
+    context 'authorized for update? on article' do
+      let(:authorizations) { {update: true} }
+
+      xcontext 'unauthorized for update? on the author' do
+        it { is_expected.to be_forbidden }
+      end
+
+      xcontext 'authorized for update? on the author' do
         it { is_expected.to be_successful }
       end
     end
