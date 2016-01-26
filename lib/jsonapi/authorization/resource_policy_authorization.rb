@@ -12,7 +12,7 @@ module JSONAPI
       end
 
       included do
-        [:save, :remove].each do |action|
+        [:remove].each do |action|
           set_callback action, :before, :authorize
         end
       end
