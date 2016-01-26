@@ -107,7 +107,7 @@ module JSONAPI
       end
 
       def model_class_for_relationship(assoc_name)
-        @operation.resource_klass._relationships[assoc_name].resource_klass._model_class
+        @operation.resource_klass._relationship(assoc_name).resource_klass._model_class
       end
 
       def related_models
