@@ -255,7 +255,7 @@ describe 'Test request', type: :request do
 
     context 'unauthorized for show? on article' do
       let(:authorizations) { {show: false} }
-      xit { is_expected.to be_forbidden }
+      it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show? on article' do
@@ -291,7 +291,7 @@ describe 'Test request', type: :request do
 
     context 'unauthorized for show? on article' do
       let(:authorizations) { {show: false} }
-      xit { is_expected.to be_forbidden }
+      it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show? on article' do
@@ -304,7 +304,7 @@ describe 'Test request', type: :request do
 
       context 'unauthorized for show? on author record' do
         let(:user_authorizations) { {show: false} }
-        xit { is_expected.to be_forbidden }
+        it { is_expected.to be_forbidden }
       end
 
       context 'article has no author' do

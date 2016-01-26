@@ -5,6 +5,7 @@ module JSONAPI
     class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
       set_callback :find_operation, :before, :authorize_find
       set_callback :show_operation, :before, :authorize_show
+      set_callback :show_relationship_operation, :before, :authorize_show_relationship
       set_callback :show_related_resource_operation, :before, :authorize_show_related_resource
       set_callback :show_related_resources_operation, :before, :authorize_show_related_resources
       set_callback :create_resource_operation, :before, :authorize_create_resource
@@ -22,6 +23,30 @@ module JSONAPI
         )._model
 
         ::Pundit.authorize(pundit_user, record, 'show?')
+      end
+
+      def authorize_show_relationship
+        parent_resource = @operation.resource_klass.find_by_key(
+          @operation.parent_key,
+          context: operation_context
+        )
+        parent_record = parent_resource._model
+        ::Pundit.authorize(pundit_user, parent_record, 'show?')
+
+        relationship = @operation.resource_klass._relationship(@operation.relationship_type)
+
+        case relationship
+        when JSONAPI::Relationship::ToOne
+          related_resource = parent_resource.public_send(@operation.relationship_type)
+          if related_resource.present?
+            related_record = related_resource._model
+            ::Pundit.authorize(pundit_user, related_record, 'show?')
+          end
+        when JSONAPI::Relationship::ToMany
+          # Do nothing — already covered by policy scopes
+        else
+          raise "Unexpected relationship type: #{relationship.inspect}"
+        end
       end
 
       def authorize_show_related_resource
