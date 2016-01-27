@@ -1,25 +1,29 @@
 require 'spec_helper'
 
 RSpec.describe 'Related resources operations', type: :request do
+  def allow_operation(operation)
+    allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(any_args) do
+      double(operation => nil)
+    end
+  end
+
+  def disallow_operation(operation)
+    raising_double = double
+    allow(raising_double).to receive(operation).and_raise(Pundit::NotAuthorizedError)
+    allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(any_args) do
+      raising_double
+    end
+  end
+
   fixtures :all
 
   let(:article) { Article.all.sample }
   let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
 
-  subject { last_response }
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
-    # TODO: improve faking of authorizer calls
-    authorizer_double = double(:authorizer)
-    allow_any_instance_of(JSONAPI::Authorization::PunditOperationsProcessor).to receive(:authorizer).and_return(authorizer_double)
-
-    authorizations.each do |type, is_authorized|
-      allow(authorizer_double).to receive(type).with(any_args) do
-        raise Pundit::NotAuthorizedError unless is_authorized
-      end
-    end
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
 
@@ -28,23 +32,24 @@ RSpec.describe 'Related resources operations', type: :request do
   end
 
   describe 'GET /articles/:id/comments' do
+    subject(:last_response) { get("/articles/#{article.id}/comments") }
     let(:article) { articles(:article_with_comments) }
+
     let(:policy_scope) { Article.all }
     let(:comments_on_article) { article.comments }
     let(:comments_policy_scope) { comments_on_article.limit(1) }
 
     before do
       allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-      get("/articles/#{article.id}/comments")
     end
 
     context 'unauthorized for show_related_resources' do
-      let(:authorizations) { {show_related_resources: false} }
+      before { disallow_operation('show_related_resources') }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_related_resources' do
-      let(:authorizations) { {show_related_resources: true} }
+      before { allow_operation('show_related_resources') }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -62,6 +67,9 @@ RSpec.describe 'Related resources operations', type: :request do
   end
 
   describe 'GET /articles/:id/author' do
+    subject(:last_response) { get("/articles/#{article.id}/author") }
+    let(:article) { articles(:article_with_author) }
+
     let(:user_authorizations) { {} }
     before do
       user_authorizations.each do |action, retval|
@@ -69,18 +77,15 @@ RSpec.describe 'Related resources operations', type: :request do
       end
     end
 
-    before { get("/articles/#{article.id}/author") }
-
-    let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show_related_resource' do
-      let(:authorizations) { {show_related_resource: false} }
+      before { disallow_operation('show_related_resource') }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_related_resource' do
-      let(:authorizations) { {show_related_resource: true} }
+      before { allow_operation('show_related_resource') }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
