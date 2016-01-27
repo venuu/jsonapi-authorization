@@ -28,12 +28,12 @@ RSpec.describe 'Relationship operations', type: :request do
     subject(:last_response) { get("/articles/#{article.id}/relationships/comments") }
 
     context 'unauthorized for show_relationship' do
-      before { disallow_operation('show_relationship') }
+      before { disallow_operation('show_relationship', article, nil) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_relationship' do
-      before { allow_operation('show_relationship') }
+      before { allow_operation('show_relationship', article, nil) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -57,12 +57,12 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show_relationship' do
-      before { disallow_operation('show_relationship') }
+      before { disallow_operation('show_relationship', article, article.author) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_relationship' do
-      before { allow_operation('show_relationship') }
+      before { allow_operation('show_relationship', article, article.author) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -76,7 +76,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'POST /articles/:id/relationships/comments', pending: true do
     context 'unauthorized for update? on article' do
-      before { disallow_action('update?', article) }
+      before { disallow_action('update?', article, []) }
 
       xcontext 'unauthorized for update? on comment' do
         it { is_expected.to be_forbidden }

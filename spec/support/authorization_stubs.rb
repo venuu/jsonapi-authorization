@@ -1,13 +1,13 @@
-def allow_operation(operation)
-  allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(any_args) do
-    instance_double(JSONAPI::Authorization::Authorizer, operation => nil)
-  end
+def allow_operation(operation, *args)
+  authorizer = instance_double(JSONAPI::Authorization::Authorizer)
+  allow(authorizer).to receive(operation).with(*args).and_return(nil)
+
+  allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(Hash).and_return(authorizer)
 end
 
-def disallow_operation(operation)
-  raising_double = instance_double(JSONAPI::Authorization::Authorizer)
-  allow(raising_double).to receive(operation).and_raise(Pundit::NotAuthorizedError)
-  allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(any_args) do
-    raising_double
-  end
+def disallow_operation(operation, *args)
+  authorizer = instance_double(JSONAPI::Authorization::Authorizer)
+  allow(authorizer).to receive(operation).with(*args).and_raise(Pundit::NotAuthorizedError)
+
+  allow(JSONAPI::Authorization::Authorizer).to receive(:new).with(Hash).and_return(authorizer)
 end
