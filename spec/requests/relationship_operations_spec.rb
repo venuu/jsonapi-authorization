@@ -27,13 +27,13 @@ RSpec.describe 'Relationship operations', type: :request do
     end
     subject(:last_response) { get("/articles/#{article.id}/relationships/comments") }
 
-    context 'unauthorized for show? on article' do
-      before { disallow_action('show?', article) }
+    context 'unauthorized for show_relationship' do
+      before { disallow_operation('show_relationship') }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show? on article' do
-      before { allow_action('show?', article) }
+    context 'authorized for show_relationship' do
+      before { allow_operation('show_relationship') }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -56,33 +56,14 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
-    context 'unauthorized for show? on article' do
-      before { disallow_action('show?', article) }
+    context 'unauthorized for show_relationship' do
+      before { disallow_operation('show_relationship') }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show? on article' do
-      before { allow_action('show?', article) }
-
-      context 'authorized for show? on author record' do
-        before { allow_action('show?', article.author) }
-        it { is_expected.to be_ok }
-      end
-
-      context 'unauthorized for show? on author record' do
-        before { disallow_action('show?', article.author) }
-        it { is_expected.to be_forbidden }
-      end
-
-      context 'article has no author' do
-        let(:article) { articles(:article_without_author) }
-
-        it { is_expected.to be_ok }
-
-        it 'responds with null data' do
-          expect(json_data).to eq(nil)
-        end
-      end
+    context 'authorized for show_relationship' do
+      before { allow_operation('show_relationship') }
+      it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
