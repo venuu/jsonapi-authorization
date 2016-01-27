@@ -11,26 +11,6 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     allow(policy).to receive(:new).with(any_args, record) { double(action => false) }
   end
 
-  before do
-    source_authorizations.each do |action, retval|
-      allow_any_instance_of(ArticlePolicy).to receive("#{action}?").and_return(retval)
-    end
-
-    if defined?(related_record) && defined?(related_authorizations)
-      related_policy = ::Pundit.policy(nil, related_record).class
-      related_authorizations.each do |action, retval|
-        allow_any_instance_of(related_policy).to receive("#{action}?").and_return(retval)
-      end
-    end
-
-    if defined?(related_records) && defined?(related_authorizations)
-      related_policy = ::Pundit.policy(nil, related_records.first).class
-      related_authorizations.each do |action, retval|
-        allow_any_instance_of(related_policy).to receive("#{action}?").and_return(retval)
-      end
-    end
-  end
-
   let(:source_record) { Article.new }
   let(:authorizer) { described_class.new({}) }
 
@@ -40,12 +20,12 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for index? on record' do
-      let(:source_authorizations) { {index: true} }
+      before { allow_action('index?', source_record) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for index? on record' do
-      let(:source_authorizations) { {index: false} }
+      before { disallow_action('index?', source_record) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -56,12 +36,12 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for show? on record' do
-      let(:source_authorizations) { {show: true} }
+      before { allow_action('show?', source_record) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      let(:source_authorizations) { {show: false} }
+      before { disallow_action('show?', source_record) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -72,18 +52,18 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for show? on source record' do
-      let(:source_authorizations) { {show: true} }
+      before { allow_action('show?', source_record) }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          let(:related_authorizations) { {show: true} }
+          before { allow_action('show?', related_record) }
           it { is_expected.not_to raise_error }
         end
 
         context 'unauthorized for show on related record' do
-          let(:related_authorizations) { {show: false} }
+          before { disallow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -95,18 +75,18 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'unauthorized for show? on source record' do
-      let(:source_authorizations) { {show: false} }
+      before { disallow_action('show?', source_record) }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          let(:related_authorizations) { {show: true} }
+          before { allow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
 
         context 'unauthorized for show on related record' do
-          let(:related_authorizations) { {show: false} }
+          before { disallow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -124,18 +104,18 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for show? on source record' do
-      let(:source_authorizations) { {show: true} }
+      before { allow_action('show?', source_record) }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          let(:related_authorizations) { {show: true} }
+          before { allow_action('show?', related_record) }
           it { is_expected.not_to raise_error }
         end
 
         context 'unauthorized for show on related record' do
-          let(:related_authorizations) { {show: false} }
+          before { disallow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -147,18 +127,18 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'unauthorized for show? on source record' do
-      let(:source_authorizations) { {show: false} }
+      before { disallow_action('show?', source_record) }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          let(:related_authorizations) { {show: true} }
+          before { allow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
 
         context 'unauthorized for show on related record' do
-          let(:related_authorizations) { {show: false} }
+          before { disallow_action('show?', related_record) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -176,12 +156,12 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for show? on record' do
-      let(:source_authorizations) { {show: true} }
+      before { allow_action('show?', source_record) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      let(:source_authorizations) { {show: false} }
+      before { disallow_action('show?', source_record) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -193,7 +173,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for update? on source record' do
-      let(:source_authorizations) { {update: true} }
+      before { allow_action('update?', source_record) }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -201,7 +181,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        let(:related_authorizations) { {update: true} }
+        before { related_records.each { |r| allow_action('update?', r) } }
         it { is_expected.not_to raise_error }
       end
 
@@ -217,7 +197,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'unauthorized for update? on source record' do
-      let(:source_authorizations) { {update: false} }
+      before { disallow_action('update?', source_record) }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -225,7 +205,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        let(:related_authorizations) { {update: true} }
+        before { related_records.each { |r| allow_action('update?', r) } }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -248,8 +228,8 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       -> { authorizer.create_resource(source_class, related_records) }
     end
 
-    context 'authorized for create? on source record' do
-      let(:source_authorizations) { {create: true} }
+    context 'authorized for create? on source class' do
+      before { allow_action('create?', source_class) }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -257,7 +237,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        let(:related_authorizations) { {update: true} }
+        before { related_records.each { |r| allow_action('update?', r) } }
         it { is_expected.not_to raise_error }
       end
 
@@ -272,8 +252,8 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       end
     end
 
-    context 'unauthorized for create? on source record' do
-      let(:source_authorizations) { {create: false} }
+    context 'unauthorized for create? on source class' do
+      before { disallow_action('create?', source_class) }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -281,7 +261,7 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        let(:related_authorizations) { {update: true} }
+        before { related_records.each { |r| allow_action('update?', r) } }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -303,12 +283,12 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
     end
 
     context 'authorized for destroy? on record' do
-      let(:source_authorizations) { {destroy: true} }
+      before { allow_action('destroy?', source_record) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for destroy? on record' do
-      let(:source_authorizations) { {destroy: false} }
+      before { disallow_action('destroy?', source_record) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
