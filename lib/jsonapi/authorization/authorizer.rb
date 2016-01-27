@@ -48,6 +48,26 @@ module JSONAPI
       def remove_resource(source_record)
         ::Pundit.authorize(user, source_record, 'destroy?')
       end
+
+      def replace_to_one_relationship(*)
+        raise NotImplementedError
+      end
+
+      def create_to_many_relationship(*)
+        raise NotImplementedError
+      end
+
+      def replace_to_many_relationship(*)
+        raise NotImplementedError
+      end
+
+      def remove_to_many_relationship(*)
+        raise NotImplementedError
+      end
+
+      def remove_to_one_relationship(*)
+        raise NotImplementedError
+      end
     end
   end
 end
