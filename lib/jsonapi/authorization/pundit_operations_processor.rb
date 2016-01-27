@@ -15,7 +15,7 @@ module JSONAPI
       set_callback :create_to_many_relationship_operation, :before, :authorize_create_to_many_relationship
       set_callback :replace_to_many_relationship_operation, :before, :authorize_replace_to_many_relationship
       # TODO: set_callback :remove_to_many_relationship_operation, :before, :authorize_remove_to_many_relationship
-      # TODO: set_callback :remove_to_one_relationship_operation, :before, :authorize_remove_to_one_relationship
+      set_callback :remove_to_one_relationship_operation, :before, :authorize_remove_to_one_relationship
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
@@ -147,6 +147,19 @@ module JSONAPI
           source_record,
           related_records
         )
+      end
+
+      def authorize_remove_to_one_relationship
+        source_resource = @operation.resource_klass.find_by_key(
+          @operation.resource_id,
+          context: operation_context
+        )
+
+        related_resource = source_resource.public_send(@operation.relationship_type)
+
+        source_record = source_resource._model
+        related_record = related_resource._model unless related_resource.nil?
+        authorizer.remove_to_one_relationship(source_record, related_record)
       end
 
       private

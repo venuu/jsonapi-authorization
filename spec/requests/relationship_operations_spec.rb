@@ -286,27 +286,23 @@ RSpec.describe 'Relationship operations', type: :request do
   describe 'DELETE /articles/:id/relationships/author' do
     subject(:last_response) { delete("/articles/#{article.id}/relationships/author") }
 
-    context 'unauthorized for update? on article' do
-      before { disallow_action('update?', article) }
+    let(:article) { articles(:article_with_author) }
+    let(:policy_scope) { Article.all }
 
-      xcontext 'unauthorized for update? on the author' do
-        it { is_expected.to be_forbidden }
-      end
-
-      xcontext 'authorized for update? on the author' do
-        it { is_expected.to be_forbidden }
-      end
+    context 'unauthorized for remove_to_one_relationship' do
+      before { disallow_operation('remove_to_one_relationship', article, article.author) }
+      it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
+    context 'authorized for remove_to_one_relationship' do
+      before { allow_operation('remove_to_one_relationship', article, article.author) }
+      it { is_expected.to be_successful }
 
-      xcontext 'unauthorized for update? on the author' do
-        it { is_expected.to be_forbidden }
-      end
-
-      xcontext 'authorized for update? on the author' do
-        it { is_expected.to be_successful }
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by policy scope' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
       end
     end
   end
