@@ -4,22 +4,12 @@ describe 'Resource operations', type: :request do
   fixtures :all
 
   let(:article) { Article.all.sample }
-  let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
 
   subject { last_response }
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
-    # TODO: improve faking of authorizer calls
-    authorizer_double = double(:authorizer)
-    allow_any_instance_of(JSONAPI::Authorization::PunditOperationsProcessor).to receive(:authorizer).and_return(authorizer_double)
-
-    authorizations.each do |type, is_authorized|
-      allow(authorizer_double).to receive(type).with(any_args) do
-        raise Pundit::NotAuthorizedError unless is_authorized
-      end
-    end
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
 
@@ -28,15 +18,15 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'GET /articles' do
-    before { get('/articles') }
+    subject(:last_response) { get('/articles') }
 
     context 'unauthorized for find' do
-      let(:authorizations) { {find: false} }
+      before { disallow_operation('find') }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for find' do
-      let(:authorizations) { {find: true} }
+      before { allow_operation('find') }
       let(:policy_scope) { Article.where(id: article.id) }
 
       it { is_expected.to be_ok }
@@ -49,11 +39,11 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'GET /articles/:id' do
-    before { get("/articles/#{article.id}") }
+    subject(:last_response) { get("/articles/#{article.id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show' do
-      let(:authorizations) { {show: false} }
+      before { disallow_operation('show') }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -66,7 +56,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for show' do
-      let(:authorizations) { {show: true} }
+      before { allow_operation('show') }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -79,15 +69,15 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'POST /articles' do
-    before { post("/articles", '{ "data": { "type": "articles" } }') }
+    subject(:last_response) { post("/articles", '{ "data": { "type": "articles" } }') }
 
     context 'unauthorized for create_resource' do
-      let(:authorizations) { {create_resource: false} }
+      before { disallow_operation('create_resource') }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_resource' do
-      let(:authorizations) { {create_resource: true} }
+      before { allow_operation('create_resource') }
       it { is_expected.to be_successful }
     end
   end
@@ -104,11 +94,11 @@ describe 'Resource operations', type: :request do
       EOS
     end
 
-    before { patch("/articles/#{article.id}", json) }
+    subject(:last_response) { patch("/articles/#{article.id}", json) }
     let(:policy_scope) { Article.all }
 
     context 'authorized for replace_fields' do
-      let(:authorizations) { {replace_fields: true} }
+      before { allow_operation('replace_fields') }
       it { is_expected.to be_successful }
 
       context 'limited by policy scope' do
@@ -118,7 +108,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'unauthorized for replace_fields' do
-      let(:authorizations) { {replace_fields: false} }
+      before { disallow_operation('replace_fields') }
       it { is_expected.to be_forbidden }
 
       context 'limited by policy scope' do
@@ -129,11 +119,11 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'DELETE /articles/:id' do
-    before { delete("/articles/#{article.id}") }
+    subject(:last_response) { delete("/articles/#{article.id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_resource' do
-      let(:authorizations) { {remove_resource: false} }
+      before { disallow_operation('remove_resource') }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -146,7 +136,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for remove_resource' do
-      let(:authorizations) { {remove_resource: true} }
+      before { allow_operation('remove_resource') }
       it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the
