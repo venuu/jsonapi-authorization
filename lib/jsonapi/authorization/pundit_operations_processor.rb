@@ -12,6 +12,7 @@ module JSONAPI
       set_callback :remove_resource_operation, :before, :authorize_remove_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
       set_callback :create_to_many_relationship_operation, :before, :authorize_create_to_many_relationship
+      set_callback :replace_to_many_relationship_operation, :before, :authorize_replace_to_many_relationship
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
@@ -107,6 +108,21 @@ module JSONAPI
         authorizer.create_to_many_relationship(source_record, related_models)
       end
 
+      def authorize_replace_to_many_relationship
+        source_resource = @operation.resource_klass.find_by_key(
+          @operation.resource_id,
+          context: operation_context
+        )
+        source_record = source_resource._model
+
+        related_records = source_resource.records_for(@operation.relationship_type)
+
+        authorizer.replace_to_many_relationship(
+          source_record,
+          related_records
+        )
+      end
+
       private
 
       def authorizer
@@ -146,6 +162,7 @@ module JSONAPI
         [:to_one, :to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_ids|
             assoc_klass = model_class_for_relationship(assoc_name)
+            # TODO: find_by_key?
             assoc_klass.find(assoc_ids)
           end
         end
