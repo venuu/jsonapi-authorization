@@ -1,19 +1,15 @@
 require 'spec_helper'
+require 'support/pundit_stubs'
 
 RSpec.describe 'Relationship operations', type: :request do
   fixtures :all
 
   let(:article) { Article.all.sample }
-  let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
 
-  subject { last_response }
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
-    authorizations.each do |action, retval|
-      allow_any_instance_of(ArticlePolicy).to receive("#{action}?").and_return(retval)
-    end
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
 
@@ -30,15 +26,15 @@ RSpec.describe 'Relationship operations', type: :request do
     before do
       allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
     end
-    before { get("/articles/#{article.id}/relationships/comments") }
+    subject(:last_response) { get("/articles/#{article.id}/relationships/comments") }
 
     context 'unauthorized for show? on article' do
-      let(:authorizations) { {show: false} }
+      before { disallow_action('show?', article) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show? on article' do
-      let(:authorizations) { {show: true} }
+      before { allow_action('show?', article) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -56,33 +52,26 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'GET /articles/:id/relationships/author' do
-    let(:user_authorizations) { {} }
-    before do
-      user_authorizations.each do |action, retval|
-        allow_any_instance_of(UserPolicy).to receive("#{action}?").and_return(retval)
-      end
-    end
-
-    before { get("/articles/#{article.id}/relationships/author") }
+    subject(:last_response) { get("/articles/#{article.id}/relationships/author") }
 
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show? on article' do
-      let(:authorizations) { {show: false} }
+      before { disallow_action('show?', article) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show? on article' do
-      let(:authorizations) { {show: true} }
+      before { allow_action('show?', article) }
 
       context 'authorized for show? on author record' do
-        let(:user_authorizations) { {show: true} }
+        before { allow_action('show?', article.author) }
         it { is_expected.to be_ok }
       end
 
       context 'unauthorized for show? on author record' do
-        let(:user_authorizations) { {show: false} }
+        before { disallow_action('show?', article.author) }
         it { is_expected.to be_forbidden }
       end
 
@@ -107,7 +96,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'POST /articles/:id/relationships/comments', pending: true do
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { disallow_action('update?', article) }
 
       xcontext 'unauthorized for update? on comment' do
         it { is_expected.to be_forbidden }
@@ -123,7 +112,7 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on comment' do
         it { is_expected.to be_forbidden }
@@ -137,7 +126,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'PATCH /articles/:id/relationships/comments' do
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { disallow_action('update?', article) }
 
       xcontext 'unauthorized for update? on comments' do
         it { is_expected.to be_forbidden }
@@ -149,7 +138,7 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on comments' do
         it { is_expected.to be_forbidden }
@@ -163,7 +152,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'PATCH /articles/:id/relationships/author' do
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { disallow_action('update?', article) }
 
       xcontext 'unauthorized for update? on author' do
         it { is_expected.to be_forbidden }
@@ -175,7 +164,7 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on author' do
         it { is_expected.to be_forbidden }
@@ -189,7 +178,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'DELETE /articles/:id/relationships/comments' do
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { disallow_action('update?', article) }
 
       xcontext 'unauthorized for update? on any of the comments' do
         it { is_expected.to be_forbidden }
@@ -201,7 +190,7 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on any of the comments' do
         it { is_expected.to be_forbidden }
@@ -214,10 +203,10 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'DELETE /articles/:id/relationships/author' do
-    before { delete("/articles/#{article.id}/relationships/author") }
+    subject(:last_response) { delete("/articles/#{article.id}/relationships/author") }
 
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { disallow_action('update?', article) }
 
       xcontext 'unauthorized for update? on the author' do
         it { is_expected.to be_forbidden }
@@ -229,7 +218,7 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on the author' do
         it { is_expected.to be_forbidden }
