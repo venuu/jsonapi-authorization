@@ -11,8 +11,11 @@ module JSONAPI
       set_callback :create_resource_operation, :before, :authorize_create_resource
       set_callback :remove_resource_operation, :before, :authorize_remove_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
+      # TODO: set_callback :replace_to_one_relationship_operation, :before, :authorize_replace_to_one_relationship
       set_callback :create_to_many_relationship_operation, :before, :authorize_create_to_many_relationship
       set_callback :replace_to_many_relationship_operation, :before, :authorize_replace_to_many_relationship
+      # TODO: set_callback :remove_to_many_relationship_operation, :before, :authorize_remove_to_many_relationship
+      # TODO: set_callback :remove_to_one_relationship_operation, :before, :authorize_remove_to_one_relationship
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
