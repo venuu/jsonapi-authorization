@@ -74,32 +74,45 @@ RSpec.describe 'Relationship operations', type: :request do
     end
   end
 
-  describe 'POST /articles/:id/relationships/comments', pending: true do
-    context 'unauthorized for update? on article' do
-      before { disallow_action('update?', article, []) }
+  describe 'POST /articles/:id/relationships/comments' do
+    let(:new_comments) { Array.new(2) { Comment.new }.each(&:save) }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": [
+          { "type": "comments", "id": "#{new_comments.first.id}" },
+          { "type": "comments", "id": "#{new_comments.last.id}" }
+        ]
+      }
+      EOS
+    end
+    subject(:last_response) { post("/articles/#{article.id}/relationships/comments", json) }
+    let(:policy_scope) { Article.all }
+    let(:comments_scope) { Comment.all }
 
-      xcontext 'unauthorized for update? on comment' do
-        it { is_expected.to be_forbidden }
-      end
-
-      xcontext 'authorized for update? on comment' do
-        # This is a tricky one. In real life, this is often something you may
-        # want to permit. However, it is difficult to model with the typical
-        # Pundit actions without knowing the particular use case
-
-        it { is_expected.to be_forbidden }
-      end
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_scope)
     end
 
-    context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
+    context 'unauthorized for create_to_many_relationship' do
+      before { disallow_operation('create_to_many_relationship', article, new_comments) }
+      it { is_expected.to be_forbidden }
+    end
 
-      xcontext 'unauthorized for update? on comment' do
-        it { is_expected.to be_forbidden }
+    context 'authorized for create_to_many_relationship' do
+      before { allow_operation('create_to_many_relationship', article, new_comments) }
+      it { is_expected.to be_successful }
+
+      context 'limited by policy scope on comments' do
+        let(:comments_scope) { Comment.none }
+        it { is_expected.to be_not_found }
       end
 
-      xcontext 'authorized for update? on comment' do
-        it { is_expected.to be_created }
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by policy scope on articles' do
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
       end
     end
   end
