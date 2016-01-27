@@ -11,8 +11,14 @@ RSpec.describe 'Related resources operations', type: :request do
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
-    authorizations.each do |action, retval|
-      allow_any_instance_of(ArticlePolicy).to receive("#{action}?").and_return(retval)
+    # TODO: improve faking of authorizer calls
+    authorizer_double = double(:authorizer)
+    allow_any_instance_of(JSONAPI::Authorization::PunditOperationsProcessor).to receive(:authorizer).and_return(authorizer_double)
+
+    authorizations.each do |type, is_authorized|
+      allow(authorizer_double).to receive(type).with(any_args) do
+        raise Pundit::NotAuthorizedError unless is_authorized
+      end
     end
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
@@ -32,13 +38,13 @@ RSpec.describe 'Related resources operations', type: :request do
       get("/articles/#{article.id}/comments")
     end
 
-    context 'unauthorized for show?' do
-      let(:authorizations) { {show: false} }
+    context 'unauthorized for show_related_resources' do
+      let(:authorizations) { {show_related_resources: false} }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show?' do
-      let(:authorizations) { {show: true} }
+    context 'authorized for show_related_resources' do
+      let(:authorizations) { {show_related_resources: true} }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -68,33 +74,13 @@ RSpec.describe 'Related resources operations', type: :request do
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
-    context 'unauthorized for show?' do
-      let(:authorizations) { {show: false} }
+    context 'unauthorized for show_related_resource' do
+      let(:authorizations) { {show_related_resource: false} }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show?' do
-      let(:authorizations) { {show: true} }
-
-      context 'authorized for show? on author record' do
-        let(:user_authorizations) { {show: true} }
-        it { is_expected.to be_ok }
-      end
-
-      context 'unauthorized for show? on author record' do
-        let(:user_authorizations) { {show: false} }
-        it { is_expected.to be_forbidden }
-      end
-
-      context 'article has no author' do
-        let(:article) { articles(:article_without_author) }
-
-        it { is_expected.to be_ok }
-
-        it 'responds with null data' do
-          expect(json_data).to eq(nil)
-        end
-      end
+    context 'authorized for show_related_resource' do
+      let(:authorizations) { {show_related_resource: true} }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
