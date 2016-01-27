@@ -7,12 +7,12 @@ module JSONAPI
         @user = context[:user]
       end
 
-      def find(record)
-        ::Pundit.authorize(user, record, 'index?')
+      def find(source_record)
+        ::Pundit.authorize(user, source_record, 'index?')
       end
 
-      def show(record)
-        ::Pundit.authorize(user, record, 'show?')
+      def show(source_record)
+        ::Pundit.authorize(user, source_record, 'show?')
       end
 
       def show_relationship(source_record, related_record)
@@ -25,8 +25,8 @@ module JSONAPI
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
       end
 
-      def show_related_resources(record)
-        ::Pundit.authorize(user, record, 'show?')
+      def show_related_resources(source_record)
+        ::Pundit.authorize(user, source_record, 'show?')
       end
 
       def replace_fields(source_record, related_records)
@@ -45,8 +45,8 @@ module JSONAPI
         end
       end
 
-      def remove_resource(record)
-        ::Pundit.authorize(user, record, 'destroy?')
+      def remove_resource(source_record)
+        ::Pundit.authorize(user, source_record, 'destroy?')
       end
     end
   end
