@@ -195,8 +195,20 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
         it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on any of the related records', skip: true do
-        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      context 'unauthorized for update? on any of the related records' do
+        it 'raises Pundit::NotAuthorizedError' do
+          forbidden_record = Comment.new
+          allowed_record = Comment.new
+          fake_forbidden_policy = OpenStruct.new(update?: false)
+          fake_allowed_policy = OpenStruct.new(update?: true)
+          allow(CommentPolicy).to receive(:new).with(any_args, forbidden_record) { fake_forbidden_policy }
+          allow(CommentPolicy).to receive(:new).with(any_args, allowed_record) { fake_allowed_policy }
+          related_records = [allowed_record, forbidden_record]
+
+          expect {
+            authorizer.replace_fields(source_record, related_records)
+          }.to raise_error(::Pundit::NotAuthorizedError)
+        end
       end
     end
 
@@ -213,16 +225,29 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'unauthorized for update? on any of the related records', skip: true do
-        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      context 'unauthorized for update? on any of the related records' do
+        it 'raises Pundit::NotAuthorizedError' do
+          forbidden_record = Comment.new
+          allowed_record = Comment.new
+          fake_forbidden_policy = OpenStruct.new(update?: false)
+          fake_allowed_policy = OpenStruct.new(update?: true)
+          allow(CommentPolicy).to receive(:new).with(any_args, forbidden_record) { fake_forbidden_policy }
+          allow(CommentPolicy).to receive(:new).with(any_args, allowed_record) { fake_allowed_policy }
+          related_records = [allowed_record, forbidden_record]
+
+          expect {
+            authorizer.replace_fields(source_record, related_records)
+          }.to raise_error(::Pundit::NotAuthorizedError)
+        end
       end
     end
   end
 
   describe '#create_resource' do
     let(:related_records) { Array.new(3) { Comment.new } }
+    let(:source_class) { source_record.class }
     subject(:method_call) do
-      -> { authorizer.create_resource(source_record, related_records) }
+      -> { authorizer.create_resource(source_class, related_records) }
     end
 
     context 'authorized for create? on source record' do
@@ -238,8 +263,20 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
         it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on any of the related records', skip: true do
-        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      context 'unauthorized for update? on any of the related records' do
+        it 'raises Pundit::NotAuthorizedError' do
+          forbidden_record = Comment.new
+          allowed_record = Comment.new
+          fake_forbidden_policy = OpenStruct.new(update?: false)
+          fake_allowed_policy = OpenStruct.new(update?: true)
+          allow(CommentPolicy).to receive(:new).with(any_args, forbidden_record) { fake_forbidden_policy }
+          allow(CommentPolicy).to receive(:new).with(any_args, allowed_record) { fake_allowed_policy }
+          related_records = [allowed_record, forbidden_record]
+
+          expect {
+            authorizer.create_resource(source_class, related_records)
+          }.to raise_error(::Pundit::NotAuthorizedError)
+        end
       end
     end
 
@@ -256,12 +293,23 @@ RSpec.describe JSONAPI::Authorization::Authorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'unauthorized for update? on any of the related records', skip: true do
-        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      context 'unauthorized for update? on any of the related records' do
+        it 'raises Pundit::NotAuthorizedError' do
+          forbidden_record = Comment.new
+          allowed_record = Comment.new
+          fake_forbidden_policy = OpenStruct.new(update?: false)
+          fake_allowed_policy = OpenStruct.new(update?: true)
+          allow(CommentPolicy).to receive(:new).with(any_args, forbidden_record) { fake_forbidden_policy }
+          allow(CommentPolicy).to receive(:new).with(any_args, allowed_record) { fake_allowed_policy }
+          related_records = [allowed_record, forbidden_record]
+
+          expect {
+            authorizer.create_resource(source_class, related_records)
+          }.to raise_error(::Pundit::NotAuthorizedError)
+        end
       end
     end
   end
-
 
   describe '#remove_resource' do
     subject(:method_call) do
