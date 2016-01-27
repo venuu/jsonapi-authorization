@@ -69,14 +69,6 @@ RSpec.describe 'Related resources operations', type: :request do
   describe 'GET /articles/:id/author' do
     subject(:last_response) { get("/articles/#{article.id}/author") }
     let(:article) { articles(:article_with_author) }
-
-    let(:user_authorizations) { {} }
-    before do
-      user_authorizations.each do |action, retval|
-        allow_any_instance_of(UserPolicy).to receive("#{action}?").and_return(retval)
-      end
-    end
-
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show_related_resource' do
