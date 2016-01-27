@@ -13,7 +13,7 @@ module JSONAPI
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
 
       def authorize_find
-        ::Pundit.authorize(pundit_user, @operation.resource_klass._model_class, 'index?')
+        authorizer.index(@operation.resource_klass._model_class)
       end
 
       def authorize_show
@@ -22,7 +22,7 @@ module JSONAPI
           context: operation_context
         )._model
 
-        ::Pundit.authorize(pundit_user, record, 'show?')
+        authorizer.show(record)
       end
 
       def authorize_show_relationship
@@ -31,7 +31,7 @@ module JSONAPI
           context: operation_context
         )
         parent_record = parent_resource._model
-        ::Pundit.authorize(pundit_user, parent_record, 'show?')
+        authorizer.show(parent_record)
 
         relationship = @operation.resource_klass._relationship(@operation.relationship_type)
 
@@ -40,7 +40,7 @@ module JSONAPI
           related_resource = parent_resource.public_send(@operation.relationship_type)
           if related_resource.present?
             related_record = related_resource._model
-            ::Pundit.authorize(pundit_user, related_record, 'show?')
+            authorizer.show(related_record)
           end
         when JSONAPI::Relationship::ToMany
           # Do nothing — already covered by policy scopes
@@ -55,12 +55,12 @@ module JSONAPI
           context: operation_context
         )
         source_record = source_resource._model
-        ::Pundit.authorize(pundit_user, source_record, 'show?')
+        authorizer.show(source_record)
 
         related_resource = source_resource.public_send(@operation.relationship_type)
         if related_resource.present?
           related_record = related_resource._model
-          ::Pundit.authorize(pundit_user, related_record, 'show?')
+          authorizer.show(related_record)
         end
       end
 
@@ -70,7 +70,7 @@ module JSONAPI
           context: operation_context
         )._model
 
-        ::Pundit.authorize(pundit_user, source_record, 'show?')
+        authorizer.show(source_record)
       end
 
       def authorize_replace_fields
@@ -79,18 +79,18 @@ module JSONAPI
           context: operation_context
         )._model
 
-        ::Pundit.authorize(pundit_user, source_record, 'update?')
+        authorizer.update(source_record)
 
         related_models.each do |rel_model|
-          ::Pundit.authorize(pundit_user, rel_model, 'update?')
+          authorizer.update(rel_model)
         end
       end
 
       def authorize_create_resource
-        ::Pundit.authorize(pundit_user, @operation.resource_klass._model_class, 'create?')
+        authorizer.create(@operation.resource_klass._model_class)
 
         related_models.each do |rel_model|
-          ::Pundit.authorize(pundit_user, rel_model, 'update?')
+          authorizer.update(rel_model)
         end
       end
 
@@ -100,10 +100,14 @@ module JSONAPI
           context: operation_context
         )._model
 
-        ::Pundit.authorize(pundit_user, record, 'destroy?')
+        authorizer.destroy(record)
       end
 
       private
+
+      def authorizer
+        @authorizer ||= Authorizer.new(operation_context)
+      end
 
       def pundit_user
         operation_context[:user]
