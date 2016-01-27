@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/pundit_stubs'
 
 RSpec.describe 'Relationship operations', type: :request do
   fixtures :all

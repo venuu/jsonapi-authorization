@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/authorization_stubs'
 
 RSpec.describe 'Related resources operations', type: :request do
   fixtures :all

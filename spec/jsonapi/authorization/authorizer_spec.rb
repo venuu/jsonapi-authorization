@@ -1,5 +1,4 @@
 require 'spec_helper'
-require 'support/pundit_stubs'
 
 RSpec.describe JSONAPI::Authorization::Authorizer do
   let(:source_record) { Article.new }
