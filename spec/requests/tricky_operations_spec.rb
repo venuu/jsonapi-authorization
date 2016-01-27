@@ -4,16 +4,12 @@ RSpec.describe 'Tricky operations', type: :request do
   fixtures :all
 
   let(:article) { Article.all.sample }
-  let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
 
   subject { last_response }
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
-    authorizations.each do |action, retval|
-      allow_any_instance_of(ArticlePolicy).to receive("#{action}?").and_return(retval)
-    end
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
   end
 
@@ -22,11 +18,11 @@ RSpec.describe 'Tricky operations', type: :request do
   end
 
   describe 'GET /articles/:id?includes=comments' do
-    before { get("/articles/#{article.id}?includes=comments") }
+    subject(:last_response) { get("/articles/#{article.id}?includes=comments") }
     let(:policy_scope) { Article.all }
 
-    context 'authorized for show?' do
-      let(:authorizations) { {show: true} }
+    context 'authorized for show? on article' do
+      before { allow_action('show?', article) }
 
       xit 'displays only comments allowed by CommentPolicy::Scope'
     end
@@ -52,7 +48,7 @@ RSpec.describe 'Tricky operations', type: :request do
     end
 
     context 'unauthorized for update? on article' do
-      let(:authorizations) { {update: false} }
+      before { allow_action('update?', article) }
 
       xcontext 'authorized for create? on comment' do
         # This is a tricky one. In real life, this is often something you may
@@ -89,7 +85,7 @@ RSpec.describe 'Tricky operations', type: :request do
     end
 
     context 'authorized for update? on article' do
-      let(:authorizations) { {update: true} }
+      before { allow_action('update?', article) }
 
       xcontext 'unauthorized for update? on comment 3' do
         it { is_expected.to be_forbidden }
