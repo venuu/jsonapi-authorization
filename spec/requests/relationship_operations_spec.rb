@@ -179,27 +179,80 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'PATCH /articles/:id/relationships/author' do
-    context 'unauthorized for update? on article' do
-      before { disallow_action('update?', article) }
+    subject(:last_response) { patch("/articles/#{article.id}/relationships/author", json) }
 
-      xcontext 'unauthorized for update? on author' do
+    let(:article) { articles(:article_with_author) }
+    let!(:old_author) { article.author }
+    let(:policy_scope) { Article.all }
+    let(:user_policy_scope) { User.all }
+
+    before do
+      allow_any_instance_of(UserPolicy::Scope).to receive(:resolve).and_return(user_policy_scope)
+    end
+
+    describe 'when replacing with a new author' do
+      let(:new_author) { User.create }
+      let(:json) do
+        <<-EOS.strip_heredoc
+        {
+          "data": {
+            "type": "users",
+            "id": "#{new_author.id}"
+          }
+        }
+        EOS
+      end
+
+      context 'unauthorized for replace_to_one_relationship' do
+        before { disallow_operation('replace_to_one_relationship', article, old_author, new_author) }
         it { is_expected.to be_forbidden }
       end
 
-      xcontext 'authorized for update? on author' do
-        it { is_expected.to be_forbidden }
+      context 'authorized for replace_to_one_relationship' do
+        before { allow_operation('replace_to_one_relationship', article, old_author, new_author) }
+        it { is_expected.to be_successful }
+
+        context 'limited by policy scope on author', skip: 'DISCUSS' do
+          before do
+            allow_any_instance_of(UserPolicy::Scope).to receive(:resolve).and_return(user_policy_scope)
+          end
+          let(:user_policy_scope) { User.where.not(id: article.author.id) }
+          it { is_expected.to be_not_found }
+        end
+
+        # If this happens in real life, it's mostly a bug. We want to document the
+        # behaviour in that case anyway, as it might be surprising.
+        context 'limited by policy scope on article' do
+          let(:policy_scope) { Article.where.not(id: article.id) }
+          it { is_expected.to be_not_found }
+        end
       end
     end
 
-    context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
+    describe 'when nullifying the author' do
+      let(:new_author) { nil }
+      let(:json) { '{ "data": null }' }
 
-      xcontext 'unauthorized for update? on author' do
+      context 'unauthorized for replace_to_one_relationship' do
+        before { disallow_operation('replace_to_one_relationship', article, old_author, new_author) }
         it { is_expected.to be_forbidden }
       end
 
-      xcontext 'authorized for update? on author' do
-        it { is_expected.to be_created }
+      context 'authorized for replace_to_one_relationship' do
+        before { allow_operation('replace_to_one_relationship', article, old_author, new_author) }
+        it { is_expected.to be_successful }
+
+        context 'limited by policy scope on author', skip: 'DISCUSS' do
+          let(:user_policy_scope) { User.where.not(id: article.author.id) }
+          it { is_expected.to be_not_found }
+        end
+
+        # If this happens in real life, it's mostly a bug. We want to document the
+        # behaviour in that case anyway, as it might be surprising.
+        context 'limited by policy scope on article' do
+          let(:policy_scope) { Article.where.not(id: article.id) }
+          it { is_expected.to be_not_found }
+        end
       end
     end
   end

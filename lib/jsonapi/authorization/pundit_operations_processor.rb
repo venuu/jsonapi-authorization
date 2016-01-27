@@ -11,7 +11,7 @@ module JSONAPI
       set_callback :create_resource_operation, :before, :authorize_create_resource
       set_callback :remove_resource_operation, :before, :authorize_remove_resource
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
-      # TODO: set_callback :replace_to_one_relationship_operation, :before, :authorize_replace_to_one_relationship
+      set_callback :replace_to_one_relationship_operation, :before, :authorize_replace_to_one_relationship
       set_callback :create_to_many_relationship_operation, :before, :authorize_create_to_many_relationship
       set_callback :replace_to_many_relationship_operation, :before, :authorize_replace_to_many_relationship
       # TODO: set_callback :remove_to_many_relationship_operation, :before, :authorize_remove_to_many_relationship
@@ -97,6 +97,29 @@ module JSONAPI
         )._model
 
         authorizer.remove_resource(record)
+      end
+
+      def authorize_replace_to_one_relationship
+        source_resource = @operation.resource_klass.find_by_key(
+          @operation.resource_id,
+          context: operation_context
+        )
+        source_record = source_resource._model
+
+        old_related_record = source_resource.records_for(@operation.relationship_type)
+        unless @operation.key_value.nil?
+          new_related_resource = @operation.resource_klass._relationship(@operation.relationship_type).resource_klass.find_by_key(
+            @operation.key_value,
+            context: operation_context
+          )
+          new_related_record = new_related_resource._model unless new_related_resource.nil?
+        end
+
+        authorizer.replace_to_one_relationship(
+          source_record,
+          old_related_record,
+          new_related_record
+        )
       end
 
       def authorize_create_to_many_relationship
