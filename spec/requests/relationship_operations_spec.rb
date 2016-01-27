@@ -258,27 +258,63 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'DELETE /articles/:id/relationships/comments' do
-    context 'unauthorized for update? on article' do
-      before { disallow_action('update?', article) }
+    let(:article) { articles(:article_with_comments) }
+    let(:comments_to_remove) { article.comments.limit(2) }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": [
+          { "type": "comments", "id": "#{comments_to_remove.first.id}" },
+          { "type": "comments", "id": "#{comments_to_remove.last.id}" }
+        ]
+      }
+      EOS
+    end
+    subject(:last_response) { delete("/articles/#{article.id}/relationships/comments", json) }
+    let(:policy_scope) { Article.all }
+    let(:comments_scope) { Comment.all }
 
-      xcontext 'unauthorized for update? on any of the comments' do
-        it { is_expected.to be_forbidden }
-      end
-
-      xcontext 'authorized for update? on all the comments' do
-        it { is_expected.to be_forbidden }
-      end
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_scope)
     end
 
-    context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
-
-      xcontext 'unauthorized for update? on any of the comments' do
-        it { is_expected.to be_forbidden }
+    context 'unauthorized for remove_to_many_relationship' do
+      before do
+        disallow_operation('remove_to_many_relationship', article, kind_of(Comment))
       end
 
-      xcontext 'authorized for update? on all the comments' do
+      it { is_expected.to be_forbidden }
+    end
+
+    context 'authorized for remove_to_many_relationship' do
+      context 'not limited by policy scopes' do
+        before do
+          allow_operations('remove_to_many_relationship', [
+            [article, comments_to_remove.first],
+            [article, comments_to_remove.second]
+          ])
+        end
+
         it { is_expected.to be_successful }
+      end
+
+      context 'limited by policy scope on comments' do
+        let(:comments_scope) { Comment.none }
+        before do
+          allow_operation('remove_to_many_relationship', kind_of(Comment))
+        end
+
+        it { is_expected.to be_not_found }
+      end
+
+      # If this happens in real life, it's mostly a bug. We want to document the
+      # behaviour in that case anyway, as it might be surprising.
+      context 'limited by policy scope on articles' do
+        before do
+          allow_operation('remove_to_many_relationship', article, kind_of(Comment))
+        end
+        let(:policy_scope) { Article.where.not(id: article.id) }
+        it { is_expected.to be_not_found }
       end
     end
   end
