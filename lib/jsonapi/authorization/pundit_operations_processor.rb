@@ -13,7 +13,7 @@ module JSONAPI
       set_callback :replace_fields_operation, :before, :authorize_replace_fields
 
       def authorize_find
-        authorizer.index(@operation.resource_klass._model_class)
+        authorizer.find(@operation.resource_klass._model_class)
       end
 
       def authorize_show
@@ -30,23 +30,22 @@ module JSONAPI
           @operation.parent_key,
           context: operation_context
         )
-        parent_record = parent_resource._model
-        authorizer.show(parent_record)
 
         relationship = @operation.resource_klass._relationship(@operation.relationship_type)
 
-        case relationship
-        when JSONAPI::Relationship::ToOne
-          related_resource = parent_resource.public_send(@operation.relationship_type)
-          if related_resource.present?
-            related_record = related_resource._model
-            authorizer.show(related_record)
+        related_resource =
+          case relationship
+          when JSONAPI::Relationship::ToOne
+            parent_resource.public_send(@operation.relationship_type)
+          when JSONAPI::Relationship::ToMany
+            # Do nothing — already covered by policy scopes
+          else
+            raise "Unexpected relationship type: #{relationship.inspect}"
           end
-        when JSONAPI::Relationship::ToMany
-          # Do nothing — already covered by policy scopes
-        else
-          raise "Unexpected relationship type: #{relationship.inspect}"
-        end
+
+        parent_record = parent_resource._model
+        related_record = related_resource._model unless related_resource.nil?
+        authorizer.show_relationship(parent_record, related_record)
       end
 
       def authorize_show_related_resource
@@ -54,14 +53,12 @@ module JSONAPI
           @operation.source_id,
           context: operation_context
         )
-        source_record = source_resource._model
-        authorizer.show(source_record)
 
         related_resource = source_resource.public_send(@operation.relationship_type)
-        if related_resource.present?
-          related_record = related_resource._model
-          authorizer.show(related_record)
-        end
+
+        source_record = source_resource._model
+        related_record = related_resource._model unless related_resource.nil?
+        authorizer.show_related_resource(source_record, related_record)
       end
 
       def authorize_show_related_resources
@@ -70,7 +67,7 @@ module JSONAPI
           context: operation_context
         )._model
 
-        authorizer.show(source_record)
+        authorizer.show_related_resources(source_record)
       end
 
       def authorize_replace_fields
@@ -79,19 +76,13 @@ module JSONAPI
           context: operation_context
         )._model
 
-        authorizer.update(source_record)
-
-        related_models.each do |rel_model|
-          authorizer.update(rel_model)
-        end
+        authorizer.replace_fields(source_record, related_models)
       end
 
       def authorize_create_resource
-        authorizer.create(@operation.resource_klass._model_class)
+        source_class = @operation.resource_klass._model_class
 
-        related_models.each do |rel_model|
-          authorizer.update(rel_model)
-        end
+        authorizer.create_resource(source_class, related_models)
       end
 
       def authorize_remove_resource
@@ -100,17 +91,13 @@ module JSONAPI
           context: operation_context
         )._model
 
-        authorizer.destroy(record)
+        authorizer.remove_resource(record)
       end
 
       private
 
       def authorizer
         @authorizer ||= Authorizer.new(operation_context)
-      end
-
-      def pundit_user
-        operation_context[:user]
       end
 
       # TODO: Communicate with upstream to fix this nasty hack
