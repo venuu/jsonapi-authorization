@@ -10,3 +10,6 @@ module JSONAPI
     # Your code goes here...
   end
 end
+
+# Allows JSONAPI configuration of operations_processor using the symbol :jsonapi_authorization
+JsonapiAuthorizationOperationsProcessor = JSONAPI::Authorization::AuthorizingOperationsProcessor
