@@ -1,15 +1,15 @@
 module JSONAPI
   module Authorization
-    # Authorizer is the class responsible for linking operation authorize
-    # calls to your choice of calls
+    # Authorizer is the class responsible for linking JSONAPI operations
+    # to your choice of authorization mechanism.
     #
-    # This class handles uses Pundit to handle authorization. It does not yet
-    # support all the operations possible — you can use your own authorizer
-    # class instead to specify what you'd like to do. See the README.md for
+    # This class uses Pundit for authorization. It does not yet
+    # support all the available operations — you can use your own authorizer
+    # class instead if you have different needs. See the README.md for
     # configuration information.
     #
     # Fetching records is the concern of +ResourcePolicyAuthorization+ which
-    # will be used internally to fetch the records to be passed here
+    # in turn affects which records end up being passed here.
     class Authorizer
       attr_reader :user
 
@@ -48,9 +48,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is queried
-      # * +related_record+ - The associated record to show or +nil+ if the
-      #   associated record was not found or if the query was for a has_many
-      #   association.
+      # * +related_record+ - The associated +has_one+ record to show or +nil+ if the
+      #   associated record was not found. For a +has_many+ association, this will always be +nil+
       def show_relationship(source_record, related_record)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
@@ -58,7 +57,7 @@ module JSONAPI
 
       # <tt>GET /resources/:id/another-resource</tt>
       #
-      # A query for a +has_one+ association
+      # A query for a record through a +has_one+ association
       #
       # ==== Parameters
       #
@@ -72,7 +71,7 @@ module JSONAPI
 
       # <tt>GET /resources/:id/other-resources</tt>
       #
-      # A query for a +has_many+ association
+      # A query for records through a +has_many+ association
       #
       # ==== Parameters
       #
@@ -85,10 +84,10 @@ module JSONAPI
       #
       # ==== Parameters
       #
-      # * +source_record+ - The record whose relationship is queried
+      # * +source_record+ - The record to be modified
       # * +new_related_records+ - An array of records to be associated to the
       #   +source_record+. This will contain the records specified in the
-      #   "relationships" key in request
+      #   "relationships" key in the request
       #--
       # TODO: Should probably take old records as well
       def replace_fields(source_record, new_related_records)
@@ -103,10 +102,10 @@ module JSONAPI
       #
       # ==== Parameters
       #
-      # * +source_record+ - The record whose relationship is queried
+      # * +source_class+ - The class of the record to be created
       # * +related_records+ - An array of records to be associated to the
-      #   +source_record+. This will contain the records specified in the
-      #   "relationships" key in request
+      #   new record. This will contain the records specified in the
+      #   "relationships" key in the request
       def create_resource(source_class, related_records)
         ::Pundit.authorize(user, source_class, 'create?')
 
@@ -133,7 +132,7 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +old_related_record+ - The current associated record
       # * +new_related_record+ - The new record replacing the +old_record+
-      #   association
+      #   association, or +nil+ if the association is to be cleared
       def replace_to_one_relationship(source_record, old_related_record, new_related_record)
         raise NotImplementedError
       end
@@ -165,9 +164,9 @@ module JSONAPI
         raise NotImplementedError
       end
 
-      # <tt>DELETE /resources/:id/relationships/other-resource</tt>
+      # <tt>DELETE /resources/:id/relationships/other-resources</tt>
       #
-      # A remove request for some of +has_many+ associations
+      # A request to deassociate elements of a +has_many+ association
       #
       # NOTE: this is called once per related record, not all at once
       #
@@ -175,14 +174,13 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +related_record+ - The record which will be deassociatied from +source_record+
-      #--
       def remove_to_many_relationship(source_record, related_record)
         raise NotImplementedError
       end
 
-      # <tt>DELETE /resources/:id/relationships/other-resource</tt>
+      # <tt>DELETE /resources/:id/relationships/another-resource</tt>
       #
-      # A remove request for a +has_one+ association
+      # A request to deassociate a +has_one+ association
       #
       # ==== Parameters
       #
