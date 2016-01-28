@@ -1,34 +1,95 @@
 module JSONAPI
   module Authorization
+    # Authorizer is the class responsible for linking operation authorize
+    # calls to your choice of calls
+    #
+    # This class handles uses Pundit to handle authorization. It does not yet
+    # support all the operations possible — you can use your own authorizer
+    # class instead to specify what you'd like to do. See the README.md for
+    # configuration information.
+    #
+    # Fetching records is the concern of +ResourcePolicyAuthorization+ which
+    # will be used internally to fetch the records to be passed here
     class Authorizer
       attr_reader :user
 
+      # Creates a new Authorizer instance
+      #
+      # ==== Parameters
+      #
+      # * +context+ - The context passed down from the controller layer
       def initialize(context)
         @user = context[:user]
       end
 
-      def find(source_record)
-        ::Pundit.authorize(user, source_record, 'index?')
+      # <tt>GET /resources</tt>
+      #
+      # ==== Parameters
+      #
+      # * +source_class+ - The source class (e.g. +Article+ for +ArticleResource+)
+      def find(source_class)
+        ::Pundit.authorize(user, source_class, 'index?')
       end
 
+      # <tt>GET /resources/:id</tt>
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record to show
       def show(source_record)
         ::Pundit.authorize(user, source_record, 'show?')
       end
 
+      # <tt>GET /resources/:id/relationships/other-resources</tt>
+      # <tt>GET /resources/:id/relationships/another-resource</tt>
+      #
+      # A query for a +has_one+ or a +has_many+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is queried
+      # * +related_record+ - The associated record to show or +nil+ if the
+      #   associated record was not found or if the query was for a has_many
+      #   association.
       def show_relationship(source_record, related_record)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
       end
 
+      # <tt>GET /resources/:id/another-resource</tt>
+      #
+      # A query for a +has_one+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is queried
+      # * +related_record+ - The associated record to show or +nil+ if the
+      #   associated record was not found
       def show_related_resource(source_record, related_record)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
       end
 
+      # <tt>GET /resources/:id/other-resources</tt>
+      #
+      # A query for a +has_many+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is queried
       def show_related_resources(source_record)
         ::Pundit.authorize(user, source_record, 'show?')
       end
 
+      # <tt>PATCH /resources/:id</tt>
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is queried
+      # * +new_related_records+ - An array of records to be associated to the
+      #   +source_record+. This will contain the records specified in the
+      #   "relationships" key in request
+      #--
       # TODO: Should probably take old records as well
       def replace_fields(source_record, new_related_records)
         ::Pundit.authorize(user, source_record, 'update?')
@@ -38,6 +99,14 @@ module JSONAPI
         end
       end
 
+      # <tt>POST /resources</tt>
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is queried
+      # * +related_records+ - An array of records to be associated to the
+      #   +source_record+. This will contain the records specified in the
+      #   "relationships" key in request
       def create_resource(source_class, related_records)
         ::Pundit.authorize(user, source_class, 'create?')
 
@@ -46,28 +115,79 @@ module JSONAPI
         end
       end
 
+      # <tt>DELETE /resources/:id</tt>
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record to be removed
       def remove_resource(source_record)
         ::Pundit.authorize(user, source_record, 'destroy?')
       end
 
+      # <tt>PATCH /resources/:id/relationships/another-resource</tt>
+      #
+      # A replace request for a +has_one+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is modified
+      # * +old_related_record+ - The current associated record
+      # * +new_related_record+ - The new record replacing the +old_record+
+      #   association
       def replace_to_one_relationship(source_record, old_related_record, new_related_record)
         raise NotImplementedError
       end
 
+      # <tt>POST /resources/:id/relationships/other-resources</tt>
+      #
+      # A request for adding to a +has_many+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is modified
+      # * +new_related_records+ - The new records to be added to the association
       def create_to_many_relationship(source_record, new_related_records)
         raise NotImplementedError
       end
 
+      # <tt>PATCH /resources/:id/relationships/other-resources</tt>
+      #
+      # A replace request for a +has_many+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is modified
+      # * +new_related_records+ - The new records replacing the entire +has_many+
+      #   association
+      #--
       # TODO: Should probably take old records as well
       def replace_to_many_relationship(source_record, new_related_records)
         raise NotImplementedError
       end
 
-      # Note: this is called once per related record, not all at once
+      # <tt>DELETE /resources/:id/relationships/other-resource</tt>
+      #
+      # A remove request for some of +has_many+ associations
+      #
+      # NOTE: this is called once per related record, not all at once
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is modified
+      # * +related_record+ - The record which will be deassociatied from +source_record+
+      #--
       def remove_to_many_relationship(source_record, related_record)
         raise NotImplementedError
       end
 
+      # <tt>DELETE /resources/:id/relationships/other-resource</tt>
+      #
+      # A remove request for a +has_one+ association
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ - The record whose relationship is modified
+      # * +related_record+ - The record which will be deassociatied from +source_record+
       def remove_to_one_relationship(source_record, related_record)
         raise NotImplementedError
       end
