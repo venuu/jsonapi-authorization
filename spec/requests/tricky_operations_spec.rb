@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Tricky operations', type: :request do
+  include PunditStubs
   fixtures :all
 
   let(:article) { Article.all.sample }

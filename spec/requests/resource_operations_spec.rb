@@ -1,6 +1,7 @@
 require 'spec_helper'
 
 describe 'Resource operations', type: :request do
+  include AuthorizationStubs
   fixtures :all
 
   let(:article) { Article.all.sample }
