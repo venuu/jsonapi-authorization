@@ -1,4 +1,4 @@
-require 'jsonapi/authorization/authorizer'
+require 'jsonapi/authorization/default_pundit_authorizer'
 
 module JSONAPI
   module Authorization
@@ -6,7 +6,7 @@ module JSONAPI
       attr_accessor :authorizer
 
       def initialize
-        self.authorizer = ::JSONAPI::Authorization::Authorizer
+        self.authorizer = ::JSONAPI::Authorization::DefaultPunditAuthorizer
       end
     end
 
