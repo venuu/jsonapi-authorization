@@ -2,7 +2,7 @@ require 'pundit'
 
 module JSONAPI
   module Authorization
-    module ResourcePolicyAuthorization
+    module PunditScopedResource
       extend ActiveSupport::Concern
 
       module ClassMethods
