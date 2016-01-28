@@ -301,7 +301,7 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('remove_to_many_relationship', kind_of(Comment))
+          allow_operation('remove_to_many_relationship', article, kind_of(Comment))
         end
 
         it { is_expected.to be_not_found }
