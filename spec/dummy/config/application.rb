@@ -28,6 +28,6 @@ class Application < Rails::Application
 end
 
 JSONAPI.configure do |config|
-  config.operations_processor = '::JSONAPI::Authorization::Pundit'
+  config.operations_processor = '::JSONAPI::Authorization::Authorizing'
   config.exception_class_whitelist = [Pundit::NotAuthorizedError]
 end

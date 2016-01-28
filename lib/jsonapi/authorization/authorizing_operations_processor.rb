@@ -2,7 +2,7 @@ require 'pundit'
 
 module JSONAPI
   module Authorization
-    class PunditOperationsProcessor < ::ActiveRecordOperationsProcessor
+    class AuthorizingOperationsProcessor < ::ActiveRecordOperationsProcessor
       set_callback :find_operation, :before, :authorize_find
       set_callback :show_operation, :before, :authorize_show
       set_callback :show_relationship_operation, :before, :authorize_show_relationship
