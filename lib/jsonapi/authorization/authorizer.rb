@@ -29,10 +29,11 @@ module JSONAPI
         ::Pundit.authorize(user, source_record, 'show?')
       end
 
-      def replace_fields(source_record, related_records)
+      # TODO: Should probably take old records as well
+      def replace_fields(source_record, new_related_records)
         ::Pundit.authorize(user, source_record, 'update?')
 
-        related_records.each do |record|
+        new_related_records.each do |record|
           ::Pundit.authorize(user, record, 'update?')
         end
       end
@@ -49,23 +50,25 @@ module JSONAPI
         ::Pundit.authorize(user, source_record, 'destroy?')
       end
 
-      def replace_to_one_relationship(*)
+      def replace_to_one_relationship(source_record, old_related_record, new_related_record)
         raise NotImplementedError
       end
 
-      def create_to_many_relationship(*)
+      def create_to_many_relationship(source_record, new_related_records)
         raise NotImplementedError
       end
 
-      def replace_to_many_relationship(*)
+      # TODO: Should probably take old records as well
+      def replace_to_many_relationship(source_record, new_related_records)
         raise NotImplementedError
       end
 
-      def remove_to_many_relationship(*)
+      # Note: this is called once per related record, not all at once
+      def remove_to_many_relationship(source_record, related_record)
         raise NotImplementedError
       end
 
-      def remove_to_one_relationship(*)
+      def remove_to_one_relationship(source_record, related_record)
         raise NotImplementedError
       end
     end
