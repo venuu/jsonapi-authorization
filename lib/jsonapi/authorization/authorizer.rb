@@ -1,12 +1,12 @@
 module JSONAPI
   module Authorization
-    # Authorizer is the class responsible for linking JSONAPI operations
-    # to your choice of authorization mechanism.
+    # Authorizer is the class responsible for linking JSONAPI operations to
+    # your choice of authorization mechanism.
     #
-    # This class uses Pundit for authorization. It does not yet
-    # support all the available operations — you can use your own authorizer
-    # class instead if you have different needs. See the README.md for
-    # configuration information.
+    # This class uses Pundit for authorization. It does not yet support all
+    # the available operations — you can use your own authorizer class instead
+    # if you have different needs. See the README.md for configuration
+    # information.
     #
     # Fetching records is the concern of +ResourcePolicyAuthorization+ which
     # in turn affects which records end up being passed here.
@@ -48,8 +48,9 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is queried
-      # * +related_record+ - The associated +has_one+ record to show or +nil+ if the
-      #   associated record was not found. For a +has_many+ association, this will always be +nil+
+      # * +related_record+ - The associated +has_one+ record to show or +nil+
+      #   if the associated record was not found. For a +has_many+ association,
+      #   this will always be +nil+
       def show_relationship(source_record, related_record)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
@@ -103,8 +104,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The class of the record to be created
-      # * +related_records+ - An array of records to be associated to the
-      #   new record. This will contain the records specified in the
+      # * +related_records+ - An array of records to be associated to the new
+      #   record. This will contain the records specified in the
       #   "relationships" key in the request
       def create_resource(source_class, related_records)
         ::Pundit.authorize(user, source_class, 'create?')
