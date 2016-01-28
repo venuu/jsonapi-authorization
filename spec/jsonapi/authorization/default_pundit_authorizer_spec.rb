@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe JSONAPI::Authorization::Authorizer do
+RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   let(:source_record) { Article.new }
   let(:authorizer) { described_class.new({}) }
 

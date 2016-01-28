@@ -1,6 +1,6 @@
 module JSONAPI
   module Authorization
-    # Authorizer is the class responsible for linking JSONAPI operations to
+    # An authorizer is a class responsible for linking JSONAPI operations to
     # your choice of authorization mechanism.
     #
     # This class uses Pundit for authorization. It does not yet support all
@@ -10,10 +10,10 @@ module JSONAPI
     #
     # Fetching records is the concern of +ResourcePolicyAuthorization+ which
     # in turn affects which records end up being passed here.
-    class Authorizer
+    class DefaultPunditAuthorizer
       attr_reader :user
 
-      # Creates a new Authorizer instance
+      # Creates a new DefaultPunditAuthorizer instance
       #
       # ==== Parameters
       #
