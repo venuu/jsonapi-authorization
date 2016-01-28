@@ -8,8 +8,8 @@ module JSONAPI
     # if you have different needs. See the README.md for configuration
     # information.
     #
-    # Fetching records is the concern of +ResourcePolicyAuthorization+ which
-    # in turn affects which records end up being passed here.
+    # Fetching records is the concern of +PunditScopedResource+ which in turn
+    # affects which records end up being passed here.
     class DefaultPunditAuthorizer
       attr_reader :user
 

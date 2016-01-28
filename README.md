@@ -49,11 +49,11 @@ class BaseResourceController < ActionController::Base
 end
 ```
 
-Have your JR resources include the `JSONAPI::Authorization::ResourcePolicyAuthorization` module.
+Have your JR resources include the `JSONAPI::Authorization::PunditScopedResource` module.
 
 ```ruby
 class BaseResource < JSONAPI::Resource
-  include JSONAPI::Authorization::ResourcePolicyAuthorization
+  include JSONAPI::Authorization::PunditScopedResource
   abstract
 end
 ```
