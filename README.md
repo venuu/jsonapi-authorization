@@ -35,7 +35,7 @@ JSONAPI.configure do |config|
 end
 ```
 
-Make all your JR controllers specify the following in the `context`:
+Make all your JR controllers specify the user in the `context` if you are using the default authorizer class (see [Configuration](#configuration) below):
 
 ```ruby
 class BaseResourceController < ActionController::Base
@@ -44,7 +44,7 @@ class BaseResourceController < ActionController::Base
   private
 
   def context
-    {user: current_user, action: action_name}
+    {user: current_user}
   end
 end
 ```

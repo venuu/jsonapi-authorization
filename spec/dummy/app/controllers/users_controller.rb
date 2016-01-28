@@ -5,7 +5,7 @@ class UsersController < ActionController::Base
   private
 
   def context
-    {user: nil, action: action_name}
+    {user: nil}
   end
 
   # https://github.com/cerebris/jsonapi-resources/pull/573
