@@ -91,6 +91,16 @@ class BaseResourceController < ActionController::Base
 end
 ```
 
+## Configuration
+
+You can use a custom authorizer class by specifying a configure block in an initializer file. If using a custom authorizer class, be sure to require them at the top of the initializer before usage.
+
+```ruby
+JSONAPI::Authorization.configure do |config|
+  config.authorizer = MyCustomAuthorizer
+end
+```
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
