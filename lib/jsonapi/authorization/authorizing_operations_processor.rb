@@ -19,6 +19,26 @@ module JSONAPI
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
+        if @operation.include_directives
+          @operation.include_directives.model_includes.each do |include_item|
+            case include_item
+            when Hash
+              raise NotImplementedError
+            when Symbol
+              relationship = @operation.resource_klass._relationship(include_item)
+              case relationship
+              when JSONAPI::Relationship::ToOne
+                raise NotImplementedError
+              when JSONAPI::Relationship::ToMany
+                authorizer.include_has_many_resource(relationship.resource_klass._model_class)
+              else
+                raise "Unexpected relationship type: #{relationship.inspect}"
+              end
+            else
+              raise "Unknown include directive: #{include_item}"
+            end
+          end
+        end
       end
 
       def authorize_show

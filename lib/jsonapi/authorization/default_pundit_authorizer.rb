@@ -190,6 +190,23 @@ module JSONAPI
       def remove_to_one_relationship(source_record, related_record)
         raise NotImplementedError
       end
+
+      # Any request including <tt>?include=other-resources</tt>
+      #
+      # This will be called for each has_many relationship if the include goes
+      # deeper than one level until some authorization fails or the include
+      # directive has been travelled completely.
+      #
+      # We can't pass all the records of a +has_many+ association here due to
+      # performance reasons, so the class is passed instead.
+      #
+      # ==== Parameters
+      #
+      # * +record_class+ - The underlying record class for the relationships
+      #                    resource.
+      def include_has_many_resource(record_class)
+        raise NotImplementedError
+      end
     end
   end
 end
