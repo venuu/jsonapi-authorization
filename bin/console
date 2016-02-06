@@ -11,5 +11,5 @@ require "jsonapi/authorization"
 # require "pry"
 # Pry.start
 
-require "irb"
-IRB.start
+require "pry"
+Pry.start
