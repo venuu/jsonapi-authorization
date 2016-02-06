@@ -207,6 +207,19 @@ module JSONAPI
       def include_has_many_resource(record_class)
         ::Pundit.authorize(user, record_class, 'index?')
       end
+
+      # Any request including <tt>?include=another-resource</tt>
+      #
+      # This will be called for each has_one relationship if the include goes
+      # deeper than one level until some authorization fails or the include
+      # directive has been travelled completely.
+      #
+      # ==== Parameters
+      #
+      # * +related_record+ - The associated record to return
+      def include_has_one_resource(record_class)
+        raise NotImplementedError
+      end
     end
   end
 end

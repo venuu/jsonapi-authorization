@@ -19,7 +19,20 @@ module JSONAPI
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
-        authorize_model_includes
+
+        # Copy-pasted from jsonapi-resources.
+        # There really should be a better way.
+        resource_records = @operation.resource_klass.find(
+          @operation.resource_klass.verify_filters(@operation.filters, @operation.options[:context]),
+          context: @operation.options[:context],
+          include_directives: @operation.include_directives,
+          sort_criteria: @operation.sort_criteria,
+          paginator: @operation.paginator
+        )
+
+        resource_records.each do |resource|
+          authorize_model_includes(resource._model)
+        end
       end
 
       def authorize_show
@@ -29,7 +42,7 @@ module JSONAPI
         )._model
 
         authorizer.show(record)
-        authorize_model_includes
+        authorize_model_includes(record)
       end
 
       def authorize_show_relationship
@@ -228,7 +241,7 @@ module JSONAPI
         end
       end
 
-      def authorize_model_includes
+      def authorize_model_includes(source_record)
         if @operation.include_directives
           @operation.include_directives.model_includes.each do |include_item|
             case include_item
@@ -238,7 +251,10 @@ module JSONAPI
               relationship = @operation.resource_klass._relationship(include_item)
               case relationship
               when JSONAPI::Relationship::ToOne
-                raise NotImplementedError
+                related_record = source_record.public_send(
+                  relationship.relation_name(@operation.options[:context])
+                )
+                authorizer.include_has_one_resource(related_record)
               when JSONAPI::Relationship::ToMany
                 authorizer.include_has_many_resource(relationship.resource_klass._model_class)
               else

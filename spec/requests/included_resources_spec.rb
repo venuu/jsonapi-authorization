@@ -4,13 +4,15 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   include AuthorizationStubs
   fixtures :all
 
-  let(:article) { articles(:article_with_comments) }
+  let(:article) { articles(:article_with_everything) }
 
   subject { last_response }
   let(:json_included) { JSON.parse(last_response.body)['included'] }
 
   before do
-    allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(Article.all)
+    allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(
+      Article.where(id: article.id)
+    )
   end
 
   before do
@@ -43,12 +45,32 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
+
+    describe 'one-level deep has_one relationship' do
+      let(:include_query) { 'author' }
+
+      context 'unauthorized for include_has_one_resource for article.author' do
+        before { disallow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer) }
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'authorized for include_has_one_resource for article.author' do
+        before { allow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer) }
+        it { is_expected.to be_ok }
+
+        it 'includes the associated author resource' do
+          expect(json_included.length).to eq(1)
+          expect(json_included.first['id']).to eq(article.author.id.to_s)
+        end
+      end
+    end
   end
 
   describe 'GET /articles' do
     subject(:last_response) { get("/articles?include=#{include_query}") }
     let(:chained_authorizer) { allow_operation('find', Article) }
 
+    # TODO: Test properly with multiple articles, not just one.
     include_examples :include_directive_tests
   end
 
