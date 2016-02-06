@@ -64,6 +64,57 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
+
+    describe 'a deep relationship' do
+      let(:include_query) { 'author.comments' }
+      let(:article) {
+        Article.create(
+          author: User.create(
+            comments: Array.new(2) { Comment.create }
+          )
+        )
+      }
+
+      context 'unauthorized for first relationship' do
+        before { disallow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer) }
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'authorized for first relationship' do
+        before { allow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer) }
+
+        context 'unauthorized for second relationship' do
+          before { disallow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
+          it { is_expected.to be_forbidden }
+        end
+
+        context 'authorized for second relationship' do
+          before { allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
+          it { is_expected.to be_ok }
+
+          let(:comments_policy_scope) { Comment.all }
+          before do
+            allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
+          end
+
+          it 'includes the first level resource' do
+            first_level_items = json_included.select { |item| item['type'] == 'users' }
+            expect(first_level_items.length).to eq(1)
+            expect(first_level_items.first['id']).to eq(article.author.id.to_s)
+          end
+
+          describe 'second level resources' do
+            let(:comments_policy_scope) { article.author.comments.limit(1) }
+
+            it 'includes only resources allowed by policy scope' do
+              second_level_items = json_included.select { |item| item['type'] == 'comments' }
+              expect(second_level_items.length).to eq(comments_policy_scope.length)
+              expect(second_level_items.map { |i| i['id'] }).to eq(comments_policy_scope.pluck(:id).map(&:to_s))
+            end
+          end
+        end
+      end
+    end
   end
 
   describe 'GET /articles' do

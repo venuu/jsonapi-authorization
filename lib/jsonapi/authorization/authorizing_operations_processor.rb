@@ -244,26 +244,47 @@ module JSONAPI
       def authorize_model_includes(source_record)
         if @operation.include_directives
           @operation.include_directives.model_includes.each do |include_item|
-            case include_item
-            when Hash
-              raise NotImplementedError
-            when Symbol
-              relationship = @operation.resource_klass._relationship(include_item)
-              case relationship
-              when JSONAPI::Relationship::ToOne
-                related_record = source_record.public_send(
-                  relationship.relation_name(@operation.options[:context])
+            authorize_include_item(@operation.resource_klass, source_record, include_item)
+          end
+        end
+      end
+
+      def authorize_include_item(resource_klass, source_record, include_item)
+        case include_item
+        when Hash
+          include_item.each do |rel_name, deep|
+            authorize_include_item(resource_klass, source_record, rel_name)
+            relationship = resource_klass._relationship(rel_name)
+            new_resource_klass = relationship.resource_klass
+            Array.wrap(
+              source_record.public_send(
+                relationship.relation_name(@operation.options[:context])
+              )
+            ).each do |new_source_record|
+              deep.each do |new_include_item|
+                authorize_include_item(
+                  new_resource_klass,
+                  new_source_record,
+                  new_include_item
                 )
-                authorizer.include_has_one_resource(related_record)
-              when JSONAPI::Relationship::ToMany
-                authorizer.include_has_many_resource(relationship.resource_klass._model_class)
-              else
-                raise "Unexpected relationship type: #{relationship.inspect}"
               end
-            else
-              raise "Unknown include directive: #{include_item}"
             end
           end
+        when Symbol
+          relationship = resource_klass._relationship(include_item)
+          case relationship
+          when JSONAPI::Relationship::ToOne
+            related_record = source_record.public_send(
+              relationship.relation_name(@operation.options[:context])
+            )
+            authorizer.include_has_one_resource(related_record)
+          when JSONAPI::Relationship::ToMany
+            authorizer.include_has_many_resource(relationship.resource_klass._model_class)
+          else
+            raise "Unexpected relationship type: #{relationship.inspect}"
+          end
+        else
+          raise "Unknown include directive: #{include_item}"
         end
       end
     end
