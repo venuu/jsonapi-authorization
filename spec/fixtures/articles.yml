@@ -3,7 +3,5 @@ article_with_comments: {}
 article_without_comments: {}
 article_with_author:
   author: user_with_articles
-article_with_everything:
-  author: user_with_articles_and_comments
 article_without_author:
   author: ~

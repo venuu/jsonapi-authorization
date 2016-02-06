@@ -7,9 +7,4 @@ comment_2:
   author: user_with_comments
 comment_3:
   article: article_with_comments
-  author: user_with_articles_and_comments
-comment_4:
-  article: article_with_everything
-  author: user_with_articles_and_comments
-comment_5:
-  article: article_with_everything
+  author: user_with_comments
