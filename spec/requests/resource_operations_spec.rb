@@ -8,8 +8,7 @@ describe 'Resource operations', type: :request do
   let(:policy_scope) { Article.none }
 
   subject { last_response }
-  let(:json_body) { JSON.parse(last_response.body) }
-  let(:json_data) { json_body["data"] }
+  let(:json_data) { JSON.parse(last_response.body)["data"] }
 
   before do
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(policy_scope)
@@ -36,33 +35,6 @@ describe 'Resource operations', type: :request do
       it 'returns results limited by policy scope' do
         expect(json_data.length).to eq(1)
         expect(json_data.first["id"]).to eq(article.id.to_s)
-      end
-    end
-
-    describe 'with ?include=comments' do
-      subject(:last_response) { get('/articles?include=comments') }
-      let(:chained_authorizer) { allow_operation('find', Article) }
-      let(:policy_scope) { Article.all }
-      let(:comments_policy_scope) { Comment.all }
-      before do
-        allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-      end
-
-      context 'unauthorized for include_has_many_resource for Comment' do
-        before { disallow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
-        it { is_expected.to be_forbidden }
-      end
-
-      context 'authorized for include_has_many_resource for Comment' do
-        before { allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
-        it { is_expected.to be_ok }
-
-        let(:comments_policy_scope) { Comment.limit(1) }
-
-        it 'includes only comments allowed by policy scope' do
-          expect(json_body['included'].length).to eq(1)
-          expect(json_body['included'].first["id"]).to eq(comments_policy_scope.first.id.to_s)
-        end
       end
     end
   end
