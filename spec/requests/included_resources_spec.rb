@@ -4,8 +4,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   include AuthorizationStubs
   fixtures :all
 
-  let(:article) { articles(:article_with_everything) }
-
   subject { last_response }
   let(:json_included) { JSON.parse(last_response.body)['included'] }
 
@@ -22,6 +20,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   shared_examples_for :include_directive_tests do
     describe 'one-level deep has_many relationship' do
       let(:include_query) { 'comments' }
+      let(:article) { articles(:article_with_comments) }
 
       let(:comments_policy_scope) { Comment.all }
       before do
@@ -48,6 +47,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     describe 'one-level deep has_one relationship' do
       let(:include_query) { 'author' }
+      let(:article) { articles(:article_with_author) }
 
       context 'unauthorized for include_has_one_resource for article.author' do
         before { disallow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer) }
