@@ -88,6 +88,7 @@ module JSONAPI
         )._model
 
         authorizer.show_related_resources(source_record)
+        authorize_model_includes(source_record)
       end
 
       def authorize_replace_fields
