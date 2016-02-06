@@ -65,6 +65,59 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       end
     end
 
+    describe 'multiple one-level deep relationships' do
+      let(:include_query) { 'author,comments' }
+      let(:article) {
+        Article.create(
+          author: User.create,
+          comments: Array.new(2) { Comment.create }
+        )
+      }
+      let(:comments_policy_scope) { Comment.all }
+      before do
+        allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
+      end
+
+      context 'unauthorized for include_has_one_resource for article.author' do
+        before do
+          disallow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer)
+          allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer)
+        end
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'unauthorized for include_has_many_resource for Comment' do
+        before do
+          allow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer)
+          disallow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer)
+        end
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'authorized for both operations' do
+        before do
+          allow_operation('include_has_one_resource', article.author, authorizer: chained_authorizer)
+          allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer)
+        end
+
+        it { is_expected.to be_ok }
+
+        let(:comments_policy_scope) { article.comments.limit(1) }
+
+        it 'includes only comments allowed by policy scope' do
+          json_comments = json_included.select { |item| item['type'] == 'comments' }
+          expect(json_comments.length).to eq(comments_policy_scope.length)
+          expect(json_comments.map { |i| i['id'] }).to eq(comments_policy_scope.pluck(:id).map(&:to_s))
+        end
+
+        it 'includes the associated author resource' do
+          json_users = json_included.select { |item| item['type'] == 'users' }
+          expect(json_users.length).to eq(1)
+          expect(json_users.first['id']).to eq(article.author.id.to_s)
+        end
+      end
+    end
+
     describe 'a deep relationship' do
       let(:include_query) { 'author.comments' }
       let(:article) {
