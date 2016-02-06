@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20160125083537) do
 
   create_table "comments", force: :cascade do |t|
     t.integer "article_id"
+    t.integer "author_id"
   end
 
   create_table "users", force: :cascade do |t|
