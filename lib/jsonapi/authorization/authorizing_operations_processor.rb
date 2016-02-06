@@ -97,6 +97,7 @@ module JSONAPI
         )._model
 
         authorizer.replace_fields(source_record, related_models)
+        authorize_model_includes(source_record)
       end
 
       def authorize_create_resource
@@ -242,8 +243,8 @@ module JSONAPI
       end
 
       def authorize_model_includes(source_record)
-        if @operation.include_directives
-          @operation.include_directives.model_includes.each do |include_item|
+        if @request.include_directives
+          @request.include_directives.model_includes.each do |include_item|
             authorize_include_item(@operation.resource_klass, source_record, include_item)
           end
         end

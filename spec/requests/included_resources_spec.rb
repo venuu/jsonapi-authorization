@@ -7,9 +7,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   subject { last_response }
   let(:json_included) { JSON.parse(last_response.body)['included'] }
 
+  let(:comments_policy_scope) { Comment.none }
+
   before do
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(
       Article.where(id: article.id)
+    )
+    allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(
+      comments_policy_scope
     )
   end
 
@@ -23,9 +28,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:article) { articles(:article_with_comments) }
 
       let(:comments_policy_scope) { Comment.all }
-      before do
-        allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-      end
 
       context 'unauthorized for include_has_many_resource for Comment' do
         before { disallow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
@@ -74,9 +76,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         )
       }
       let(:comments_policy_scope) { Comment.all }
-      before do
-        allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-      end
 
       context 'unauthorized for include_has_one_resource for article.author' do
         before do
@@ -146,9 +145,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           it { is_expected.to be_ok }
 
           let(:comments_policy_scope) { Comment.all }
-          before do
-            allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
-          end
 
           it 'includes the first level resource' do
             first_level_items = json_included.select { |item| item['type'] == 'users' }
@@ -181,6 +177,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   describe 'GET /articles/:id' do
     subject(:last_response) { get("/articles/#{article.id}?include=#{include_query}") }
     let(:chained_authorizer) { allow_operation('show', article) }
+
+    include_examples :include_directive_tests
+  end
+
+  describe 'PATCH /articles/:id' do
+    let(:json) { %({"data": { "type": "articles", "id": "#{article.id}" }}) }
+    subject(:last_response) { patch("/articles/#{article.id}?include=#{include_query}", json) }
+    let(:chained_authorizer) { allow_operation('replace_fields', article, []) }
 
     include_examples :include_directive_tests
   end
