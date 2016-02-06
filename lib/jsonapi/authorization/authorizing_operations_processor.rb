@@ -19,26 +19,7 @@ module JSONAPI
 
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
-        if @operation.include_directives
-          @operation.include_directives.model_includes.each do |include_item|
-            case include_item
-            when Hash
-              raise NotImplementedError
-            when Symbol
-              relationship = @operation.resource_klass._relationship(include_item)
-              case relationship
-              when JSONAPI::Relationship::ToOne
-                raise NotImplementedError
-              when JSONAPI::Relationship::ToMany
-                authorizer.include_has_many_resource(relationship.resource_klass._model_class)
-              else
-                raise "Unexpected relationship type: #{relationship.inspect}"
-              end
-            else
-              raise "Unknown include directive: #{include_item}"
-            end
-          end
-        end
+        authorize_model_includes
       end
 
       def authorize_show
@@ -48,6 +29,7 @@ module JSONAPI
         )._model
 
         authorizer.show(record)
+        authorize_model_includes
       end
 
       def authorize_show_relationship
@@ -242,6 +224,29 @@ module JSONAPI
             assoc_klass = model_class_for_relationship(assoc_name)
             # TODO: find_by_key?
             assoc_klass.find(assoc_ids)
+          end
+        end
+      end
+
+      def authorize_model_includes
+        if @operation.include_directives
+          @operation.include_directives.model_includes.each do |include_item|
+            case include_item
+            when Hash
+              raise NotImplementedError
+            when Symbol
+              relationship = @operation.resource_klass._relationship(include_item)
+              case relationship
+              when JSONAPI::Relationship::ToOne
+                raise NotImplementedError
+              when JSONAPI::Relationship::ToMany
+                authorizer.include_has_many_resource(relationship.resource_klass._model_class)
+              else
+                raise "Unexpected relationship type: #{relationship.inspect}"
+              end
+            else
+              raise "Unknown include directive: #{include_item}"
+            end
           end
         end
       end

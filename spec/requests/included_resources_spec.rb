@@ -4,7 +4,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   include AuthorizationStubs
   fixtures :all
 
-  let(:article) { Article.all.sample }
+  let(:article) { articles(:article_with_comments) }
 
   subject { last_response }
   let(:json_included) { JSON.parse(last_response.body)['included'] }
@@ -17,10 +17,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     header 'Content-Type', 'application/vnd.api+json'
   end
 
-  describe 'GET /articles' do
-    subject(:last_response) { get("/articles?include=#{include_query}") }
-    let(:chained_authorizer) { allow_operation('find', Article) }
-
+  shared_examples_for :include_directive_tests do
     describe 'one-level deep has_many relationship' do
       let(:include_query) { 'comments' }
 
@@ -46,5 +43,19 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
+  end
+
+  describe 'GET /articles' do
+    subject(:last_response) { get("/articles?include=#{include_query}") }
+    let(:chained_authorizer) { allow_operation('find', Article) }
+
+    include_examples :include_directive_tests
+  end
+
+  describe 'GET /articles/:id' do
+    subject(:last_response) { get("/articles/#{article.id}?include=#{include_query}") }
+    let(:chained_authorizer) { allow_operation('show', article) }
+
+    include_examples :include_directive_tests
   end
 end
