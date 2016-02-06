@@ -79,6 +79,7 @@ module JSONAPI
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
         authorizer.show_related_resource(source_record, related_record)
+        authorize_model_includes(source_record)
       end
 
       def authorize_show_related_resources
