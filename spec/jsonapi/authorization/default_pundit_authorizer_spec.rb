@@ -284,4 +284,21 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
+
+  describe '#include_has_many_resource' do
+    let(:source_class) { source_record.class }
+    subject(:method_call) do
+      -> { authorizer.include_has_many_resource(source_class) }
+    end
+
+    context 'authorized for index? on record class' do
+      before { allow_action('index?', source_class) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for index? on record class' do
+      before { disallow_action('index?', source_class) }
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+  end
 end

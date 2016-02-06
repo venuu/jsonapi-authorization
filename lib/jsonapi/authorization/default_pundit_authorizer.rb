@@ -205,7 +205,7 @@ module JSONAPI
       # * +record_class+ - The underlying record class for the relationships
       #                    resource.
       def include_has_many_resource(record_class)
-        raise NotImplementedError
+        ::Pundit.authorize(user, record_class, 'index?')
       end
     end
   end
