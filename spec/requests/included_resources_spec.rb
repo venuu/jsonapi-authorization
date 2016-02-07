@@ -195,11 +195,19 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
+
+    describe 'a deep relationship with empty relations' do
+      context 'first level has_one is nil' do
+        let(:include_query) { 'non-existing-article.comments' }
+
+        it { is_expected.to be_successful }
+      end
+    end
   end
 
   describe 'GET /articles' do
     subject(:last_response) { get("/articles?include=#{include_query}") }
-    let(:chained_authorizer) { allow_operation('find', Article) }
+    let!(:chained_authorizer) { allow_operation('find', Article) }
 
     let!(:article) {
       Article.create(
@@ -227,7 +235,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     }
 
     subject(:last_response) { get("/articles/#{article.id}?include=#{include_query}") }
-    let(:chained_authorizer) { allow_operation('show', article) }
+    let!(:chained_authorizer) { allow_operation('show', article) }
 
     include_examples :include_directive_tests
   end
@@ -244,7 +252,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:json) { %({"data": { "type": "articles", "id": "#{article.id}" }}) }
     subject(:last_response) { patch("/articles/#{article.id}?include=#{include_query}", json) }
-    let(:chained_authorizer) { allow_operation('replace_fields', article, []) }
+    let!(:chained_authorizer) { allow_operation('replace_fields', article, []) }
 
     include_examples :include_directive_tests
   end
@@ -283,7 +291,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     let(:article) { existing_author.articles.first }
 
     subject(:last_response) { post("/articles?include=#{include_query}", json) }
-    let(:chained_authorizer) do
+    let!(:chained_authorizer) do
       allow_operation('create_resource', Article, [existing_author, *existing_comments])
     end
 
@@ -303,7 +311,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     let(:article_policy_scope) { Article.where(id: article.id) }
 
     subject(:last_response) { get("/articles/#{article.id}/articles?include=#{include_query}") }
-    let(:chained_authorizer) { allow_operation('show_related_resources', article) }
+    let!(:chained_authorizer) { allow_operation('show_related_resources', article) }
 
     include_examples :include_directive_tests
   end
@@ -319,7 +327,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     }
 
     subject(:last_response) { get("/articles/#{article.id}/article?include=#{include_query}") }
-    let(:chained_authorizer) { allow_operation('show_related_resource', article, article) }
+    let!(:chained_authorizer) { allow_operation('show_related_resource', article, article) }
 
     include_examples :include_directive_tests
   end

@@ -284,7 +284,7 @@ module JSONAPI
             related_record = source_record.public_send(
               relationship.relation_name(@operation.options[:context])
             )
-            authorizer.include_has_one_resource(related_record)
+            authorizer.include_has_one_resource(related_record) unless related_record.nil?
           when JSONAPI::Relationship::ToMany
             authorizer.include_has_many_resource(relationship.resource_klass._model_class)
           else

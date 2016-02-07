@@ -5,4 +5,5 @@ class Article < ActiveRecord::Base
   # Hack for easy include directive checks
   has_many :articles, -> { limit(2) }, foreign_key: :id
   has_one :article, foreign_key: :id
+  has_one :non_existing_article, -> { none }, class_name: 'Article', foreign_key: :id
 end
