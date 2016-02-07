@@ -202,6 +202,20 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
         it { is_expected.to be_successful }
       end
+
+      context 'first level has_many is empty' do
+        let(:include_query) { 'empty-articles.comments' }
+
+        context 'unauthorized for first relationship' do
+          before { disallow_operation('include_has_many_resource', Article, authorizer: chained_authorizer) }
+          it { is_expected.to be_forbidden }
+        end
+
+        context 'authorized for first relationship' do
+          before { allow_operation('include_has_many_resource', Article, authorizer: chained_authorizer) }
+          it { is_expected.to be_successful }
+        end
+      end
     end
   end
 

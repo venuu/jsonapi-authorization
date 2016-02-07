@@ -8,4 +8,5 @@ class ArticleResource < JSONAPI::Resource
   has_many :articles
   has_one :article
   has_one :non_existing_article, class_name: 'Article', foreign_key_on: :related
+  has_many :empty_articles, class_name: 'Article', foreign_key_on: :related
 end
