@@ -17,22 +17,30 @@ module JSONAPI
       set_callback :remove_to_many_relationship_operation, :before, :authorize_remove_to_many_relationship
       set_callback :remove_to_one_relationship_operation, :before, :authorize_remove_to_one_relationship
 
-      def authorize_find
-        authorizer.find(@operation.resource_klass._model_class)
+      [
+        :find_operation,
+        :show_operation,
+        :show_related_resource_operation,
+        :show_related_resources_operation,
+        :create_resource_operation,
+        :replace_fields_operation
+      ].each do |op_name|
+        set_callback op_name, :after, :authorize_include_directive
+      end
 
-        # Copy-pasted from jsonapi-resources.
-        # There really should be a better way.
-        resource_records = @operation.resource_klass.find(
-          @operation.resource_klass.verify_filters(@operation.filters, @operation.options[:context]),
-          context: @operation.options[:context],
-          include_directives: @operation.include_directives,
-          sort_criteria: @operation.sort_criteria,
-          paginator: @operation.paginator
-        )
-
-        resource_records.each do |resource|
+      def authorize_include_directive
+        resources = if @result.respond_to?(:resources)
+                      @result.resources
+                    else
+                      [@result.resource]
+                    end
+        resources.each do |resource|
           authorize_model_includes(resource._model)
         end
+      end
+
+      def authorize_find
+        authorizer.find(@operation.resource_klass._model_class)
       end
 
       def authorize_show
@@ -42,7 +50,6 @@ module JSONAPI
         )._model
 
         authorizer.show(record)
-        authorize_model_includes(record)
       end
 
       def authorize_show_relationship
@@ -79,7 +86,6 @@ module JSONAPI
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
         authorizer.show_related_resource(source_record, related_record)
-        authorize_model_includes(source_record)
       end
 
       def authorize_show_related_resources
@@ -89,7 +95,6 @@ module JSONAPI
         )._model
 
         authorizer.show_related_resources(source_record)
-        authorize_model_includes(source_record)
       end
 
       def authorize_replace_fields
@@ -99,7 +104,6 @@ module JSONAPI
         )._model
 
         authorizer.replace_fields(source_record, related_models)
-        authorize_model_includes(source_record)
       end
 
       def authorize_create_resource
