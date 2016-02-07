@@ -217,8 +217,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +related_record+ - The associated record to return
-      def include_has_one_resource(record_class)
-        raise NotImplementedError
+      def include_has_one_resource(related_record)
+        ::Pundit.authorize(user, related_record, 'show?')
       end
     end
   end
