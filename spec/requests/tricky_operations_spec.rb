@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 RSpec.describe 'Tricky operations', type: :request do
-  include PunditStubs
+  include AuthorizationStubs
   fixtures :all
 
   let(:article) { Article.all.sample }
@@ -18,18 +18,8 @@ RSpec.describe 'Tricky operations', type: :request do
     header 'Content-Type', 'application/vnd.api+json'
   end
 
-  describe 'GET /articles/:id?includes=comments' do
-    subject(:last_response) { get("/articles/#{article.id}?includes=comments") }
-    let(:policy_scope) { Article.all }
-
-    context 'authorized for show? on article' do
-      before { allow_action('show?', article) }
-
-      xit 'displays only comments allowed by CommentPolicy::Scope'
-    end
-  end
-
-  describe 'POST /comments (with relationships link to articles)', pending: true do
+  describe 'POST /comments (with relationships link to articles)' do
+    subject(:last_response) { post("/comments", json) }
     let(:json) do
       <<-EOS.strip_heredoc
       {
@@ -38,7 +28,7 @@ RSpec.describe 'Tricky operations', type: :request do
           "relationships": {
             "article": {
               "data": {
-                "id": "1",
+                "id": "#{article.id}",
                 "type": "articles"
               }
             }
@@ -48,35 +38,42 @@ RSpec.describe 'Tricky operations', type: :request do
       EOS
     end
 
-    context 'unauthorized for update? on article' do
-      before { allow_action('update?', article) }
+    context 'authorized for create_resource on Comment and [article]' do
+      let(:policy_scope) { Article.where(id: article.id) }
+      before { allow_operation('create_resource', Comment, [article]) }
 
-      xcontext 'authorized for create? on comment' do
-        # This is a tricky one. In real life, this is often something you may
-        # want to permit. However, it is difficult to model with the typical
-        # Pundit actions without knowing the particular use case
+      it { is_expected.to be_successful }
+    end
 
-        it { is_expected.to be_forbidden }
-      end
+    context 'unauthorized for create_resource on Comment and [article]' do
+      let(:policy_scope) { Article.where(id: article.id) }
+      before { disallow_operation('create_resource', Comment, [article]) }
+
+      it { is_expected.to be_forbidden }
     end
   end
 
-  describe 'PATCH /articles/:id (mass-modifying relationships)', pending: true do
-    let(:existing) do
-      Article.new(comments: Comment.where(id: 3))
+  describe 'PATCH /articles/:id (mass-modifying relationships)' do
+    let!(:new_comments) do
+      Array.new(2) { Comment.create }
+    end
+    let(:policy_scope) { Article.where(id: article.id) }
+    let(:comments_policy_scope) { Comment.all }
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
     end
 
     let(:json) do
       <<-EOS.strip_heredoc
       {
         "data": {
-          "id": "<<TODO>>"
+          "id": "#{article.id}",
           "type": "articles",
           "relationships": {
             "comments": {
               "data": [
-                { "type": "comments", "id": "1" },
-                { "type": "comments", "id": "2" }
+                { "type": "comments", "id": "#{new_comments.first.id}" },
+                { "type": "comments", "id": "#{new_comments.second.id}" }
               ]
             }
           }
@@ -84,22 +81,26 @@ RSpec.describe 'Tricky operations', type: :request do
       }
       EOS
     end
+    subject(:last_response) { patch("/articles/#{article.id}", json) }
 
-    context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
-
-      xcontext 'unauthorized for update? on comment 3' do
-        it { is_expected.to be_forbidden }
-      end
-      xcontext 'unauthorized for update? on comment 2' do
-        it { is_expected.to be_forbidden }
-      end
-      xcontext 'unauthorized for update? on comment 1' do
-        it { is_expected.to be_forbidden }
-      end
-      xcontext 'authorized for update? on comments 1,2,3' do
+    context 'authorized for replace_fields on article and all new records' do
+      context 'not limited by Comments policy scope' do
+        before { allow_operation('replace_fields', article, new_comments) }
         it { is_expected.to be_successful }
       end
+
+      context 'limited by Comments policy scope' do
+        let(:comments_policy_scope) { Comment.where("id NOT IN (?)", new_comments.map(&:id)) }
+        before { allow_operation('replace_fields', article, new_comments) }
+
+        it { pending 'DISCUSS: Should this error out somehow?'; is_expected.to be_not_found }
+      end
+    end
+
+    context 'unauthorized for replace_fields on article and all new records' do
+      before { disallow_operation('replace_fields', article, new_comments) }
+
+      it { is_expected.to be_forbidden }
     end
   end
 end
