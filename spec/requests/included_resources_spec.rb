@@ -221,7 +221,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     subject(:last_response) { get("/articles?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('find', Article) }
 
-    let!(:article) {
+    let(:article) {
       Article.create(
         author: User.create(
           comments: Array.new(2) { Comment.create }
@@ -237,7 +237,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id' do
-    let!(:article) {
+    let(:article) {
       Article.create(
         author: User.create(
           comments: Array.new(2) { Comment.create }
@@ -253,7 +253,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'PATCH /articles/:id' do
-    let!(:article) {
+    let(:article) {
       Article.create(
         author: User.create(
           comments: Array.new(2) { Comment.create }
@@ -270,12 +270,12 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'POST /articles/:id' do
-    let!(:existing_author) do
+    let(:existing_author) do
       User.create(
         comments: Array.new(2) { Comment.create }
       )
     end
-    let!(:existing_comments) do
+    let(:existing_comments) do
       Array.new(2) { Comment.create }
     end
     let(:json) do
@@ -311,7 +311,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id/articles' do
-    let!(:article) {
+    let(:article) {
       Article.create(
         author: User.create(
           comments: Array.new(2) { Comment.create }
@@ -329,7 +329,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id/article' do
-    let!(:article) {
+    let(:article) {
       Article.create(
         author: User.create(
           comments: Array.new(2) { Comment.create }
