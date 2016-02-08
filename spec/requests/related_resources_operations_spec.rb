@@ -19,7 +19,7 @@ RSpec.describe 'Related resources operations', type: :request do
   end
 
   describe 'GET /articles/:id/comments' do
-    subject(:last_response) { get("/articles/#{article.id}/comments") }
+    subject(:last_response) { get("/articles/#{article.external_id}/comments") }
     let(:article) { articles(:article_with_comments) }
 
     let(:policy_scope) { Article.all }
@@ -54,7 +54,7 @@ RSpec.describe 'Related resources operations', type: :request do
   end
 
   describe 'GET /articles/:id/author' do
-    subject(:last_response) { get("/articles/#{article.id}/author") }
+    subject(:last_response) { get("/articles/#{article.external_id}/author") }
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 

@@ -34,13 +34,13 @@ describe 'Resource operations', type: :request do
 
       it 'returns results limited by policy scope' do
         expect(json_data.length).to eq(1)
-        expect(json_data.first["id"]).to eq(article.id.to_s)
+        expect(json_data.first["id"]).to eq(article.external_id)
       end
     end
   end
 
   describe 'GET /articles/:id' do
-    subject(:last_response) { get("/articles/#{article.id}") }
+    subject(:last_response) { get("/articles/#{article.external_id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show' do
@@ -70,7 +70,7 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'POST /articles' do
-    subject(:last_response) { post("/articles", '{ "data": { "type": "articles" } }') }
+    subject(:last_response) { post("/articles", '{ "data": { "id": "1", "type": "articles" } }') }
 
     context 'unauthorized for create_resource' do
       before { disallow_operation('create_resource', Article, []) }
@@ -88,14 +88,14 @@ describe 'Resource operations', type: :request do
       <<-EOS.strip_heredoc
       {
         "data": {
-          "id": "#{article.id}",
+          "id": "#{article.external_id}",
           "type": "articles"
         }
       }
       EOS
     end
 
-    subject(:last_response) { patch("/articles/#{article.id}", json) }
+    subject(:last_response) { patch("/articles/#{article.external_id}", json) }
     let(:policy_scope) { Article.all }
 
     context 'authorized for replace_fields' do
@@ -120,7 +120,7 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'DELETE /articles/:id' do
-    subject(:last_response) { delete("/articles/#{article.id}") }
+    subject(:last_response) { delete("/articles/#{article.external_id}") }
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_resource' do
