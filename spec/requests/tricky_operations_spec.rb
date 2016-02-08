@@ -28,7 +28,7 @@ RSpec.describe 'Tricky operations', type: :request do
           "relationships": {
             "article": {
               "data": {
-                "id": "#{article.id}",
+                "id": "#{article.external_id}",
                 "type": "articles"
               }
             }

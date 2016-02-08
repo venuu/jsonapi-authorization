@@ -209,8 +209,12 @@ module JSONAPI
         end
       end
 
+      def resource_class_for_relationship(assoc_name)
+        @operation.resource_klass._relationship(assoc_name).resource_klass
+      end
+
       def model_class_for_relationship(assoc_name)
-        @operation.resource_klass._relationship(assoc_name).resource_klass._model_class
+        resource_class_for_relationship(assoc_name)._model_class
       end
 
       def related_models
@@ -219,9 +223,9 @@ module JSONAPI
 
         [:to_one, :to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_ids|
-            assoc_klass = model_class_for_relationship(assoc_name)
-            # TODO: find_by_key?
-            assoc_klass.find(assoc_ids)
+            resource_class = resource_class_for_relationship(assoc_name)
+            resource = resource_class.find_by_key(assoc_ids, context: @operation.options[:context])
+            resource._model
           end
         end
       end
