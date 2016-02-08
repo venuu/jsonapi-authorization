@@ -116,7 +116,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         before do
           allow_operation('include_has_one_resource', any_args, authorizer: chained_authorizer)
           allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer)
-          last_response
         end
         after do
           expect(chained_authorizer).to have_received(:include_has_one_resource).with(any_args)
@@ -173,7 +172,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
         context 'authorized for second relationship' do
           before { allow_operation('include_has_many_resource', Comment, authorizer: chained_authorizer) }
-          before { last_response }
           it { is_expected.to be_successful }
 
           let(:comments_policy_scope) { Comment.all }
