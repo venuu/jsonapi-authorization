@@ -29,6 +29,7 @@ module JSONAPI
       end
 
       def authorize_include_directive
+        return if @result.is_a?(::JSONAPI::ErrorsOperationResult)
         resources = if @result.respond_to?(:resources)
                       @result.resources
                     else

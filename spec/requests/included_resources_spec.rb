@@ -215,6 +215,15 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
+
+    context 'the request has failed already', pending: 'How to test this' do
+      let(:include_query) { 'author.comments' }
+
+      it 'does not run include authorizations' do
+        expect(last_response).not_to be_forbidden
+        expect(last_response).not_to be_successful
+      end
+    end
   end
 
   describe 'GET /articles' do
