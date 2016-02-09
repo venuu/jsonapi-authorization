@@ -224,8 +224,8 @@ module JSONAPI
         [:to_one, :to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_ids|
             resource_class = resource_class_for_relationship(assoc_name)
-            resource = resource_class.find_by_key(assoc_ids, context: @operation.options[:context])
-            resource._model
+            primary_key = resource_class._primary_key
+            resource_class._model_class.where(primary_key => assoc_ids)
           end
         end
       end

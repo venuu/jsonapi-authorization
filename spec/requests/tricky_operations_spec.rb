@@ -67,7 +67,7 @@ RSpec.describe 'Tricky operations', type: :request do
       <<-EOS.strip_heredoc
       {
         "data": {
-          "id": "#{article.id}",
+          "id": "#{article.external_id}",
           "type": "articles",
           "relationships": {
             "comments": {
@@ -81,7 +81,7 @@ RSpec.describe 'Tricky operations', type: :request do
       }
       EOS
     end
-    subject(:last_response) { patch("/articles/#{article.id}", json) }
+    subject(:last_response) { patch("/articles/#{article.external_id}", json) }
 
     context 'authorized for replace_fields on article and all new records' do
       context 'not limited by Comments policy scope' do
