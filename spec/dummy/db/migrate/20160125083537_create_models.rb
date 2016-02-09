@@ -10,6 +10,7 @@ class CreateModels < ActiveRecord::Migration
 
     create_table :articles do |t|
       t.references :author
+      t.string :blank_value
     end
   end
 end

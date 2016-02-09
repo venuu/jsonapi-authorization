@@ -15,6 +15,7 @@ ActiveRecord::Schema.define(version: 20160125083537) do
 
   create_table "articles", force: :cascade do |t|
     t.integer "author_id"
+    t.string  "blank_value"
   end
 
   create_table "comments", force: :cascade do |t|
