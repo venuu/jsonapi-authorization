@@ -286,34 +286,37 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   end
 
   describe '#include_has_many_resource' do
-    let(:source_class) { source_record.class }
+    let(:record_class) { Article }
+    let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_many_resource(source_class) }
+      -> { authorizer.include_has_many_resource(record_class, source_record) }
     end
 
     context 'authorized for index? on record class' do
-      before { allow_action('index?', source_class) }
+      before { allow_action('index?', record_class) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for index? on record class' do
-      before { disallow_action('index?', source_class) }
+      before { disallow_action('index?', record_class) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
 
   describe '#include_has_one_resource' do
+    let(:related_record) { Article.new }
+    let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_one_resource(source_record) }
+      -> { authorizer.include_has_one_resource(related_record, source_record) }
     end
 
     context 'authorized for show? on record' do
-      before { allow_action('show?', source_record) }
+      before { allow_action('show?', related_record) }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      before { disallow_action('show?', source_record) }
+      before { disallow_action('show?', related_record) }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end

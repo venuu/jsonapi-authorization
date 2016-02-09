@@ -204,7 +204,9 @@ module JSONAPI
       #
       # * +record_class+ - The underlying record class for the relationships
       #                    resource.
-      def include_has_many_resource(record_class)
+      # * +source_record+ — The source relationship record, e.g. an Article in
+      #                     article.comments check
+      def include_has_many_resource(record_class, source_record)
         ::Pundit.authorize(user, record_class, 'index?')
       end
 
@@ -217,7 +219,9 @@ module JSONAPI
       # ==== Parameters
       #
       # * +related_record+ - The associated record to return
-      def include_has_one_resource(related_record)
+      # * +source_record+ — The source relationship record, e.g. an Article in
+      #                     article.author check
+      def include_has_one_resource(related_record, source_record)
         ::Pundit.authorize(user, related_record, 'show?')
       end
     end

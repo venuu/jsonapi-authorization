@@ -285,9 +285,13 @@ module JSONAPI
             related_record = source_record.public_send(
               relationship.relation_name(@operation.options[:context])
             )
-            authorizer.include_has_one_resource(related_record) unless related_record.nil?
+            return if related_record.nil?
+            authorizer.include_has_one_resource(related_record, source_record)
           when JSONAPI::Relationship::ToMany
-            authorizer.include_has_many_resource(relationship.resource_klass._model_class)
+            authorizer.include_has_many_resource(
+              relationship.resource_klass._model_class,
+              source_record
+            )
           else
             raise "Unexpected relationship type: #{relationship.inspect}"
           end
