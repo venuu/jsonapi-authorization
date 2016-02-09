@@ -215,15 +215,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         end
       end
     end
-
-    context 'the request has failed already', pending: 'How to test this' do
-      let(:include_query) { 'author.comments' }
-
-      it 'does not run include authorizations' do
-        expect(last_response).not_to be_forbidden
-        expect(last_response).not_to be_successful
-      end
-    end
   end
 
   describe 'GET /articles' do
@@ -271,11 +262,31 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       )
     }
 
-    let(:json) { %({"data": { "type": "articles", "id": "#{article.id}" }}) }
+    let(:attributes_json) { '{}' }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "type": "articles",
+          "id": "#{article.id}",
+          "attributes": #{attributes_json}
+        }
+      }
+      EOS
+    end
     subject(:last_response) { patch("/articles/#{article.id}?include=#{include_query}", json) }
     let!(:chained_authorizer) { allow_operation('replace_fields', article, []) }
 
     include_examples :include_directive_tests
+
+    context 'the request has already failed validations' do
+      let(:include_query) { 'author.comments' }
+      let(:attributes_json) { '{ "blank-value": "indifferent" }' }
+
+      it 'does not run include authorizations and fails with validation error' do
+        expect(last_response).to be_unprocessable
+      end
+    end
   end
 
   describe 'POST /articles/:id' do
@@ -287,11 +298,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     let(:existing_comments) do
       Array.new(2) { Comment.create }
     end
+
+    let(:attributes_json) { '{}' }
     let(:json) do
       <<-EOS.strip_heredoc
       {
         "data": {
           "type": "articles",
+          "attributes": #{attributes_json},
           "relationships": {
             "comments": {
               "data": [
@@ -317,6 +331,15 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     end
 
     include_examples :include_directive_tests
+
+    context 'the request has already failed validations' do
+      let(:include_query) { 'author.comments' }
+      let(:attributes_json) { '{ "blank-value": "indifferent" }' }
+
+      it 'does not run include authorizations and fails with validation error' do
+        expect(last_response).to be_unprocessable
+      end
+    end
   end
 
   describe 'GET /articles/:id/articles' do
