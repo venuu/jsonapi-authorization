@@ -188,6 +188,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:article) {
       Article.create(
+        external_id: "indifferent_external_id",
         author: User.create(
           comments: Array.new(2) { Comment.create }
         ),
@@ -204,6 +205,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   describe 'GET /articles/:id' do
     let(:article) {
       Article.create(
+        external_id: "indifferent_external_id",
         author: User.create(
           comments: Array.new(2) { Comment.create }
         ),
@@ -211,7 +213,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       )
     }
 
-    subject(:last_response) { get("/articles/#{article.id}?include=#{include_query}") }
+    subject(:last_response) { get("/articles/#{article.external_id}?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('show', article) }
 
     include_examples :include_directive_tests
@@ -220,6 +222,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   describe 'PATCH /articles/:id' do
     let(:article) {
       Article.create(
+        external_id: "indifferent_external_id",
         author: User.create(
           comments: Array.new(2) { Comment.create }
         ),
@@ -233,13 +236,13 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       {
         "data": {
           "type": "articles",
-          "id": "#{article.id}",
+          "id": "#{article.external_id}",
           "attributes": #{attributes_json}
         }
       }
       EOS
     end
-    subject(:last_response) { patch("/articles/#{article.id}?include=#{include_query}", json) }
+    subject(:last_response) { patch("/articles/#{article.external_id}?include=#{include_query}", json) }
     let!(:chained_authorizer) { allow_operation('replace_fields', article, []) }
 
     include_examples :include_directive_tests
@@ -270,6 +273,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       {
         "data": {
           "type": "articles",
+          "id": "indifferent_external_id",
           "attributes": #{attributes_json},
           "relationships": {
             "comments": {
@@ -310,6 +314,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   describe 'GET /articles/:id/articles' do
     let(:article) {
       Article.create(
+        external_id: "indifferent_external_id",
         author: User.create(
           comments: Array.new(2) { Comment.create }
         ),
@@ -319,7 +324,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:article_policy_scope) { Article.where(id: article.id) }
 
-    subject(:last_response) { get("/articles/#{article.id}/articles?include=#{include_query}") }
+    subject(:last_response) { get("/articles/#{article.external_id}/articles?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('show_related_resources', article) }
 
     include_examples :include_directive_tests
@@ -328,6 +333,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   describe 'GET /articles/:id/article' do
     let(:article) {
       Article.create(
+        external_id: "indifferent_external_id",
         author: User.create(
           comments: Array.new(2) { Comment.create }
         ),
@@ -335,7 +341,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       )
     }
 
-    subject(:last_response) { get("/articles/#{article.id}/article?include=#{include_query}") }
+    subject(:last_response) { get("/articles/#{article.external_id}/article?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('show_related_resource', article, article) }
 
     include_examples :include_directive_tests
