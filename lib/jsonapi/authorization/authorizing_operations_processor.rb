@@ -222,10 +222,16 @@ module JSONAPI
         return [] if data.nil?
 
         [:to_one, :to_many].flat_map do |rel_type|
-          data[rel_type].flat_map do |assoc_name, assoc_ids|
-            resource_class = resource_class_for_relationship(assoc_name)
-            primary_key = resource_class._primary_key
-            resource_class._model_class.where(primary_key => assoc_ids)
+          data[rel_type].flat_map do |assoc_name, assoc_value|
+            case assoc_value
+            when Hash # polymorphic relationship
+              resource_class = @operation.resource_klass.resource_for(assoc_value[:type].to_s)
+              resource_class.find_by_key(assoc_value[:id], context: @operation.options[:context])._model
+            else
+              resource_class = resource_class_for_relationship(assoc_name)
+              primary_key = resource_class._primary_key
+              resource_class._model_class.where(primary_key => assoc_value)
+            end
           end
         end
       end

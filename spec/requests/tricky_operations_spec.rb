@@ -53,6 +53,41 @@ RSpec.describe 'Tricky operations', type: :request do
     end
   end
 
+  describe 'POST /tags (with polymorphic relationship link to article)' do
+    subject(:last_response) { post("/tags", json) }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "type": "tags",
+          "relationships": {
+            "taggable": {
+              "data": {
+                "id": "#{article.external_id}",
+                "type": "articles"
+              }
+            }
+          }
+        }
+      }
+      EOS
+    end
+
+    context 'authorized for create_resource on Tag and [article]' do
+      let(:policy_scope) { Article.where(id: article.id) }
+      before { allow_operation('create_resource', Tag, [article]) }
+
+      it { is_expected.to be_successful }
+    end
+
+    context 'unauthorized for create_resource on Tag and [article]' do
+      let(:policy_scope) { Article.where(id: article.id) }
+      before { disallow_operation('create_resource', Tag, [article]) }
+
+      it { is_expected.to be_forbidden }
+    end
+  end
+
   describe 'PATCH /articles/:id (mass-modifying relationships)' do
     let!(:new_comments) do
       Array.new(2) { Comment.create }
