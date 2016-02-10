@@ -264,17 +264,17 @@ module JSONAPI
           include_item.each do |rel_name, deep|
             authorize_include_item(resource_klass, source_record, rel_name)
             relationship = resource_klass._relationship(rel_name)
-            new_resource_klass = relationship.resource_klass
+            next_resource_klass = relationship.resource_klass
             Array.wrap(
               source_record.public_send(
                 relationship.relation_name(@operation.options[:context])
               )
-            ).each do |new_source_record|
-              deep.each do |new_include_item|
+            ).each do |next_source_record|
+              deep.each do |next_include_item|
                 authorize_include_item(
-                  new_resource_klass,
-                  new_source_record,
-                  new_include_item
+                  next_resource_klass,
+                  next_source_record,
+                  next_include_item
                 )
               end
             end
