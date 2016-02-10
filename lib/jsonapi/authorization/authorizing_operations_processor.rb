@@ -260,6 +260,7 @@ module JSONAPI
       def authorize_include_item(resource_klass, source_record, include_item)
         case include_item
         when Hash
+          # e.g. {articles: [:comments, :author]} when ?include=articles.comments,articles.author
           include_item.each do |rel_name, deep|
             authorize_include_item(resource_klass, source_record, rel_name)
             relationship = resource_klass._relationship(rel_name)
