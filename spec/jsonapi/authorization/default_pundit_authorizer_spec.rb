@@ -289,7 +289,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:record_class) { Article }
     let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_many_resource(record_class, source_record) }
+      -> { authorizer.include_has_many_resource(source_record, record_class) }
     end
 
     context 'authorized for index? on record class' do
@@ -307,7 +307,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:related_record) { Article.new }
     let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_one_resource(related_record, source_record) }
+      -> { authorizer.include_has_one_resource(source_record, related_record) }
     end
 
     context 'authorized for show? on record' do

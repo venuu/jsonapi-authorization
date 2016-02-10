@@ -33,9 +33,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         before { disallow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
         after do
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article)
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Comment)
           else
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, an_instance_of(Article))
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(an_instance_of(Article), Comment)
           end
         end
 
@@ -45,7 +45,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       context 'authorized for include_has_many_resource for Comment' do
         before { allow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
         after do
-          expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article)
+          expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Comment)
         end
         it { is_expected.to be_successful }
 
@@ -66,9 +66,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         after do
           expect(chained_authorizer).to have_received(:include_has_one_resource).with(any_args)
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
           else
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(an_instance_of(User), an_instance_of(Article))
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(an_instance_of(Article), an_instance_of(User))
           end
         end
         it { is_expected.to be_forbidden }
@@ -77,7 +77,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       context 'authorized for include_has_one_resource for article.author' do
         before { allow_operation('include_has_one_resource', any_args, authorizer: chained_authorizer) }
         after do
-          expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
+          expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
         end
         it { is_expected.to be_successful }
 
@@ -99,9 +99,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         after do
           expect(chained_authorizer).to have_received(:include_has_one_resource).with(any_args)
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
           else
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(an_instance_of(User), an_instance_of(Article))
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(an_instance_of(Article), an_instance_of(User))
           end
         end
 
@@ -116,9 +116,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         after do
           expect(chained_authorizer).to have_received(:include_has_many_resource).with(any_args)
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article)
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Comment)
           else
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, an_instance_of(Article))
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(an_instance_of(Article), Comment)
           end
         end
 
@@ -131,8 +131,8 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           allow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer)
         end
         after do
-          expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
-          expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article)
+          expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
+          expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Comment)
         end
 
         it { is_expected.to be_successful }
@@ -160,7 +160,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         after do
           expect(chained_authorizer).to have_received(:include_has_one_resource).with(any_args)
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
           end
         end
 
@@ -172,7 +172,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         after do
           expect(chained_authorizer).to have_received(:include_has_one_resource).with(any_args)
           if article.present?
-            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article.author, article)
+            expect(chained_authorizer).to have_received(:include_has_one_resource).with(article, article.author)
           end
         end
 
@@ -180,9 +180,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           before { disallow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
           after do
             if article.present?
-              expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article.author)
+              expect(chained_authorizer).to have_received(:include_has_many_resource).with(article.author, Comment)
             else
-              expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, an_instance_of(User))
+              expect(chained_authorizer).to have_received(:include_has_many_resource).with(an_instance_of(User), Comment)
             end
           end
 
@@ -192,7 +192,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         context 'authorized for second relationship' do
           before { allow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
           after do
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Comment, article.author)
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(article.author, Comment)
           end
 
           it { is_expected.to be_successful }
@@ -231,9 +231,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           before { disallow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
           after do
             if article.present?
-              expect(chained_authorizer).to have_received(:include_has_many_resource).with(Article, article)
+              expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Article)
             else
-              expect(chained_authorizer).to have_received(:include_has_many_resource).with(Article, an_instance_of(Article))
+              expect(chained_authorizer).to have_received(:include_has_many_resource).with(an_instance_of(Article), Article)
             end
           end
           it { is_expected.to be_forbidden }
@@ -242,7 +242,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         context 'authorized for first relationship' do
           before { allow_operation('include_has_many_resource', any_args, authorizer: chained_authorizer) }
           after do
-            expect(chained_authorizer).to have_received(:include_has_many_resource).with(Article, article)
+            expect(chained_authorizer).to have_received(:include_has_many_resource).with(article, Article)
           end
           it { is_expected.to be_successful }
         end
