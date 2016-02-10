@@ -30,11 +30,14 @@ module JSONAPI
 
       def authorize_include_directive
         return if @result.is_a?(::JSONAPI::ErrorsOperationResult)
-        resources = if @result.respond_to?(:resources)
-                      @result.resources
-                    else
-                      [@result.resource]
-                    end
+        resources = Array.wrap(
+          if @result.respond_to?(:resources)
+            @result.resources
+          elsif @result.respond_to?(:resource)
+            @result.resource
+          end
+        )
+
         resources.each do |resource|
           authorize_model_includes(resource._model)
         end
