@@ -1,0 +1,9 @@
+---
+tag_1:
+  taggable: comment_1
+tag_2:
+  taggable: comment_1
+tag_3:
+  taggable: article_with_comments
+tag_4:
+  taggable: article_with_comments

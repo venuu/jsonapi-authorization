@@ -1,7 +1,11 @@
 ---
-article_with_comments: {}
-article_without_comments: {}
+article_with_comments:
+  external_id: 1
+article_without_comments:
+  external_id: 2
 article_with_author:
+  external_id: 3
   author: user_with_articles
 article_without_author:
+  external_id: 4
   author: ~
