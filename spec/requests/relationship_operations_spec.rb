@@ -26,7 +26,7 @@ RSpec.describe 'Relationship operations', type: :request do
     before do
       allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
     end
-    subject(:last_response) { get("/articles/#{article.id}/relationships/comments") }
+    subject(:last_response) { get("/articles/#{article.external_id}/relationships/comments") }
 
     context 'unauthorized for show_relationship' do
       before { disallow_operation('show_relationship', article, nil) }
@@ -52,7 +52,7 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'GET /articles/:id/relationships/author' do
-    subject(:last_response) { get("/articles/#{article.id}/relationships/author") }
+    subject(:last_response) { get("/articles/#{article.external_id}/relationships/author") }
 
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
@@ -87,7 +87,7 @@ RSpec.describe 'Relationship operations', type: :request do
       }
       EOS
     end
-    subject(:last_response) { post("/articles/#{article.id}/relationships/comments", json) }
+    subject(:last_response) { post("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }
     let(:comments_scope) { Comment.all }
 
@@ -133,7 +133,7 @@ RSpec.describe 'Relationship operations', type: :request do
       }
       EOS
     end
-    subject(:last_response) { patch("/articles/#{article.id}/relationships/comments", json) }
+    subject(:last_response) { patch("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }
     let(:comments_scope) { Comment.all }
 
@@ -180,7 +180,7 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'PATCH /articles/:id/relationships/author' do
-    subject(:last_response) { patch("/articles/#{article.id}/relationships/author", json) }
+    subject(:last_response) { patch("/articles/#{article.external_id}/relationships/author", json) }
 
     let(:article) { articles(:article_with_author) }
     let!(:old_author) { article.author }
@@ -271,7 +271,7 @@ RSpec.describe 'Relationship operations', type: :request do
       }
       EOS
     end
-    subject(:last_response) { delete("/articles/#{article.id}/relationships/comments", json) }
+    subject(:last_response) { delete("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }
     let(:comments_scope) { Comment.all }
 
@@ -321,7 +321,7 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   describe 'DELETE /articles/:id/relationships/author' do
-    subject(:last_response) { delete("/articles/#{article.id}/relationships/author") }
+    subject(:last_response) { delete("/articles/#{article.external_id}/relationships/author") }
 
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
