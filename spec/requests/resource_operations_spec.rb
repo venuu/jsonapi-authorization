@@ -70,7 +70,17 @@ describe 'Resource operations', type: :request do
   end
 
   describe 'POST /articles' do
-    subject(:last_response) { post("/articles", '{ "data": { "id": "1", "type": "articles" } }') }
+    subject(:last_response) { post("/articles", json) }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "id": "external_id",
+          "type": "articles"
+        }
+      }
+      EOS
+    end
 
     context 'unauthorized for create_resource' do
       before { disallow_operation('create_resource', Article, []) }
