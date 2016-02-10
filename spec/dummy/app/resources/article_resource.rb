@@ -2,6 +2,7 @@ class ArticleResource < JSONAPI::Resource
   include JSONAPI::Authorization::PunditScopedResource
 
   has_many :comments, acts_as_set: true
+  has_many :tags
   has_one :author, class_name: 'User'
 
   primary_key :external_id

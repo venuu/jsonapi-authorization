@@ -11,5 +11,9 @@ class CreateModels < ActiveRecord::Migration
       t.string :external_id, null: false
       t.references :author
     end
+
+    create_table :tags do |t|
+      t.references :taggable, polymorphic: true
+    end
   end
 end
