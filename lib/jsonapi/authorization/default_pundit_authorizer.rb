@@ -190,6 +190,40 @@ module JSONAPI
       def remove_to_one_relationship(source_record, related_record)
         raise NotImplementedError
       end
+
+      # Any request including <tt>?include=other-resources</tt>
+      #
+      # This will be called for each has_many relationship if the include goes
+      # deeper than one level until some authorization fails or the include
+      # directive has been travelled completely.
+      #
+      # We can't pass all the records of a +has_many+ association here due to
+      # performance reasons, so the class is passed instead.
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ — The source relationship record, e.g. an Article in
+      #                     article.comments check
+      # * +record_class+ - The underlying record class for the relationships
+      #                    resource.
+      def include_has_many_resource(source_record, record_class)
+        ::Pundit.authorize(user, record_class, 'index?')
+      end
+
+      # Any request including <tt>?include=another-resource</tt>
+      #
+      # This will be called for each has_one relationship if the include goes
+      # deeper than one level until some authorization fails or the include
+      # directive has been travelled completely.
+      #
+      # ==== Parameters
+      #
+      # * +source_record+ — The source relationship record, e.g. an Article in
+      #                     article.author check
+      # * +related_record+ - The associated record to return
+      def include_has_one_resource(source_record, related_record)
+        ::Pundit.authorize(user, related_record, 'show?')
+      end
     end
   end
 end

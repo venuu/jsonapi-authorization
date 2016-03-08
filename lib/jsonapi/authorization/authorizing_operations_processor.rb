@@ -17,6 +17,32 @@ module JSONAPI
       set_callback :remove_to_many_relationship_operation, :before, :authorize_remove_to_many_relationship
       set_callback :remove_to_one_relationship_operation, :before, :authorize_remove_to_one_relationship
 
+      [
+        :find_operation,
+        :show_operation,
+        :show_related_resource_operation,
+        :show_related_resources_operation,
+        :create_resource_operation,
+        :replace_fields_operation
+      ].each do |op_name|
+        set_callback op_name, :after, :authorize_include_directive
+      end
+
+      def authorize_include_directive
+        return if @result.is_a?(::JSONAPI::ErrorsOperationResult)
+        resources = Array.wrap(
+          if @result.respond_to?(:resources)
+            @result.resources
+          elsif @result.respond_to?(:resource)
+            @result.resource
+          end
+        )
+
+        resources.each do |resource|
+          authorize_model_includes(resource._model)
+        end
+      end
+
       def authorize_find
         authorizer.find(@operation.resource_klass._model_class)
       end
@@ -233,6 +259,58 @@ module JSONAPI
               resource_class._model_class.where(primary_key => assoc_value)
             end
           end
+        end
+      end
+
+      def authorize_model_includes(source_record)
+        if @request.include_directives
+          @request.include_directives.model_includes.each do |include_item|
+            authorize_include_item(@operation.resource_klass, source_record, include_item)
+          end
+        end
+      end
+
+      def authorize_include_item(resource_klass, source_record, include_item)
+        case include_item
+        when Hash
+          # e.g. {articles: [:comments, :author]} when ?include=articles.comments,articles.author
+          include_item.each do |rel_name, deep|
+            authorize_include_item(resource_klass, source_record, rel_name)
+            relationship = resource_klass._relationship(rel_name)
+            next_resource_klass = relationship.resource_klass
+            Array.wrap(
+              source_record.public_send(
+                relationship.relation_name(@operation.options[:context])
+              )
+            ).each do |next_source_record|
+              deep.each do |next_include_item|
+                authorize_include_item(
+                  next_resource_klass,
+                  next_source_record,
+                  next_include_item
+                )
+              end
+            end
+          end
+        when Symbol
+          relationship = resource_klass._relationship(include_item)
+          case relationship
+          when JSONAPI::Relationship::ToOne
+            related_record = source_record.public_send(
+              relationship.relation_name(@operation.options[:context])
+            )
+            return if related_record.nil?
+            authorizer.include_has_one_resource(source_record, related_record)
+          when JSONAPI::Relationship::ToMany
+            authorizer.include_has_many_resource(
+              source_record,
+              relationship.resource_klass._model_class
+            )
+          else
+            raise "Unexpected relationship type: #{relationship.inspect}"
+          end
+        else
+          raise "Unknown include directive: #{include_item}"
         end
       end
     end

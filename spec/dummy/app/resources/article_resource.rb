@@ -14,4 +14,14 @@ class ArticleResource < JSONAPI::Resource
   def id=(external_id)
     _model.external_id = external_id
   end
+
+  # # Hack for easy include directive checks
+  has_many :articles
+  has_one :article
+  has_one :non_existing_article, class_name: 'Article', foreign_key_on: :related
+  has_many :empty_articles, class_name: 'Article', foreign_key_on: :related
+
+  # Setting this attribute is an easy way to test that authorizations work even
+  # when the model has validation errors
+  attributes :blank_value
 end
