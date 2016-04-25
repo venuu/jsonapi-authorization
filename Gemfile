@@ -23,5 +23,5 @@ when 'master'
 when 'default'
   gem 'jsonapi-resources', '0.7.0'
 else
-  gem 'jsonapi-resources', "~> #{jsonapi_resources_version}"
+  gem 'jsonapi-resources', jsonapi_resources_version
 end
