@@ -11,11 +11,19 @@ branch. This may contain information that is not relevant to the release you are
 
 `JSONAPI::Authorization` adds authorization to the [jsonapi-resources][jr] (JR) gem using [Pundit][pundit].
 
-***PLEASE NOTE:*** This gem is still considered to be ***alpha quality***. Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn't the case, please [open an issue][issues].
-
   [jr]: https://github.com/cerebris/jsonapi-resources "A resource-focused Rails library for developing JSON API compliant servers."
   [pundit]: https://github.com/elabs/pundit "Minimal authorization through OO design and pure Ruby classes"
+
+## Caveats
+
+Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn't the case, please [open an issue][issues].
+
+This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for [more complex cases][complex-case].
+
+The API is subject to change between minor version bumps until we reach v1.0.0.
+
   [issues]: https://github.com/venuu/jsonapi-authorization/issues
+  [complex-case]: https://github.com/venuu/jsonapi-authorization/issues/15
 
 ## Installation
 
