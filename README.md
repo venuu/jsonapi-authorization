@@ -22,7 +22,6 @@ This gem should work out-of-the box for simple cases. The default authorizer mig
 
 The API is subject to change between minor version bumps until we reach v1.0.0.
 
-  [issues]: https://github.com/venuu/jsonapi-authorization/issues
   [complex-case]: https://github.com/venuu/jsonapi-authorization/issues/15
 
 ## Installation
@@ -40,6 +39,13 @@ And then execute:
 Or install it yourself as:
 
     $ gem install jsonapi-authorization
+
+## Compatibility
+
+* `v0.6.x` supports JR `v0.7.x`
+* `v0.8.x` supports JR `v0.8.x`
+
+We aim to support the same Ruby and Ruby on Rails versions as `jsonapi-resources` does. If that's not the case, please [open an issue][issues].
 
 ## Usage
 
@@ -118,3 +124,5 @@ Originally based on discussion and code samples by [@barelyknown](https://github
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/venuu/jsonapi-authorization.
+
+  [issues]: https://github.com/venuu/jsonapi-authorization/issues
