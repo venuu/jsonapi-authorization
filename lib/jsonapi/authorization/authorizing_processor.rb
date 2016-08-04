@@ -283,7 +283,7 @@ module JSONAPI
               end
             end
           end
-          when Symbol
+        when Symbol
           relationship = resource_klass._relationship(include_item)
           case relationship
           when JSONAPI::Relationship::ToOne
@@ -292,7 +292,7 @@ module JSONAPI
             )
             return if related_record.nil?
             authorizer.include_has_one_resource(source_record, related_record)
-            when JSONAPI::Relationship::ToMany
+          when JSONAPI::Relationship::ToMany
             authorizer.include_has_many_resource(
               source_record,
               relationship.resource_klass._model_class
