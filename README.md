@@ -39,7 +39,7 @@ Make sure you have a Pundit policy specified for every backing model that your J
 
 ```ruby
 JSONAPI.configure do |config|
-  config.operations_processor = :jsonapi_authorization
+  config.default_processor_klass = JSONAPI::Authorization::AuthorizingProcessor
 end
 ```
 
