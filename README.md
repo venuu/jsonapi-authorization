@@ -85,6 +85,18 @@ JSONAPI::Authorization.configure do |config|
 end
 ```
 
+## Troubleshooting
+
+### "Unable to find policy" exception for a request
+
+The exception might look like this for resource class `ArticleResource` that is backed by `Article` model:
+
+```
+unable to find policy `ArticlePolicy` for `Article'
+```
+
+This means that you don't have a policy class created for your model. Create one and the error should go away.
+
 ## Development
 
 After checking out the repo, run `bundle install` to install dependencies. Then, run `bundle exec rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
