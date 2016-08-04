@@ -35,24 +35,33 @@ Or install it yourself as:
 
 ## Usage
 
-Make sure you have a Pundit policy specified for every backing model that your JR resources use. Then hook this gem up to your application like so:
+First make sure you have a Pundit policy specified for every backing model that your JR resources use.
+
+Hook up this gem as the default processor for JR, and optionally allow rescuing from `Pundit::NotAuthorizedError` to output better errors for unauthorized requests:
 
 ```ruby
+# config/initializers/jsonapi-resources.rb
 JSONAPI.configure do |config|
   config.default_processor_klass = JSONAPI::Authorization::AuthorizingProcessor
+  config.exception_class_whitelist = [Pundit::NotAuthorizedError]
 end
 ```
 
-Make all your JR controllers specify the user in the `context` if you are using the default authorizer class (see [Configuration](#configuration) below):
+Make all your JR controllers specify the user in the `context` and rescue errors thrown by unauthorized requests:
 
 ```ruby
 class BaseResourceController < ActionController::Base
   include JSONAPI::ActsAsResourceController
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
   def context
     {user: current_user}
+  end
+
+  def user_not_authorized
+    head :forbidden
   end
 end
 ```
@@ -63,39 +72,6 @@ Have your JR resources include the `JSONAPI::Authorization::PunditScopedResource
 class BaseResource < JSONAPI::Resource
   include JSONAPI::Authorization::PunditScopedResource
   abstract
-end
-```
-
-If you want to send a custom response for unauthorized requests, add a `rescue_from` hook to your `BaseResourceController` and whitelist `Pundit::NotAuthorizedError` in your JR configuration.
-
-## Known bugs
-
-There is a bug affecting `jsonapi-resources` error whitelisting, see https://github.com/cerebris/jsonapi-resources/pull/573. To make your whitelisting and `rescue_from` to work properly, here is a potential workaround:
-
-```ruby
-JSONAPI.configure do |config|
-  config.exception_class_whitelist = [Pundit::NotAuthorizedError]
-end
-```
-
-```ruby
-class BaseResourceController < ActionController::Base
-  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
-
-  private
-
-  # https://github.com/cerebris/jsonapi-resources/pull/573
-  def handle_exceptions(e)
-    if JSONAPI.configuration.exception_class_whitelist.any? { |k| e.class.ancestors.include?(k) }
-      raise e
-    else
-      super
-    end
-  end
-
-  def user_not_authorized
-    head :forbidden
-  end
 end
 ```
 
