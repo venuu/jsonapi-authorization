@@ -1,5 +1,5 @@
 require "jsonapi-resources"
-require "jsonapi/authorization/authorizing_operations_processor"
+require "jsonapi/authorization/authorizing_processor"
 require "jsonapi/authorization/configuration"
 require "jsonapi/authorization/default_pundit_authorizer"
 require "jsonapi/authorization/pundit_scoped_resource"
@@ -12,4 +12,4 @@ module JSONAPI
 end
 
 # Allows JSONAPI configuration of operations_processor using the symbol :jsonapi_authorization
-JsonapiAuthorizationOperationsProcessor = JSONAPI::Authorization::AuthorizingOperationsProcessor
+JsonapiAuthorizationProcessor = JSONAPI::Authorization::AuthorizingProcessor
