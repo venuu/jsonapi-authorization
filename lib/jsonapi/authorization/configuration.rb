@@ -4,9 +4,19 @@ module JSONAPI
   module Authorization
     class Configuration
       attr_accessor :authorizer
+      attr_accessor :pundit_user
 
       def initialize
-        self.authorizer = ::JSONAPI::Authorization::DefaultPunditAuthorizer
+        self.authorizer  = ::JSONAPI::Authorization::DefaultPunditAuthorizer
+        self.pundit_user = :user
+      end
+
+      def user_context(context)
+        if pundit_user.is_a?(Symbol)
+          context[pundit_user]
+        else
+          pundit_user.call(context)
+        end
       end
     end
 

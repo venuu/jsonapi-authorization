@@ -22,7 +22,7 @@ class Application < Rails::Application
 
   config.middleware.delete "Rack::Lock"
   config.middleware.delete "ActionDispatch::Flash"
-  config.middleware.delete "ActionDispatch::BestStandardsSupport"
+  #config.middleware.delete "ActionDispatch::BestStandardsSupport"
 
   config.secret_key_base = "correct-horse-battery-staple"
 end
