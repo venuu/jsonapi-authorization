@@ -99,6 +99,16 @@ JSONAPI::Authorization.configure do |config|
 end
 ```
 
+By default JSONAPI::Authorization uses the `:user` key from the JSONAPI context hash as the Pundit user. If you would like to use `:current_user` or some other key, it can be configured as well.
+
+```ruby
+JSONAPI::Authorization.configure do |config|
+  config.pundit_user = :current_user
+  # or a block can be provided
+  config.pundit_user = ->(context){ context[:current_user] }
+end
+```
+
 ## Troubleshooting
 
 ### "Unable to find policy" exception for a request
