@@ -2,6 +2,8 @@ AllCops:
   Exclude:
     - 'bin/*'
     - 'spec/dummy/db/schema.rb'
+    - 'vendor/bundle/**/*'
+    - 'tmp/**/*'
 
 Metrics/LineLength:
   Enabled: true
