@@ -1,8 +1,16 @@
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'spec/dummy/db/schema.rb'
+
 Metrics/LineLength:
   Enabled: true
   Max: 100
 
 Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Metrics/ClassLength:
@@ -37,7 +45,10 @@ Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
 Style/IndentHash:
-  Enabled: false
+  EnforcedStyle: consistent
+
+Style/IndentArray:
+  EnforcedStyle: consistent
 
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -86,3 +97,6 @@ Style/SingleLineBlockParams:
     - inject:
         - acc
         - obj
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method
