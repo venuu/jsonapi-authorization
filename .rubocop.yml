@@ -8,6 +8,8 @@ AllCops:
 Metrics/LineLength:
   Enabled: true
   Max: 100
+  Exclude:
+    - spec/requests/**/*.rb
 
 Style/MultilineOperationIndentation:
   EnforcedStyle: indented
