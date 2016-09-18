@@ -10,6 +10,7 @@ Metrics/LineLength:
   Max: 100
   Exclude:
     - spec/requests/**/*.rb
+    - jsonapi-authorization.gemspec
 
 Style/MultilineOperationIndentation:
   EnforcedStyle: indented
