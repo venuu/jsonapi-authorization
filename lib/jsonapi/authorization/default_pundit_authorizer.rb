@@ -134,7 +134,7 @@ module JSONAPI
       # * +old_related_record+ - The current associated record
       # * +new_related_record+ - The new record replacing the +old_record+
       #   association, or +nil+ if the association is to be cleared
-      def replace_to_one_relationship(source_record, old_related_record, new_related_record)
+      def replace_to_one_relationship(_source_record, _old_related_record, _new_related_record)
         raise NotImplementedError
       end
 
@@ -146,7 +146,7 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_records+ - The new records to be added to the association
-      def create_to_many_relationship(source_record, new_related_records)
+      def create_to_many_relationship(_source_record, _new_related_records)
         raise NotImplementedError
       end
 
@@ -161,7 +161,7 @@ module JSONAPI
       #   association
       #--
       # TODO: Should probably take old records as well
-      def replace_to_many_relationship(source_record, new_related_records)
+      def replace_to_many_relationship(_source_record, _new_related_records)
         raise NotImplementedError
       end
 
@@ -175,7 +175,7 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +related_record+ - The record which will be deassociatied from +source_record+
-      def remove_to_many_relationship(source_record, related_record)
+      def remove_to_many_relationship(_source_record, _related_record)
         raise NotImplementedError
       end
 
@@ -187,7 +187,7 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +related_record+ - The record which will be deassociatied from +source_record+
-      def remove_to_one_relationship(source_record, related_record)
+      def remove_to_one_relationship(_source_record, _related_record)
         raise NotImplementedError
       end
 
@@ -206,7 +206,7 @@ module JSONAPI
       #                     article.comments check
       # * +record_class+ - The underlying record class for the relationships
       #                    resource.
-      def include_has_many_resource(source_record, record_class)
+      def include_has_many_resource(_source_record, record_class)
         ::Pundit.authorize(user, record_class, 'index?')
       end
 
@@ -221,7 +221,7 @@ module JSONAPI
       # * +source_record+ — The source relationship record, e.g. an Article in
       #                     article.author check
       # * +related_record+ - The associated record to return
-      def include_has_one_resource(source_record, related_record)
+      def include_has_one_resource(_source_record, related_record)
         ::Pundit.authorize(user, related_record, 'show?')
       end
     end
