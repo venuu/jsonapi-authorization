@@ -164,7 +164,10 @@ RSpec.describe 'Relationship operations', type: :request do
           allow_operation('replace_to_many_relationship', article, [])
         end
 
-        it { pending 'TODO: Maybe this actually should be succesful?'; is_expected.to be_not_found }
+        it do
+          pending 'TODO: Maybe this actually should be succesful?'
+          is_expected.to be_not_found
+        end
       end
 
       # If this happens in real life, it's mostly a bug. We want to document the
