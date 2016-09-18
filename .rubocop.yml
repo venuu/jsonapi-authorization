@@ -5,6 +5,10 @@ AllCops:
     - 'vendor/bundle/**/*'
     - 'tmp/**/*'
 
+Style/FileName:
+  Exclude:
+    - lib/jsonapi-authorization.rb
+
 Metrics/LineLength:
   Enabled: true
   Max: 100
