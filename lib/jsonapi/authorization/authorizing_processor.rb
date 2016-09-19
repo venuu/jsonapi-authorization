@@ -135,10 +135,13 @@ module JSONAPI
 
         old_related_record = source_resource.records_for(params[:relationship_type].to_sym)
         unless params[:key_value].nil?
-          new_related_resource = @resource_klass._relationship(params[:relationship_type].to_sym).resource_klass.find_by_key(
-            params[:key_value],
-            context: context
-          )
+          new_related_resource = @resource_klass
+            ._relationship(params[:relationship_type].to_sym)
+            .resource_klass
+            .find_by_key(
+              params[:key_value],
+              context: context
+            )
           new_related_record = new_related_resource._model unless new_related_resource.nil?
         end
 
@@ -183,10 +186,13 @@ module JSONAPI
         )
         source_record = source_resource._model
 
-        related_resource = @resource_klass._relationship(params[:relationship_type].to_sym).resource_klass.find_by_key(
-          params[:associated_key],
-          context: context
-        )
+        related_resource = @resource_klass
+          ._relationship(params[:relationship_type].to_sym)
+          .resource_klass
+          .find_by_key(
+            params[:associated_key],
+            context: context
+          )
         related_record = related_resource._model unless related_resource.nil?
 
         authorizer.remove_to_many_relationship(

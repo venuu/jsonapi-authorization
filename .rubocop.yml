@@ -1,8 +1,25 @@
+AllCops:
+  Exclude:
+    - 'bin/*'
+    - 'spec/dummy/db/schema.rb'
+    - 'vendor/bundle/**/*'
+    - 'tmp/**/*'
+
+Style/FileName:
+  Exclude:
+    - lib/jsonapi-authorization.rb
+
 Metrics/LineLength:
   Enabled: true
   Max: 100
+  Exclude:
+    - spec/requests/**/*.rb
+    - jsonapi-authorization.gemspec
 
 Style/MultilineOperationIndentation:
+  EnforcedStyle: indented
+
+Style/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Metrics/ClassLength:
@@ -37,7 +54,10 @@ Style/SpaceInsideHashLiteralBraces:
   EnforcedStyle: space
 
 Style/IndentHash:
-  Enabled: false
+  EnforcedStyle: consistent
+
+Style/IndentArray:
+  EnforcedStyle: consistent
 
 Style/ClassAndModuleChildren:
   Enabled: false
@@ -86,3 +106,6 @@ Style/SingleLineBlockParams:
     - inject:
         - acc
         - obj
+
+Style/Alias:
+  EnforcedStyle: prefer_alias_method

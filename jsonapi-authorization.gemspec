@@ -28,4 +28,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug", "~> 1.3"
   spec.add_development_dependency "pry-doc", "~> 0.6"
   spec.add_development_dependency "pry-rails", "~> 0.3.4"
+  spec.add_development_dependency "rubocop", "~> 0.36.0"
+  spec.add_development_dependency "phare", "~> 0.7.1"
 end

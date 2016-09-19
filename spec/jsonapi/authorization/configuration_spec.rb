@@ -20,13 +20,13 @@ RSpec.describe JSONAPI::Authorization::Configuration do
 
     context "given a proc" do
       it "returns the 'user'" do
-        JSONAPI::Authorization.configuration.pundit_user = ->(context){ context[:current_user] }
+        JSONAPI::Authorization.configuration.pundit_user = ->(context) { context[:current_user] }
 
         user = User.new
         jsonapi_context = { current_user: user }
         user_context = JSONAPI::Authorization.configuration.user_context(jsonapi_context)
 
-        expect(user_context).to be user        
+        expect(user_context).to be user
       end
     end
   end

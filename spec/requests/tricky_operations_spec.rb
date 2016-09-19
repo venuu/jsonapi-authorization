@@ -128,7 +128,10 @@ RSpec.describe 'Tricky operations', type: :request do
         let(:comments_policy_scope) { Comment.where("id NOT IN (?)", new_comments.map(&:id)) }
         before { allow_operation('replace_fields', article, new_comments) }
 
-        it { pending 'DISCUSS: Should this error out somehow?'; is_expected.to be_not_found }
+        it do
+          pending 'DISCUSS: Should this error out somehow?'
+          is_expected.to be_not_found
+        end
       end
     end
 
