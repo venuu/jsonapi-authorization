@@ -20,7 +20,7 @@ ActiveRecord::Schema.define(version: 20160125083537) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.integer "article_id"
+    t.string  "article_id"
     t.integer "author_id"
   end
 
