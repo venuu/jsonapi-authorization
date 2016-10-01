@@ -1,7 +1,7 @@
 class CreateModels < ActiveRecord::Migration
   def change
     create_table :comments do |t|
-      t.belongs_to :article
+      t.string :article_id
       t.belongs_to :author
     end
 

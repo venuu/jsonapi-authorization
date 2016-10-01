@@ -20,13 +20,13 @@ ActiveRecord::Schema.define(version: 20160125083537) do
   end
 
   create_table "comments", force: :cascade do |t|
-    t.integer "article_id"
+    t.string  "article_id"
     t.integer "author_id"
   end
 
   create_table "tags", force: :cascade do |t|
-    t.string  "taggable_type"
     t.integer "taggable_id"
+    t.string  "taggable_type"
   end
 
   create_table "users", force: :cascade do |t|
