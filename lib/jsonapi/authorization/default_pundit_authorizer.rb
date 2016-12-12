@@ -148,14 +148,14 @@ module JSONAPI
       # * +new_related_records+ - The new records to be added to the association
       # * +relationship_type+ - The relationship type
       def create_to_many_relationship(source_record, new_related_records, relationship_type)
-        policy = Pundit.policy(user, source_record)
-        relationship_method = 'allow_relationship_' + relationship_type.to_s + '?'
-        if policy.respond_to?(relationship_method)
-          allowed = policy.send(relationship_method, new_related_records)
-        else
-          allowed = policy.update?
-        end
-        raise Pundit::NotAuthorizedError unless allowed
+        policy = ::Pundit.policy(user, source_record)
+        relationship_method = "allow_relationship_#{relationship_type}?"
+        allowed = if policy.respond_to?(relationship_method)
+                    policy.send(relationship_method, new_related_records)
+                  else
+                    policy.update?
+                  end
+        raise ::Pundit::NotAuthorizedError unless allowed
       end
 
       # <tt>PATCH /resources/:id/relationships/other-resources</tt>
