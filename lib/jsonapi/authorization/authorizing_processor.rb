@@ -158,10 +158,10 @@ module JSONAPI
           context: context
         )._model
 
-        related_models =
-          model_class_for_relationship(params[:relationship_type].to_sym).find(params[:data])
+        relationship_type = params[:relationship_type].to_sym
+        related_models = model_class_for_relationship(relationship_type).find(params[:data])
 
-        authorizer.create_to_many_relationship(source_record, related_models)
+        authorizer.create_to_many_relationship(source_record, related_models, relationship_type)
       end
 
       def authorize_replace_to_many_relationship

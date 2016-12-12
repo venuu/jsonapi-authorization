@@ -146,8 +146,16 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_records+ - The new records to be added to the association
-      def create_to_many_relationship(_source_record, _new_related_records)
-        raise NotImplementedError
+      # * +relationship_type+ - The relationship type
+      def create_to_many_relationship(source_record, new_related_records, relationship_type)
+        policy = Pundit.policy(user, source_record)
+        relationship_method = 'allow_relationship_' + relationship_type.to_s + '?'
+        if policy.respond_to?(relationship_method)
+          allowed = policy.send(relationship_method, new_related_records)
+        else
+          allowed = policy.update?
+        end
+        raise Pundit::NotAuthorizedError unless allowed
       end
 
       # <tt>PATCH /resources/:id/relationships/other-resources</tt>
