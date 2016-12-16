@@ -31,4 +31,8 @@ class ArticlePolicy
   def destroy?
     raise NotImplementedError
   end
+
+  def allow_relationship_comments? comments
+    raise NotImplementedError
+  end
 end

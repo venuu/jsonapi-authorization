@@ -285,6 +285,48 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
   end
 
+  describe '#create_to_many_relationship' do
+    let(:related_records) { Array.new(3) { Comment.new } }
+    subject(:method_call) do
+      -> { authorizer.create_to_many_relationship(source_record, related_records, :comments) }
+    end
+
+    context 'authorized for allow_relationship_comments? on record' do
+      before { allow_action('allow_relationship_comments?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'authorized for update? on record' do
+      before { allow_action('update?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on record' do
+      before do
+        disallow_action('allow_relationship_comments?', source_record)
+        disallow_action('update?', source_record)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'where allow_relationship_<type>? not defined' do
+      let(:related_records) { Array.new(3) { Tag.new } }
+      subject(:method_call) do
+        -> { authorizer.create_to_many_relationship(source_record, related_records, :tags) }
+      end
+
+      context 'authorized for update? on record' do
+        before { allow_action('update?', source_record) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for update? on record' do
+        before { disallow_action('update?', source_record) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+    end
+  end
+
   describe '#include_has_many_resource' do
     let(:record_class) { Article }
     let(:source_record) { Comment.new }

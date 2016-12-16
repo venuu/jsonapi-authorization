@@ -96,12 +96,12 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'unauthorized for create_to_many_relationship' do
-      before { disallow_operation('create_to_many_relationship', article, new_comments) }
+      before { disallow_operation('create_to_many_relationship', article, new_comments, :comments) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_to_many_relationship' do
-      before { allow_operation('create_to_many_relationship', article, new_comments) }
+      before { allow_operation('create_to_many_relationship', article, new_comments, :comments) }
       it { is_expected.to be_successful }
 
       context 'limited by policy scope on comments' do
