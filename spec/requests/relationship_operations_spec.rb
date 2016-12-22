@@ -284,7 +284,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
     context 'unauthorized for remove_to_many_relationship' do
       before do
-        disallow_operation('remove_to_many_relationship', article, kind_of(Comment))
+        disallow_operation('remove_to_many_relationship', article, kind_of(Comment), :comments)
       end
 
       it { is_expected.to be_forbidden }
@@ -294,8 +294,8 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'not limited by policy scopes' do
         before do
           allow_operations('remove_to_many_relationship', [
-            [article, comments_to_remove.first],
-            [article, comments_to_remove.second]
+            [article, comments_to_remove.first, :comments],
+            [article, comments_to_remove.second, :comments]
           ])
         end
 
@@ -305,7 +305,7 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('remove_to_many_relationship', article, kind_of(Comment))
+          allow_operation('remove_to_many_relationship', article, kind_of(Comment), :comments)
         end
 
         it { is_expected.to be_not_found }
@@ -315,7 +315,7 @@ RSpec.describe 'Relationship operations', type: :request do
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope on articles' do
         before do
-          allow_operation('remove_to_many_relationship', article, kind_of(Comment))
+          allow_operation('remove_to_many_relationship', article, kind_of(Comment), :comments)
         end
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }

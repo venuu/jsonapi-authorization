@@ -175,26 +175,34 @@ module JSONAPI
 
       # <tt>DELETE /resources/:id/relationships/other-resources</tt>
       #
-      # A request to deassociate elements of a +has_many+ association
+      # A request to disassociate elements of a +has_many+ association
       #
       # NOTE: this is called once per related record, not all at once
       #
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is modified
-      # * +related_record+ - The record which will be deassociatied from +source_record+
-      def remove_to_many_relationship(_source_record, _related_record)
-        raise NotImplementedError
+      # * +related_record+ - The record which will be disassociated from +source_record+
+      # * +relationship_type+ - The relationship type
+      def remove_to_many_relationship(source_record, related_record, relationship_type)
+        policy = ::Pundit.policy(user, source_record)
+        relationship_method = "remove_from_#{relationship_type}?"
+        allowed = if policy.respond_to?(relationship_method)
+                    policy.send(relationship_method, related_record)
+                  else
+                    policy.update?
+                  end
+        raise ::Pundit::NotAuthorizedError unless allowed
       end
 
       # <tt>DELETE /resources/:id/relationships/another-resource</tt>
       #
-      # A request to deassociate a +has_one+ association
+      # A request to disassociate a +has_one+ association
       #
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is modified
-      # * +related_record+ - The record which will be deassociatied from +source_record+
+      # * +related_record+ - The record which will be disassociated from +source_record+
       def remove_to_one_relationship(_source_record, _related_record)
         raise NotImplementedError
       end

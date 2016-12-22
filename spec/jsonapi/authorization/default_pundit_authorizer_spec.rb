@@ -2,6 +2,7 @@ require 'spec_helper'
 
 RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   include PunditStubs
+  fixtures :all
 
   let(:source_record) { Article.new }
   let(:authorizer) { described_class.new({}) }
@@ -322,6 +323,49 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
       context 'unauthorized for update? on record' do
         before { disallow_action('update?', source_record) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+    end
+  end
+
+  describe '#remove_to_many_relationship' do
+    let(:article) { articles(:article_with_comments) }
+    let(:comments_to_remove) { article.comments.limit(2) }
+    subject(:method_call) do
+      -> { authorizer.remove_to_many_relationship(article, comments_to_remove, :comments) }
+    end
+
+    context 'authorized for remove_from_comments? on article' do
+      before { allow_action('remove_from_comments?', article) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'authorized for update? on article' do
+      before { allow_action('update?', article) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on article' do
+      before do
+        disallow_action('remove_from_comments?', article)
+        disallow_action('update?', article)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'where remove_from_<type>? not defined' do
+      let(:tags_to_remove) { article.tags.limit(2) }
+      subject(:method_call) do
+        -> { authorizer.create_to_many_relationship(article, tags_to_remove, :tags) }
+      end
+
+      context 'authorized for update? on article' do
+        before { allow_action('update?', article) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for update? on article' do
+        before { disallow_action('update?', article) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
