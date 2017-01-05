@@ -18,6 +18,8 @@ branch. This may contain information that is not relevant to the release you are
 
 Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn't the case, please [open an issue][issues].
 
+If you're using custom processors, make sure that they extend `JSONAPI::Authorization::AuthorizingProcessor`, or authorization will not be performed for that resource.
+
 This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for [more complex cases][complex-case].
 
 The API is subject to change between minor version bumps until we reach v1.0.0.
