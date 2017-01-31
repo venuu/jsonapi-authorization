@@ -292,8 +292,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.create_to_many_relationship(source_record, related_records, :comments) }
     end
 
-    context 'authorized for allow_relationship_comments? on record' do
-      before { allow_action('allow_relationship_comments?', source_record) }
+    context 'authorized for add_to_comments? on record' do
+      before { allow_action('add_to_comments?', source_record) }
       it { is_expected.not_to raise_error }
     end
 
@@ -304,13 +304,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action('allow_relationship_comments?', source_record)
+        disallow_action('add_to_comments?', source_record)
         disallow_action('update?', source_record)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
-    context 'where allow_relationship_<type>? not defined' do
+    context 'where add_to_<type>? not defined' do
       let(:related_records) { Array.new(3) { Tag.new } }
       subject(:method_call) do
         -> { authorizer.create_to_many_relationship(source_record, related_records, :tags) }

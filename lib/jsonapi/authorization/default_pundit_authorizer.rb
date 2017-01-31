@@ -149,7 +149,7 @@ module JSONAPI
       # * +relationship_type+ - The relationship type
       def create_to_many_relationship(source_record, new_related_records, relationship_type)
         policy = ::Pundit.policy(user, source_record)
-        relationship_method = "allow_relationship_#{relationship_type}?"
+        relationship_method = "add_to_#{relationship_type}?"
         allowed = if policy.respond_to?(relationship_method)
                     policy.send(relationship_method, new_related_records)
                   else

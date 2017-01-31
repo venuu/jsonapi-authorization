@@ -32,7 +32,7 @@ class ArticlePolicy
     raise NotImplementedError
   end
 
-  def allow_relationship_comments?(_comments)
+  def add_to_comments?(_comments)
     raise NotImplementedError
   end
 
