@@ -14,7 +14,7 @@ module JSONAPI
 
       def records_for(association_name)
         record_or_records = @model.public_send(association_name)
-        relationship = self.class._relationships[association_name]
+        relationship = fetch_relationship(association_name)
 
         case relationship
         when JSONAPI::Relationship::ToOne
@@ -24,6 +24,19 @@ module JSONAPI
           ::Pundit.policy_scope!(user_context, record_or_records)
         else
           raise "Unknown relationship type #{relationship.inspect}"
+        end
+      end
+
+      private
+
+      def fetch_relationship(association_name)
+        relationships = self.class._relationships.select do |_k, v|
+          v.relation_name({}) == association_name
+        end
+        if relationships.empty?
+          nil
+        else
+          relationships.values.first
         end
       end
     end
