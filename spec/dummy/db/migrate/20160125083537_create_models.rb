@@ -3,6 +3,7 @@ class CreateModels < ActiveRecord::Migration
     create_table :comments do |t|
       t.string :article_id
       t.belongs_to :author
+      t.belongs_to :reviewing_user, references: :user
     end
 
     create_table :users do |t|

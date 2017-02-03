@@ -3,4 +3,5 @@ class CommentResource < JSONAPI::Resource
 
   has_many :tags
   has_one :article
+  has_one :reviewer, relation_name: "reviewing_user", class_name: "User"
 end
