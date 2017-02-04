@@ -40,7 +40,7 @@ class ArticlePolicy
     raise NotImplementedError
   end
 
-  def remove_from_comments?(_comments)
+  def remove_from_comments?(_comment)
     raise NotImplementedError
   end
 end
