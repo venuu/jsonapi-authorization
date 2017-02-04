@@ -171,11 +171,13 @@ module JSONAPI
         )
         source_record = source_resource._model
 
-        related_records = source_resource.records_for(params[:relationship_type].to_sym)
+        relationship_type = params[:relationship_type].to_sym
+        new_related_records = model_class_for_relationship(relationship_type).find(params[:data])
 
         authorizer.replace_to_many_relationship(
           source_record,
-          related_records
+          new_related_records,
+          relationship_type
         )
       end
 

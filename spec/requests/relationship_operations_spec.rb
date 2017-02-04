@@ -120,9 +120,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
   describe 'PATCH /articles/:id/relationships/comments' do
     let(:article) { articles(:article_with_comments) }
-    let!(:old_comments) { article.comments }
     let(:new_comments) { Array.new(2) { Comment.new }.each(&:save) }
-    let(:comments) { old_comments + new_comments }
     let(:json) do
       <<-EOS.strip_heredoc
       {
@@ -143,7 +141,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
     context 'unauthorized for replace_to_many_relationship' do
       before do
-        disallow_operation('replace_to_many_relationship', article, comments)
+        disallow_operation('replace_to_many_relationship', article, new_comments, :comments)
       end
 
       it { is_expected.to be_forbidden }
@@ -152,7 +150,7 @@ RSpec.describe 'Relationship operations', type: :request do
     context 'authorized for replace_to_many_relationship' do
       context 'not limited by policy scopes' do
         before do
-          allow_operation('replace_to_many_relationship', article, comments)
+          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
         end
 
         it { is_expected.to be_successful }
@@ -161,7 +159,7 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('replace_to_many_relationship', article, [])
+          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
         end
 
         it do
@@ -174,7 +172,7 @@ RSpec.describe 'Relationship operations', type: :request do
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope on articles' do
         before do
-          allow_operation('replace_to_many_relationship', article, comments)
+          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
         end
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }

@@ -328,6 +328,49 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
   end
 
+  describe '#replace_to_many_relationship' do
+    let(:article) { articles(:article_with_comments) }
+    let(:new_comments) { Array.new(3) { Comment.new } }
+    subject(:method_call) do
+      -> { authorizer.replace_to_many_relationship(article, new_comments, :comments) }
+    end
+
+    context 'authorized for replace_comments? on record' do
+      before { allow_action('replace_comments?', article) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'authorized for update? on record' do
+      before { allow_action('update?', article) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on record' do
+      before do
+        disallow_action('replace_comments?', article)
+        disallow_action('update?', article)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'where replace_<type>? not defined' do
+      let(:new_tags) { Array.new(3) { Tag.new } }
+      subject(:method_call) do
+        -> { authorizer.replace_to_many_relationship(article, new_tags, :tags) }
+      end
+
+      context 'authorized for update? on record' do
+        before { allow_action('update?', article) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for update? on record' do
+        before { disallow_action('update?', article) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+    end
+  end
+
   describe '#remove_to_many_relationship' do
     let(:article) { articles(:article_with_comments) }
     let(:comments_to_remove) { article.comments.limit(2) }

@@ -167,10 +167,16 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_records+ - The new records replacing the entire +has_many+
       #   association
-      #--
-      # TODO: Should probably take old records as well
-      def replace_to_many_relationship(_source_record, _new_related_records)
-        raise NotImplementedError
+      # * +relationship_type+ - The relationship type
+      def replace_to_many_relationship(source_record, new_related_records, relationship_type)
+        policy = ::Pundit.policy(user, source_record)
+        relationship_method = "replace_#{relationship_type}?"
+        allowed = if policy.respond_to?(relationship_method)
+                    policy.send(relationship_method, new_related_records)
+                  else
+                    policy.update?
+                  end
+        raise ::Pundit::NotAuthorizedError unless allowed
       end
 
       # <tt>DELETE /resources/:id/relationships/other-resources</tt>
