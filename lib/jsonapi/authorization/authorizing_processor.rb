@@ -127,28 +127,28 @@ module JSONAPI
       end
 
       def authorize_replace_to_one_relationship
+        return authorize_remove_to_one_relationship if params[:key_value].nil?
+
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
         )
         source_record = source_resource._model
 
-        old_related_record = source_resource.records_for(params[:relationship_type].to_sym)
-        unless params[:key_value].nil?
-          new_related_resource = @resource_klass
-            ._relationship(params[:relationship_type].to_sym)
-            .resource_klass
-            .find_by_key(
-              params[:key_value],
-              context: context
-            )
-          new_related_record = new_related_resource._model unless new_related_resource.nil?
-        end
+        relationship_type = params[:relationship_type].to_sym
+        new_related_resource = @resource_klass
+          ._relationship(relationship_type)
+          .resource_klass
+          .find_by_key(
+            params[:key_value],
+            context: context
+          )
+        new_related_record = new_related_resource._model unless new_related_resource.nil?
 
         authorizer.replace_to_one_relationship(
           source_record,
-          old_related_record,
-          new_related_record
+          new_related_record,
+          relationship_type
         )
       end
 
@@ -206,16 +206,14 @@ module JSONAPI
       end
 
       def authorize_remove_to_one_relationship
-        source_resource = @resource_klass.find_by_key(
+        source_record = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
-        )
+        )._model
 
-        related_resource = source_resource.public_send(params[:relationship_type].to_sym)
+        relationship_type = params[:relationship_type].to_sym
 
-        source_record = source_resource._model
-        related_record = related_resource._model unless related_resource.nil?
-        authorizer.remove_to_one_relationship(source_record, related_record)
+        authorizer.remove_to_one_relationship(source_record, relationship_type)
       end
 
       private

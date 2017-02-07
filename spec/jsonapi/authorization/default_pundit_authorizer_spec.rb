@@ -286,6 +286,49 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
   end
 
+  describe '#replace_to_one_relationship' do
+    let(:related_record) { User.new }
+    subject(:method_call) do
+      -> { authorizer.replace_to_one_relationship(source_record, related_record, :author) }
+    end
+
+    context 'authorized for replace_author? on record' do
+      before { allow_action('replace_author?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'authorized for update? on record' do
+      before { allow_action('update?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on record' do
+      before do
+        disallow_action('replace_author?', source_record)
+        disallow_action('update?', source_record)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'where replace_<type>? not defined' do
+      let(:source_record) { comments(:comment_1) }
+      let(:related_records) { Article.new }
+      subject(:method_call) do
+        -> { authorizer.replace_to_one_relationship(source_record, related_record, :article) }
+      end
+
+      context 'authorized for update? on record' do
+        before { allow_action('update?', source_record) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for update? on record' do
+        before { disallow_action('update?', source_record) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+    end
+  end
+
   describe '#create_to_many_relationship' do
     let(:related_records) { Array.new(3) { Comment.new } }
     subject(:method_call) do
@@ -409,6 +452,47 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
       context 'unauthorized for update? on article' do
         before { disallow_action('update?', article) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+    end
+  end
+
+  describe '#remove_to_one_relationship' do
+    subject(:method_call) do
+      -> { authorizer.remove_to_one_relationship(source_record, :author) }
+    end
+
+    context 'authorized for remove_author? on record' do
+      before { allow_action('remove_author?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'authorized for update? on record' do
+      before { allow_action('update?', source_record) }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on record' do
+      before do
+        disallow_action('remove_author?', source_record)
+        disallow_action('update?', source_record)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'where remove_<type>? not defined' do
+      let(:source_record) { comments(:comment_1) }
+      subject(:method_call) do
+        -> { authorizer.remove_to_one_relationship(source_record, :article) }
+      end
+
+      context 'authorized for update? on record' do
+        before { allow_action('update?', source_record) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for update? on record' do
+        before { disallow_action('update?', source_record) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end

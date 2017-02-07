@@ -43,4 +43,12 @@ class ArticlePolicy
   def remove_from_comments?(_comment)
     raise NotImplementedError
   end
+
+  def replace_author?(_author)
+    raise NotImplementedError
+  end
+
+  def remove_author?
+    raise NotImplementedError
+  end
 end

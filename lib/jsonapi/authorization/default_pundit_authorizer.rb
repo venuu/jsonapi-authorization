@@ -131,11 +131,17 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is modified
-      # * +old_related_record+ - The current associated record
-      # * +new_related_record+ - The new record replacing the +old_record+
-      #   association, or +nil+ if the association is to be cleared
-      def replace_to_one_relationship(_source_record, _old_related_record, _new_related_record)
-        raise NotImplementedError
+      # * +new_related_record+ - The new record replacing the old record
+      # * +relationship_type+ - The relationship type
+      def replace_to_one_relationship(source_record, new_related_record, relationship_type)
+        policy = ::Pundit.policy(user, source_record)
+        relationship_method = "replace_#{relationship_type}?"
+        allowed = if policy.respond_to?(relationship_method)
+                    policy.send(relationship_method, new_related_record)
+                  else
+                    policy.update?
+                  end
+        raise ::Pundit::NotAuthorizedError unless allowed
       end
 
       # <tt>POST /resources/:id/relationships/other-resources</tt>
@@ -208,9 +214,16 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is modified
-      # * +related_record+ - The record which will be disassociated from +source_record+
-      def remove_to_one_relationship(_source_record, _related_record)
-        raise NotImplementedError
+      # * +relationship_type+ - The relationship type
+      def remove_to_one_relationship(source_record, relationship_type)
+        policy = ::Pundit.policy(user, source_record)
+        relationship_method = "remove_#{relationship_type}?"
+        allowed = if policy.respond_to?(relationship_method)
+                    policy.send(relationship_method)
+                  else
+                    policy.update?
+                  end
+        raise ::Pundit::NotAuthorizedError unless allowed
       end
 
       # Any request including <tt>?include=other-resources</tt>

@@ -206,12 +206,12 @@ RSpec.describe 'Relationship operations', type: :request do
       end
 
       context 'unauthorized for replace_to_one_relationship' do
-        before { disallow_operation('replace_to_one_relationship', article, old_author, new_author) }
+        before { disallow_operation('replace_to_one_relationship', article, new_author, :author) }
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for replace_to_one_relationship' do
-        before { allow_operation('replace_to_one_relationship', article, old_author, new_author) }
+        before { allow_operation('replace_to_one_relationship', article, new_author, :author) }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on author', skip: 'DISCUSS' do
@@ -235,13 +235,13 @@ RSpec.describe 'Relationship operations', type: :request do
       let(:new_author) { nil }
       let(:json) { '{ "data": null }' }
 
-      context 'unauthorized for replace_to_one_relationship' do
-        before { disallow_operation('replace_to_one_relationship', article, old_author, new_author) }
+      context 'unauthorized for remove_to_one_relationship' do
+        before { disallow_operation('remove_to_one_relationship', article, :author) }
         it { is_expected.to be_forbidden }
       end
 
-      context 'authorized for replace_to_one_relationship' do
-        before { allow_operation('replace_to_one_relationship', article, old_author, new_author) }
+      context 'authorized for remove_to_one_relationship' do
+        before { allow_operation('remove_to_one_relationship', article, :author) }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on author', skip: 'DISCUSS' do
@@ -328,12 +328,12 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_to_one_relationship' do
-      before { disallow_operation('remove_to_one_relationship', article, article.author) }
+      before { disallow_operation('remove_to_one_relationship', article, :author) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for remove_to_one_relationship' do
-      before { allow_operation('remove_to_one_relationship', article, article.author) }
+      before { allow_operation('remove_to_one_relationship', article, :author) }
       it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the
