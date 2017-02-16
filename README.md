@@ -119,7 +119,7 @@ end
 ```
 
 Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.
-For example if you have an N:M relationship with users and projects make sure that
+For example if you have a many-to-many relationship with users and projects make sure that
 `ProjectPolicy#add_to_users?(users)` and `UserPolicy#add_to_projects?(projects)` match up.
 
 ## Configuration
