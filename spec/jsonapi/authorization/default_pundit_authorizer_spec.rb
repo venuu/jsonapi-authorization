@@ -292,13 +292,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.replace_to_one_relationship(source_record, related_record, :author) }
     end
 
-    context 'authorized for replace_author? on record' do
-      before { allow_action(source_record, 'replace_author?') }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for update? on record' do
-      before { allow_action(source_record, 'update?') }
+    context 'authorized for replace_author? and update? on record' do
+      before { stub_policy_actions(source_record, replace_author?: true, update?: true) }
       it { is_expected.not_to raise_error }
     end
 
@@ -343,13 +338,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.create_to_many_relationship(source_record, related_records, :comments) }
     end
 
-    context 'authorized for add_to_comments? on record' do
-      before { allow_action(source_record, 'add_to_comments?') }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for update? on record' do
-      before { allow_action(source_record, 'update?') }
+    context 'authorized for add_to_comments? and update? on record' do
+      before { stub_policy_actions(source_record, add_to_comments?: true, update?: true) }
       it { is_expected.not_to raise_error }
     end
 
@@ -394,13 +384,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.replace_to_many_relationship(article, new_comments, :comments) }
     end
 
-    context 'authorized for replace_comments? on record' do
-      before { allow_action(article, 'replace_comments?') }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for update? on record' do
-      before { allow_action(article, 'update?') }
+    context 'authorized for replace_comments? and update? on record' do
+      before { stub_policy_actions(article, replace_comments?: true, update?: true) }
       it { is_expected.not_to raise_error }
     end
 
@@ -445,13 +430,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.remove_to_many_relationship(article, comments_to_remove, :comments) }
     end
 
-    context 'authorized for remove_from_comments? on article' do
-      before { allow_action(article, 'remove_from_comments?') }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for update? on article' do
-      before { allow_action(article, 'update?') }
+    context 'authorized for remove_from_comments? and article? on article' do
+      before { stub_policy_actions(article, remove_from_comments?: true, update?: true) }
       it { is_expected.not_to raise_error }
     end
 
@@ -494,13 +474,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       -> { authorizer.remove_to_one_relationship(source_record, :author) }
     end
 
-    context 'authorized for remove_author? on record' do
-      before { allow_action(source_record, 'remove_author?') }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for update? on record' do
-      before { allow_action(source_record, 'update?') }
+    context 'authorized for remove_author? and article? on record' do
+      before { stub_policy_actions(source_record, remove_author?: true, update?: true) }
       it { is_expected.not_to raise_error }
     end
 
