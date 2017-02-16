@@ -12,4 +12,17 @@ module PunditStubs
       receive(:new).with(any_args, record) { instance_double(policy, action => false) }
     )
   end
+
+  def stub_policy_actions(record, actions_and_return_values)
+    policy = ::Pundit::PolicyFinder.new(record).policy
+    allow(policy).to(
+      receive(:new).with(any_args, record) do
+        instance_double(policy).tap do |policy_double|
+          actions_and_return_values.each do |action, is_allowed|
+            allow(policy_double).to receive(action).and_return(is_allowed)
+          end
+        end
+      end
+    )
+  end
 end

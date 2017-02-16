@@ -304,8 +304,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action(source_record, 'replace_author?')
-        disallow_action(source_record, 'update?')
+        stub_policy_actions(source_record, replace_author?: false, update?: false)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -348,8 +347,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action(source_record, 'add_to_comments?')
-        disallow_action(source_record, 'update?')
+        stub_policy_actions(source_record, add_to_comments?: false, update?: false)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -392,8 +390,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action(article, 'replace_comments?')
-        disallow_action(article, 'update?')
+        stub_policy_actions(article, replace_comments?: false, update?: false)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -436,8 +433,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on article' do
       before do
-        disallow_action(article, 'remove_from_comments?')
-        disallow_action(article, 'update?')
+        stub_policy_actions(article, remove_from_comments?: false, update?: false)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -478,8 +474,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action(source_record, 'remove_author?')
-        disallow_action(source_record, 'update?')
+        stub_policy_actions(source_record, remove_author?: false, update?: false)
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
