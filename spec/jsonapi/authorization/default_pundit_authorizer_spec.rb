@@ -13,12 +13,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for index? on record' do
-      before { allow_action('index?', source_record) }
+      before { allow_action(source_record, 'index?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for index? on record' do
-      before { disallow_action('index?', source_record) }
+      before { disallow_action(source_record, 'index?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -29,12 +29,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for show? on record' do
-      before { allow_action('show?', source_record) }
+      before { allow_action(source_record, 'show?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      before { disallow_action('show?', source_record) }
+      before { disallow_action(source_record, 'show?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -45,18 +45,18 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for show? on source record' do
-      before { allow_action('show?', source_record) }
+      before { allow_action(source_record, 'show?') }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          before { allow_action('show?', related_record) }
+          before { allow_action(related_record, 'show?') }
           it { is_expected.not_to raise_error }
         end
 
         context 'unauthorized for show on related record' do
-          before { disallow_action('show?', related_record) }
+          before { disallow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -68,18 +68,18 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'unauthorized for show? on source record' do
-      before { disallow_action('show?', source_record) }
+      before { disallow_action(source_record, 'show?') }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          before { allow_action('show?', related_record) }
+          before { allow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
 
         context 'unauthorized for show on related record' do
-          before { disallow_action('show?', related_record) }
+          before { disallow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -97,18 +97,18 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for show? on source record' do
-      before { allow_action('show?', source_record) }
+      before { allow_action(source_record, 'show?') }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          before { allow_action('show?', related_record) }
+          before { allow_action(related_record, 'show?') }
           it { is_expected.not_to raise_error }
         end
 
         context 'unauthorized for show on related record' do
-          before { disallow_action('show?', related_record) }
+          before { disallow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -120,18 +120,18 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'unauthorized for show? on source record' do
-      before { disallow_action('show?', source_record) }
+      before { disallow_action(source_record, 'show?') }
 
       context 'related record is present' do
         let(:related_record) { Comment.new }
 
         context 'authorized for show on related record' do
-          before { allow_action('show?', related_record) }
+          before { allow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
 
         context 'unauthorized for show on related record' do
-          before { disallow_action('show?', related_record) }
+          before { disallow_action(related_record, 'show?') }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -149,12 +149,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for show? on record' do
-      before { allow_action('show?', source_record) }
+      before { allow_action(source_record, 'show?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      before { disallow_action('show?', source_record) }
+      before { disallow_action(source_record, 'show?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -166,7 +166,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for update? on source record' do
-      before { allow_action('update?', source_record) }
+      before { allow_action(source_record, 'update?') }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -174,15 +174,15 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action('update?', r) } }
+        before { related_records.each { |r| allow_action(r, 'update?') } }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on any of the related records' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
         before do
-          allow_action('update?', related_records.first)
-          disallow_action('update?', related_records.last)
+          allow_action(related_records.first, 'update?')
+          disallow_action(related_records.last, 'update?')
         end
 
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
@@ -190,7 +190,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'unauthorized for update? on source record' do
-      before { disallow_action('update?', source_record) }
+      before { disallow_action(source_record, 'update?') }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -198,15 +198,15 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action('update?', r) } }
+        before { related_records.each { |r| allow_action(r, 'update?') } }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for update? on any of the related records' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
         before do
-          allow_action('update?', related_records.first)
-          disallow_action('update?', related_records.last)
+          allow_action(related_records.first, 'update?')
+          disallow_action(related_records.last, 'update?')
         end
 
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
@@ -222,7 +222,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for create? on source class' do
-      before { allow_action('create?', source_class) }
+      before { allow_action(source_class, 'create?') }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -230,15 +230,15 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action('update?', r) } }
+        before { related_records.each { |r| allow_action(r, 'update?') } }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on any of the related records' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
         before do
-          allow_action('update?', related_records.first)
-          disallow_action('update?', related_records.last)
+          allow_action(related_records.first, 'update?')
+          disallow_action(related_records.last, 'update?')
         end
 
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
@@ -246,7 +246,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'unauthorized for create? on source class' do
-      before { disallow_action('create?', source_class) }
+      before { disallow_action(source_class, 'create?') }
 
       context 'related records is empty' do
         let(:related_records) { [] }
@@ -254,15 +254,15 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action('update?', r) } }
+        before { related_records.each { |r| allow_action(r, 'update?') } }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for update? on any of the related records' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
         before do
-          allow_action('update?', related_records.first)
-          disallow_action('update?', related_records.last)
+          allow_action(related_records.first, 'update?')
+          disallow_action(related_records.last, 'update?')
         end
 
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
@@ -276,12 +276,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for destroy? on record' do
-      before { allow_action('destroy?', source_record) }
+      before { allow_action(source_record, 'destroy?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for destroy? on record' do
-      before { disallow_action('destroy?', source_record) }
+      before { disallow_action(source_record, 'destroy?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -293,19 +293,19 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for replace_author? on record' do
-      before { allow_action('replace_author?', source_record) }
+      before { allow_action(source_record, 'replace_author?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'authorized for update? on record' do
-      before { allow_action('update?', source_record) }
+      before { allow_action(source_record, 'update?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action('replace_author?', source_record)
-        disallow_action('update?', source_record)
+        disallow_action(source_record, 'replace_author?')
+        disallow_action(source_record, 'update?')
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -319,12 +319,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on record' do
-        before { allow_action('update?', source_record) }
+        before { allow_action(source_record, 'update?') }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action('update?', source_record) }
+        before { disallow_action(source_record, 'update?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -337,19 +337,19 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for add_to_comments? on record' do
-      before { allow_action('add_to_comments?', source_record) }
+      before { allow_action(source_record, 'add_to_comments?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'authorized for update? on record' do
-      before { allow_action('update?', source_record) }
+      before { allow_action(source_record, 'update?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action('add_to_comments?', source_record)
-        disallow_action('update?', source_record)
+        disallow_action(source_record, 'add_to_comments?')
+        disallow_action(source_record, 'update?')
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -362,12 +362,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on record' do
-        before { allow_action('update?', source_record) }
+        before { allow_action(source_record, 'update?') }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action('update?', source_record) }
+        before { disallow_action(source_record, 'update?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -381,19 +381,19 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for replace_comments? on record' do
-      before { allow_action('replace_comments?', article) }
+      before { allow_action(article, 'replace_comments?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'authorized for update? on record' do
-      before { allow_action('update?', article) }
+      before { allow_action(article, 'update?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action('replace_comments?', article)
-        disallow_action('update?', article)
+        disallow_action(article, 'replace_comments?')
+        disallow_action(article, 'update?')
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -406,12 +406,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on record' do
-        before { allow_action('update?', article) }
+        before { allow_action(article, 'update?') }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action('update?', article) }
+        before { disallow_action(article, 'update?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -425,19 +425,19 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for remove_from_comments? on article' do
-      before { allow_action('remove_from_comments?', article) }
+      before { allow_action(article, 'remove_from_comments?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'authorized for update? on article' do
-      before { allow_action('update?', article) }
+      before { allow_action(article, 'update?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on article' do
       before do
-        disallow_action('remove_from_comments?', article)
-        disallow_action('update?', article)
+        disallow_action(article, 'remove_from_comments?')
+        disallow_action(article, 'update?')
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -450,12 +450,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on article' do
-        before { allow_action('update?', article) }
+        before { allow_action(article, 'update?') }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on article' do
-        before { disallow_action('update?', article) }
+        before { disallow_action(article, 'update?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -467,19 +467,19 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for remove_author? on record' do
-      before { allow_action('remove_author?', source_record) }
+      before { allow_action(source_record, 'remove_author?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'authorized for update? on record' do
-      before { allow_action('update?', source_record) }
+      before { allow_action(source_record, 'update?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on record' do
       before do
-        disallow_action('remove_author?', source_record)
-        disallow_action('update?', source_record)
+        disallow_action(source_record, 'remove_author?')
+        disallow_action(source_record, 'update?')
       end
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -492,12 +492,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for update? on record' do
-        before { allow_action('update?', source_record) }
+        before { allow_action(source_record, 'update?') }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action('update?', source_record) }
+        before { disallow_action(source_record, 'update?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -511,12 +511,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for index? on record class' do
-      before { allow_action('index?', record_class) }
+      before { allow_action(record_class, 'index?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for index? on record class' do
-      before { disallow_action('index?', record_class) }
+      before { disallow_action(record_class, 'index?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
@@ -529,12 +529,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for show? on record' do
-      before { allow_action('show?', related_record) }
+      before { allow_action(related_record, 'show?') }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for show? on record' do
-      before { disallow_action('show?', related_record) }
+      before { disallow_action(related_record, 'show?') }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
