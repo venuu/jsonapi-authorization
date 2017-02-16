@@ -311,6 +311,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where replace_<type>? not defined' do
+      # CommentPolicy does not define #replace_article?, so #update? should determine authorization
       let(:source_record) { comments(:comment_1) }
       let(:related_records) { Article.new }
       subject(:method_call) do
@@ -354,6 +355,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where add_to_<type>? not defined' do
+      # ArticlePolicy does not define #add_to_tags?, so #update? should determine authorization
       let(:related_records) { Array.new(3) { Tag.new } }
       subject(:method_call) do
         -> { authorizer.create_to_many_relationship(source_record, related_records, :tags) }
@@ -397,6 +399,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where replace_<type>? not defined' do
+      # ArticlePolicy does not define #replace_tags?, so #update? should determine authorization
       let(:new_tags) { Array.new(3) { Tag.new } }
       subject(:method_call) do
         -> { authorizer.replace_to_many_relationship(article, new_tags, :tags) }
@@ -440,6 +443,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where remove_from_<type>? not defined' do
+      # ArticlePolicy does not define #remove_from_tags?, so #update? should determine authorization
       let(:tags_to_remove) { article.tags.limit(2) }
       subject(:method_call) do
         -> { authorizer.create_to_many_relationship(article, tags_to_remove, :tags) }
@@ -481,6 +485,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where remove_<type>? not defined' do
+      # CommentPolicy does not define #remove_article?, so #update? should determine authorization
       let(:source_record) { comments(:comment_1) }
       subject(:method_call) do
         -> { authorizer.remove_to_one_relationship(source_record, :article) }
