@@ -302,7 +302,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
-    context 'unauthorized for update? on record' do
+    context 'unauthorized for replace_author? and update? on record' do
       before do
         stub_policy_actions(source_record, replace_author?: false, update?: false)
       end
@@ -345,7 +345,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
-    context 'unauthorized for update? on record' do
+    context 'unauthorized for add_to_comments? and update? on record' do
       before do
         stub_policy_actions(source_record, add_to_comments?: false, update?: false)
       end
@@ -388,7 +388,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
-    context 'unauthorized for update? on record' do
+    context 'unauthorized for update? and replace_comments? on record' do
       before do
         stub_policy_actions(article, replace_comments?: false, update?: false)
       end
@@ -431,7 +431,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
-    context 'unauthorized for update? on article' do
+    context 'unauthorized for update? and remove_from_comments? on article' do
       before do
         stub_policy_actions(article, remove_from_comments?: false, update?: false)
       end
@@ -472,7 +472,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
-    context 'unauthorized for update? on record' do
+    context 'unauthorized for update? and remove_author? on record' do
       before do
         stub_policy_actions(source_record, remove_author?: false, update?: false)
       end
