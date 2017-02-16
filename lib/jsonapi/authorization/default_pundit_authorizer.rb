@@ -134,18 +134,8 @@ module JSONAPI
       # * +new_related_record+ - The new record replacing the old record
       # * +relationship_type+ - The relationship type
       def replace_to_one_relationship(source_record, new_related_record, relationship_type)
-        policy = ::Pundit.policy(user, source_record)
         relationship_method = "replace_#{relationship_type}?"
-        if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method, new_related_record)
-            raise ::Pundit::NotAuthorizedError,
-                  query: relationship_method,
-                  record: source_record,
-                  policy: policy
-          end
-        else
-          ::Pundit.authorize(user, source_record, 'update?')
-        end
+        authorize_relationship_operation(source_record, relationship_method, new_related_record)
       end
 
       # <tt>POST /resources/:id/relationships/other-resources</tt>
@@ -158,18 +148,8 @@ module JSONAPI
       # * +new_related_records+ - The new records to be added to the association
       # * +relationship_type+ - The relationship type
       def create_to_many_relationship(source_record, new_related_records, relationship_type)
-        policy = ::Pundit.policy(user, source_record)
         relationship_method = "add_to_#{relationship_type}?"
-        if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method, new_related_records)
-            raise ::Pundit::NotAuthorizedError,
-                  query: relationship_method,
-                  record: source_record,
-                  policy: policy
-          end
-        else
-          ::Pundit.authorize(user, source_record, 'update?')
-        end
+        authorize_relationship_operation(source_record, relationship_method, new_related_records)
       end
 
       # <tt>PATCH /resources/:id/relationships/other-resources</tt>
@@ -183,18 +163,8 @@ module JSONAPI
       #   association
       # * +relationship_type+ - The relationship type
       def replace_to_many_relationship(source_record, new_related_records, relationship_type)
-        policy = ::Pundit.policy(user, source_record)
         relationship_method = "replace_#{relationship_type}?"
-        if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method, new_related_records)
-            raise ::Pundit::NotAuthorizedError,
-                  query: relationship_method,
-                  record: source_record,
-                  policy: policy
-          end
-        else
-          ::Pundit.authorize(user, source_record, 'update?')
-        end
+        authorize_relationship_operation(source_record, relationship_method, new_related_records)
       end
 
       # <tt>DELETE /resources/:id/relationships/other-resources</tt>
@@ -209,18 +179,8 @@ module JSONAPI
       # * +related_record+ - The record which will be disassociated from +source_record+
       # * +relationship_type+ - The relationship type
       def remove_to_many_relationship(source_record, related_record, relationship_type)
-        policy = ::Pundit.policy(user, source_record)
         relationship_method = "remove_from_#{relationship_type}?"
-        if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method, related_record)
-            raise ::Pundit::NotAuthorizedError,
-                  query: relationship_method,
-                  record: source_record,
-                  policy: policy
-          end
-        else
-          ::Pundit.authorize(user, source_record, 'update?')
-        end
+        authorize_relationship_operation(source_record, relationship_method, related_record)
       end
 
       # <tt>DELETE /resources/:id/relationships/another-resource</tt>
@@ -232,18 +192,8 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +relationship_type+ - The relationship type
       def remove_to_one_relationship(source_record, relationship_type)
-        policy = ::Pundit.policy(user, source_record)
         relationship_method = "remove_#{relationship_type}?"
-        if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method)
-            raise ::Pundit::NotAuthorizedError,
-                  query: relationship_method,
-                  record: source_record,
-                  policy: policy
-          end
-        else
-          ::Pundit.authorize(user, source_record, 'update?')
-        end
+        authorize_relationship_operation(source_record, relationship_method)
       end
 
       # Any request including <tt>?include=other-resources</tt>
@@ -278,6 +228,22 @@ module JSONAPI
       # * +related_record+ - The associated record to return
       def include_has_one_resource(_source_record, related_record)
         ::Pundit.authorize(user, related_record, 'show?')
+      end
+
+      private
+
+      def authorize_relationship_operation(source_record, relationship_method, *args)
+        policy = ::Pundit.policy(user, source_record)
+        if policy.respond_to?(relationship_method)
+          unless policy.public_send(relationship_method, *args)
+            raise ::Pundit::NotAuthorizedError,
+                  query: relationship_method,
+                  record: source_record,
+                  policy: policy
+          end
+        else
+          ::Pundit.authorize(user, source_record, 'update?')
+        end
       end
     end
   end
