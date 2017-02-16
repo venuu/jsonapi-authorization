@@ -302,6 +302,20 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
+    context 'unauthorized for replace_author? and authorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, replace_author?: false, update?: true)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'authorized for replace_author? and unauthorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, replace_author?: true, update?: false)
+      end
+      it { is_expected.not_to raise_error }
+    end
+
     context 'unauthorized for replace_author? and update? on record' do
       before do
         stub_policy_actions(source_record, replace_author?: false, update?: false)
@@ -342,6 +356,20 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'authorized for update? on record' do
       before { allow_action(source_record, 'update?') }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for add_to_comments? and authorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, add_to_comments?: false, update?: true)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'authorized for add_to_comments? and unauthorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, add_to_comments?: true, update?: false)
+      end
       it { is_expected.not_to raise_error }
     end
 
@@ -388,6 +416,20 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
+    context 'unauthorized for replace_comments? and authorized for update? on record' do
+      before do
+        stub_policy_actions(article, replace_comments?: false, update?: true)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'authorized for replace_comments? and unauthorized for update? on record' do
+      before do
+        stub_policy_actions(article, replace_comments?: true, update?: false)
+      end
+      it { is_expected.not_to raise_error }
+    end
+
     context 'unauthorized for replace_comments? and update? on record' do
       before do
         stub_policy_actions(article, replace_comments?: false, update?: false)
@@ -431,6 +473,20 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.not_to raise_error }
     end
 
+    context 'unauthorized for remove_from_comments? and authorized for update? on article' do
+      before do
+        stub_policy_actions(article, remove_from_comments?: false, update?: true)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'authorized for remove_from_comments? and unauthorized for update? on article' do
+      before do
+        stub_policy_actions(article, remove_from_comments?: true, update?: false)
+      end
+      it { is_expected.not_to raise_error }
+    end
+
     context 'unauthorized for remove_from_comments? and update? on article' do
       before do
         stub_policy_actions(article, remove_from_comments?: false, update?: false)
@@ -469,6 +525,20 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'authorized for update? on record' do
       before { allow_action(source_record, 'update?') }
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for remove_author? and authorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, remove_author?: false, update?: true)
+      end
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+
+    context 'authorized for remove_author? and unauthorized for update? on record' do
+      before do
+        stub_policy_actions(source_record, remove_author?: true, update?: false)
+      end
       it { is_expected.not_to raise_error }
     end
 
