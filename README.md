@@ -91,6 +91,39 @@ class BaseResource < JSONAPI::Resource
 end
 ```
 
+### Policies
+
+To check whether an action is allowed JSONAPI::Authorization calls the respective actions of your pundit policies
+(`index?`, `show?`, `create?`, `update?`, `destroy?`).
+
+For relationship operations by default `update?` is being called for all affected resources.
+For a finer grained control you can define `add_to_<relation>?`, `replace_<relation>?`, and `remove_from_<relation>?`
+as the following example shows.
+
+```ruby
+class ArticlePolicy
+
+  # (...)
+
+  def add_to_comments?(new_comments)
+    record.published && new_comments.all? { |comment| comment.author == user }
+  end
+
+  def replace_comments?(new_comments)
+    allowed = record.comments.all? { |comment| new_comments.include?(comment) || add_to_comments?([comment])}
+    allowed && new_comments.all? { |comment| record.comments.include?(comment) || remove_from_comments?(comment) }
+  end
+
+  def remove_from_comments?(comment)
+    comment.author == user || user.admin?
+  end
+end
+```
+
+Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.
+For example if you have a many-to-many relationship with users and projects make sure that
+`ProjectPolicy#add_to_users?(users)` and `UserPolicy#add_to_projects?(projects)` match up.
+
 ## Configuration
 
 You can use a custom authorizer class by specifying a configure block in an initializer file. If using a custom authorizer class, be sure to require them at the top of the initializer before usage.

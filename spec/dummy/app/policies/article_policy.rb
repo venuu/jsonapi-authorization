@@ -31,4 +31,24 @@ class ArticlePolicy
   def destroy?
     raise NotImplementedError
   end
+
+  def add_to_comments?(_comments)
+    raise NotImplementedError
+  end
+
+  def replace_comments?(_comments)
+    raise NotImplementedError
+  end
+
+  def remove_from_comments?(_comment)
+    raise NotImplementedError
+  end
+
+  def replace_author?(_author)
+    raise NotImplementedError
+  end
+
+  def remove_author?
+    raise NotImplementedError
+  end
 end
