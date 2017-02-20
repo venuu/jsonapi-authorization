@@ -95,6 +95,15 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "arcreative",
+      "name": "Adam Robertson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1896026?v=3",
+      "profile": "https://github.com/arcreative",
+      "contributions": [
+        "doc"
+      ]
     }
   ]
 }
