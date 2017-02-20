@@ -48,6 +48,15 @@
         "test",
         "question"
       ]
+    },
+    {
+      "login": "thibaudgg",
+      "name": "Thibaud Guillaume-Gentil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1322?v=3",
+      "profile": "http://thibaud.gg",
+      "contributions": [
+        "code"
+      ]
     }
   ]
 }
