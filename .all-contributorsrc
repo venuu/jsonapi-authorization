@@ -1,0 +1,26 @@
+{
+  "projectName": "jsonapi-authorization",
+  "projectOwner": "Venuu",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "valscion",
+      "name": "Vesa Laakso",
+      "avatar_url": "https://avatars.githubusercontent.com/u/482561?v=3",
+      "profile": "http://vesalaakso.com",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "test",
+        "bug",
+        "question",
+        "review"
+      ]
+    }
+  ]
+}

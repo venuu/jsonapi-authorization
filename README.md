@@ -1,6 +1,6 @@
 # JSONAPI::Authorization
 
-[![Build Status](https://img.shields.io/travis/venuu/jsonapi-authorization/master.svg?style=flat&maxAge=3600)](https://travis-ci.org/venuu/jsonapi-authorization) [![Gem Version](https://img.shields.io/gem/v/jsonapi-authorization.svg?style=flat&maxAge=3600)](https://rubygems.org/gems/jsonapi-authorization)
+[![Build Status](https://img.shields.io/travis/venuu/jsonapi-authorization/master.svg?style=flat&maxAge=3600)](https://travis-ci.org/venuu/jsonapi-authorization) [![Gem Version](https://img.shields.io/gem/v/jsonapi-authorization.svg?style=flat&maxAge=3600)](https://rubygems.org/gems/jsonapi-authorization) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat&maxAge=3600)](#contributors)
 
 **NOTE:** This README is the documentation for `JSONAPI::Authorization`. If you are viewing this at the
 [project page on Github](https://github.com/venuu/jsonapi-authorization) you are viewing the documentation for the `master`
@@ -171,3 +171,14 @@ Originally based on discussion and code samples by [@barelyknown](https://github
 Bug reports and pull requests are welcome on GitHub at https://github.com/venuu/jsonapi-authorization.
 
   [issues]: https://github.com/venuu/jsonapi-authorization/issues
+
+## Contributors
+
+Thanks goes to these wonderful people ([emoji key](https://github.com/kentcdodds/all-contributors#emoji-key)):
+
+<!-- ALL-CONTRIBUTORS-LIST:START - Do not remove or modify this section -->
+| [<img src="https://avatars.githubusercontent.com/u/482561?v=3" width="100px;"/><br /><sub>Vesa Laakso</sub>](http://vesalaakso.com)<br />[💻](https://github.com/Venuu/jsonapi-authorization/commits?author=valscion) [📖](https://github.com/Venuu/jsonapi-authorization/commits?author=valscion) 🚇 [⚠️](https://github.com/Venuu/jsonapi-authorization/commits?author=valscion) [🐛](https://github.com/Venuu/jsonapi-authorization/issues?q=author%3Avalscion) 💬 👀 |
+| :---: |
+<!-- ALL-CONTRIBUTORS-LIST:END -->
+
+This project follows the [all-contributors](https://github.com/kentcdodds/all-contributors) specification. Contributions of any kind welcome!
