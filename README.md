@@ -1,6 +1,6 @@
 # JSONAPI::Authorization
 
-[![Build Status](https://img.shields.io/travis/venuu/jsonapi-authorization/master.svg?style=flat&maxAge=3600)](https://travis-ci.org/venuu/jsonapi-authorization) [![Gem Version](https://img.shields.io/gem/v/jsonapi-authorization.svg?style=flat&maxAge=3600)](https://rubygems.org/gems/jsonapi-authorization) [![All Contributors](https://img.shields.io/badge/all_contributors-1-orange.svg?style=flat&maxAge=3600)](#contributors)
+[![Build Status](https://img.shields.io/travis/venuu/jsonapi-authorization/master.svg?style=flat&maxAge=3600)](https://travis-ci.org/venuu/jsonapi-authorization) [![Gem Version](https://img.shields.io/gem/v/jsonapi-authorization.svg?style=flat&maxAge=3600)](https://rubygems.org/gems/jsonapi-authorization)
 
 **NOTE:** This README is the documentation for `JSONAPI::Authorization`. If you are viewing this at the
 [project page on Github](https://github.com/venuu/jsonapi-authorization) you are viewing the documentation for the `master`
