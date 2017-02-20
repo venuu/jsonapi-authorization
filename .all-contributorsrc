@@ -66,6 +66,17 @@
       "contributions": [
         "code"
       ]
+    },
+    {
+      "login": "coryodaniel",
+      "name": "Cory O'Daniel",
+      "avatar_url": "https://avatars.githubusercontent.com/u/11587?v=3",
+      "profile": "http://coryodaniel.com",
+      "contributions": [
+        "code",
+        "test",
+        "doc"
+      ]
     }
   ]
 }
