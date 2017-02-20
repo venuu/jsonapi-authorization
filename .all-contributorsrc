@@ -36,6 +36,18 @@
         "question",
         "review"
       ]
+    },
+    {
+      "login": "matthias-g",
+      "name": "matthias-g",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1591161?v=3",
+      "profile": "https://github.com/matthias-g",
+      "contributions": [
+        "code",
+        "doc",
+        "test",
+        "question"
+      ]
     }
   ]
 }
