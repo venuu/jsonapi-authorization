@@ -1,0 +1,89 @@
+{
+  "projectName": "jsonapi-authorization",
+  "projectOwner": "Venuu",
+  "files": [
+    "README.md"
+  ],
+  "imageSize": 100,
+  "commit": true,
+  "contributors": [
+    {
+      "login": "valscion",
+      "name": "Vesa Laakso",
+      "avatar_url": "https://avatars.githubusercontent.com/u/482561?v=3",
+      "profile": "http://vesalaakso.com",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "test",
+        "bug",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "lime",
+      "name": "Emil Sågfors",
+      "avatar_url": "https://avatars.githubusercontent.com/u/562204?v=3",
+      "profile": "https://github.com/lime",
+      "contributions": [
+        "code",
+        "doc",
+        "infra",
+        "test",
+        "bug",
+        "question",
+        "review"
+      ]
+    },
+    {
+      "login": "matthias-g",
+      "name": "Matthias Grundmann",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1591161?v=3",
+      "profile": "https://github.com/matthias-g",
+      "contributions": [
+        "code",
+        "doc",
+        "test",
+        "question"
+      ]
+    },
+    {
+      "login": "thibaudgg",
+      "name": "Thibaud Guillaume-Gentil",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1322?v=3",
+      "profile": "http://thibaud.gg",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "acid",
+      "name": "Daniel Schweighöfer",
+      "avatar_url": "https://avatars.githubusercontent.com/u/71660?v=3",
+      "profile": "http://netsteward.net",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "bsofiato",
+      "name": "Bruno Sofiato",
+      "avatar_url": "https://avatars.githubusercontent.com/u/5076967?v=3",
+      "profile": "https://github.com/bsofiato",
+      "contributions": [
+        "code"
+      ]
+    },
+    {
+      "login": "arcreative",
+      "name": "Adam Robertson",
+      "avatar_url": "https://avatars.githubusercontent.com/u/1896026?v=3",
+      "profile": "https://github.com/arcreative",
+      "contributions": [
+        "doc"
+      ]
+    }
+  ]
+}
