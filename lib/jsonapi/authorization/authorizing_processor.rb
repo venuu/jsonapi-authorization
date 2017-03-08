@@ -269,6 +269,41 @@ module JSONAPI
         end
       end
 
+      def related_models_with_context
+        data = params[:data]
+        return { relationship: nil, relation_name: nil, records: nil } if data.nil?
+
+        [:to_one, :to_many].flat_map do |rel_type|
+          data[rel_type].flat_map do |assoc_name, assoc_value|
+            related_models =
+              case assoc_value
+              when Hash # polymorphic relationship
+                resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
+                resource_class.find_by_key(assoc_value[:id], context: context)._model
+              when Array
+                resource_class = @resource_klass.resource_for(assoc_name.to_s)
+                resource_class.find_by_keys(assoc_value, context: context).map(&:_model)
+              else
+                resource_class = resource_class_for_relationship(assoc_name)
+                primary_key = resource_class._primary_key.to_sym
+                resource_class._model_class.find_by(primary_key => assoc_value)
+              end
+            old_records = if params[:resource_id]
+                            @resource_klass.find_by_key(
+                              params[:resource_id],
+                              context: context
+                            )._model.send(assoc_name)
+                          end
+            {
+              relationship: @resource_klass._relationships[assoc_name],
+              relation_name: assoc_name,
+              records: related_models,
+              old_records: old_records
+            }
+          end
+        end
+      end
+
       def authorize_model_includes(source_record)
         if params[:include_directives]
           params[:include_directives].model_includes.each do |include_item|
