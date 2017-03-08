@@ -86,16 +86,49 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to be modified
-      # * +new_related_records+ - An array of records to be associated to the
-      #   +source_record+. This will contain the records specified in the
-      #   "relationships" key in the request
-      #--
-      # TODO: Should probably take old records as well
-      def replace_fields(source_record, new_related_records)
+      # * +related_records_with_context+ - A has with the relationship object,
+      # the relationship name, an Array of new related records, and an Array
+      # of old related records that are to be replaced.
+      def replace_fields(source_record, related_records_with_context)
         ::Pundit.authorize(user, source_record, 'update?')
 
-        new_related_records.each do |record|
-          ::Pundit.authorize(user, record, 'update?')
+        policy = ::Pundit.policy!(user, source_record)
+        related_records_with_context.each do |data|
+          relationship  = data[:relationship]
+          relation_name = data[:relation_name]
+          new_records   = data[:records]
+          old_records   = data[:old_records]
+          remove_method_name = relationship_method(data, prefix: 'remove')
+          add_method_name    = relationship_method(data, prefix: 'add')
+
+          if old_records
+            allowed_to_remove=
+              if policy.respond_to?(remove_method_name)
+                policy.public_send(remove_method_name, old_records)
+              else
+                policy.update?
+              end
+              unless allowed_to_remove
+                raise ::Pundit::NotAuthorizedError,
+                               query: remove_method_name,
+                               record: old_records,
+                               policy: policy
+              end
+          end
+
+          allowed_to_add =
+            if policy.respond_to?(add_method_name)
+              policy.public_send(add_method_name, new_records)
+            else
+              policy.update?
+            end
+
+          unless allowed_to_add
+            raise ::Pundit::NotAuthorizedError,
+                           query: add_method_name,
+                           record: new_records,
+                           policy: policy
+          end
         end
       end
 
@@ -122,7 +155,7 @@ module JSONAPI
 
           unless allowed
            raise ::Pundit::NotAuthorizedError,
-                           query: add_method_name
+                           query: add_method_name,
                            record: records,
                            policy: policy
           end
