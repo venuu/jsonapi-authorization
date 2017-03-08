@@ -210,8 +210,16 @@ module JSONAPI
           params[:resource_id],
           context: context
         )._model
-
+        
         relationship_type = params[:relationship_type].to_sym
+        relationship_resource = @resource_klass
+          ._relationship(relationship_type)
+          .resource_klass
+          .find_by_key(
+            params[:associated_key],
+            context: context
+          )
+        related_record = related_resource._model unless related_resource.nil?
 
         authorizer.remove_to_one_relationship(source_record, relationship_type)
       end
