@@ -110,9 +110,9 @@ module JSONAPI
               end
               unless allowed_to_remove
                 raise ::Pundit::NotAuthorizedError,
-                               query: remove_method_name,
-                               record: old_records,
-                               policy: policy
+                        query: remove_method_name,
+                        record: old_records,
+                        policy: policy
               end
           end
 
@@ -125,9 +125,9 @@ module JSONAPI
 
           unless allowed_to_add
             raise ::Pundit::NotAuthorizedError,
-                           query: add_method_name,
-                           record: new_records,
-                           policy: policy
+                    query: add_method_name,
+                    record: new_records,
+                    policy: policy
           end
         end
       end
@@ -155,9 +155,9 @@ module JSONAPI
 
           unless allowed
            raise ::Pundit::NotAuthorizedError,
-                           query: add_method_name,
-                           record: records,
-                           policy: policy
+                   query: add_method_name,
+                   record: records,
+                   policy: policy
           end
         end
       end
