@@ -216,12 +216,12 @@ module JSONAPI
           ._relationship(relationship_type)
           .resource_klass
           .find_by_key(
-            params[:associated_key],
+            params[:resource_id],
             context: context
           )
-        related_record = related_resource._model unless related_resource.nil?
+        related_record = relationship_resource._model unless relationship_resource.nil?
 
-        authorizer.remove_to_one_relationship(source_record, relationship_type)
+        authorizer.remove_to_one_relationship(source_record, related_record, relationship_type)
       end
 
       private
