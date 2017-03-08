@@ -103,18 +103,18 @@ module JSONAPI
       end
 
       def authorize_replace_fields
+        field_data = params[:data]
         source_record = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
         )._model
-
-        authorizer.replace_fields(source_record, related_models)
+        authorizer.replace_fields(source_record, related_models_with_context)
       end
 
       def authorize_create_resource
-        source_class = @resource_klass._model_class
-
-        authorizer.create_resource(source_class, related_models)
+        field_data = params[:data]
+        source_class = resource_klass._model_class
+        authorizer.create_resource(source_class, related_models_with_context)
       end
 
       def authorize_remove_resource
