@@ -292,6 +292,23 @@ module JSONAPI
           ::Pundit.authorize(user, source_record, 'update?')
         end
       end
+
+      def relationship_method(data, **options)
+        relationship = data[:relationship]
+        assoc_name   = data[:relation_name]
+        prefix       = options[:prefix]
+
+        case relationship
+        when ->(relationship) { relationship.polymorphic }
+          polymorphic_type = data[:records].class.name.downcase
+          "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
+        when ->(relationship) { relationship.class == JSONAPI::Relationship::ToOne }
+          "#{prefix}_#{assoc_name}?"
+        else
+          prefix_preposition = prefix == 'add' ? 'to' : 'from'
+          "#{prefix}_#{prefix_preposition}_#{assoc_name}?"
+        end
+      end
     end
   end
 end
