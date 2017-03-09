@@ -238,9 +238,9 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +relationship_type+ - The relationship type
-      def remove_to_one_relationship(source_record, related_record, relationship_type)
+      def remove_to_one_relationship(source_record, relationship_type)
         relationship_method = "remove_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, related_record)
+        authorize_relationship_operation(source_record, relationship_method)
       end
 
       # Any request including <tt>?include=other-resources</tt>
