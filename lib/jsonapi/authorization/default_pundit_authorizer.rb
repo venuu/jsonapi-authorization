@@ -87,48 +87,14 @@ module JSONAPI
       #
       # * +source_record+ - The record to be modified
       # * +related_records_with_context+ - A has with the relationship object,
-      # the relationship name, an Array of new related records, and an Array
-      # of old related records that are to be replaced.
+      # the relationship name, an Array of new related records.
       def replace_fields(source_record, related_records_with_context)
         ::Pundit.authorize(user, source_record, 'update?')
-
-        policy = ::Pundit.policy!(user, source_record)
         related_records_with_context.each do |data|
           relationship  = data[:relationship]
           relation_name = data[:relation_name]
-          new_records   = data[:records]
-          old_records   = data[:old_records]
-          remove_method_name = relationship_method(data, prefix: 'remove')
-          add_method_name    = relationship_method(data, prefix: 'add')
-
-          if old_records
-            allowed_to_remove=
-              if policy.respond_to?(remove_method_name)
-                policy.public_send(remove_method_name, old_records)
-              else
-                policy.update?
-              end
-              unless allowed_to_remove
-                raise ::Pundit::NotAuthorizedError,
-                        query: remove_method_name,
-                        record: old_records,
-                        policy: policy
-              end
-          end
-
-          allowed_to_add =
-            if policy.respond_to?(add_method_name)
-              policy.public_send(add_method_name, new_records)
-            else
-              policy.update?
-            end
-
-          unless allowed_to_add
-            raise ::Pundit::NotAuthorizedError,
-                    query: add_method_name,
-                    record: new_records,
-                    policy: policy
-          end
+          records   = data[:records]
+          authorize_relationship_operation(source_record, relationship_method(data), records)
         end
       end
 
@@ -142,23 +108,10 @@ module JSONAPI
       # will contain the records specified in the "relationships" key in the request
       def create_resource(source_class, related_records_with_context)
         ::Pundit.authorize(user, source_class, 'create?')
-
-        policy = ::Pundit.policy!(user, source_class)
         related_records_with_context.each do |data|
           records = data[:records]
-          add_method_name = relationship_method(data, prefix: 'add')
-          allowed = if policy.respond_to?(add_method_name)
-                      policy.public_send(add_method_name, records)
-                    else
-                      policy.update?  
-                    end
-
-          unless allowed
-           raise ::Pundit::NotAuthorizedError,
-                   query: add_method_name,
-                   record: records,
-                   policy: policy
-          end
+          add_method_name = relationship_method(data)
+          authorize_relationship_operation(source_class, add_method_name, records)
         end
       end
 
@@ -293,20 +246,18 @@ module JSONAPI
         end
       end
 
-      def relationship_method(data, **options)
+      def relationship_method(data)
         relationship = data[:relationship]
         assoc_name   = data[:relation_name]
-        prefix       = options[:prefix]
 
         case relationship
-        when ->(relationship) { relationship.polymorphic }
+        when relationship.polymorphic
           polymorphic_type = data[:records].class.name.downcase
-          "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
-        when ->(relationship) { relationship.class == JSONAPI::Relationship::ToOne }
-          "#{prefix}_#{assoc_name}?"
+          "#add_#{relationship.class_name.downcase}_#{polymorphic_type}?"
+        when relationship.class == JSONAPI::Relationship::ToOne
+          "add_#{assoc_name}?"
         else
-          prefix_preposition = prefix == 'add' ? 'to' : 'from'
-          "#{prefix}_#{prefix_preposition}_#{assoc_name}?"
+          "add_to_#{assoc_name}?"
         end
       end
     end

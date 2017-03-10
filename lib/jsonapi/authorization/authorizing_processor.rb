@@ -280,17 +280,10 @@ module JSONAPI
                 primary_key = resource_class._primary_key.to_sym
                 resource_class._model_class.find_by(primary_key => assoc_value)
               end
-            old_records = if params[:resource_id]
-                            @resource_klass.find_by_key(
-                              params[:resource_id],
-                              context: context
-                            )._model.send(assoc_name)
-                          end
             {
               relationship: @resource_klass._relationships[assoc_name],
               relation_name: assoc_name,
               records: related_models,
-              old_records: old_records
             }
           end
         end
