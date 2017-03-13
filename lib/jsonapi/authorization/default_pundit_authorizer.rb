@@ -95,13 +95,13 @@ module JSONAPI
           relation_name = data[:relation_name]
           records = data[:records]
 
-          # Authorize removing old records 
+          # Authorize removing old records
           case relationship
           when JSONAPI::Relationship::ToMany
             old_records = source_record.send relation_name
             authorize_relationship_operation(
-              source_record, 
-              relationship_method(data, prefix: 'remove'), 
+              source_record,
+              relationship_method(data, prefix: 'remove'),
               old_records
             )
           else
@@ -121,7 +121,7 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The class of the record to be created
-      # * +related_records_with_context+ - A hash with the relationship, 
+      # * +related_records_with_context+ - A hash with the relationship,
       # relation name, and records to be associated with the new record. This
       # will contain the records specified in the "relationships" key in the request
       def create_resource(source_class, related_records_with_context)
@@ -270,7 +270,7 @@ module JSONAPI
         prefix       = options[:prefix] || 'add'
 
         case relationship
-        when ->(relationship) { relationship.polymorphic }
+        when ->(rel) { rel.polymorphic }
           polymorphic_type = data[:records].class.name.downcase
           "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
         when JSONAPI::Relationship::ToOne
