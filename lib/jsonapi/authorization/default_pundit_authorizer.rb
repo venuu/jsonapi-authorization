@@ -251,10 +251,10 @@ module JSONAPI
         assoc_name   = data[:relation_name]
 
         case relationship
-        when relationship.polymorphic
+        when ->(relationship) { relationship.polymorphic }
           polymorphic_type = data[:records].class.name.downcase
           "#add_#{relationship.class_name.downcase}_#{polymorphic_type}?"
-        when relationship.class == JSONAPI::Relationship::ToOne
+        when JSONAPI::Relationship::ToOne
           "add_#{assoc_name}?"
         else
           "add_to_#{assoc_name}?"
