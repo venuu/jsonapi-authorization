@@ -93,7 +93,25 @@ module JSONAPI
         related_records_with_context.each do |data|
           relationship  = data[:relationship]
           relation_name = data[:relation_name]
-          records   = data[:records]
+          records = data[:records]
+
+          # Authorize removing old records 
+          case relationship
+          when JSONAPI::Relationship::ToMany
+            old_records = source_record.send relation_name
+            authorize_relationship_operation(
+              source_record, 
+              relationship_method(data, prefix: 'remove'), 
+              old_records
+            )
+          else
+            authorize_relationship_operation(
+              source_record,
+              relationship_method(data, prefix: 'remove')
+            )
+          end
+
+          # Authorize adding new records
           authorize_relationship_operation(source_record, relationship_method(data), records)
         end
       end
@@ -246,18 +264,20 @@ module JSONAPI
         end
       end
 
-      def relationship_method(data)
+      def relationship_method(data, **options)
         relationship = data[:relationship]
         assoc_name   = data[:relation_name]
+        prefix       = options[:prefix] || 'add'
 
         case relationship
         when ->(relationship) { relationship.polymorphic }
           polymorphic_type = data[:records].class.name.downcase
-          "#add_#{relationship.class_name.downcase}_#{polymorphic_type}?"
+          "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
         when JSONAPI::Relationship::ToOne
-          "add_#{assoc_name}?"
+          "#{prefix}_#{assoc_name}?"
         else
-          "add_to_#{assoc_name}?"
+          prefix_preposition = prefix == 'add' ? 'to' : 'from'
+          "#{prefix}_#{prefix_preposition}_#{assoc_name}?"
         end
       end
     end
