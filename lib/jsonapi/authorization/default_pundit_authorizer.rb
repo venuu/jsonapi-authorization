@@ -271,7 +271,7 @@ module JSONAPI
 
         case relationship
         when ->(rel) { rel.polymorphic }
-          polymorphic_type = data[:records].class.name.downcase
+          polymorphic_type = data[:records].class.name.underscore
           "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
         when JSONAPI::Relationship::ToOne
           "#{prefix}_#{assoc_name}?"
