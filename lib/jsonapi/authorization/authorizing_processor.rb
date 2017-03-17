@@ -201,28 +201,34 @@ module JSONAPI
         )
       end
 
-      def authorize_remove_to_many_relationship
+        def authorize_remove_to_many_relationship
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
         )
         source_record = source_resource._model
 
-        relationship_type = params[:relationship_type].to_sym
-        related_resource = @resource_klass
-          ._relationship(relationship_type)
+        related_resources = @resource_klass
+          ._relationship(params[:relationship_type].to_sym)
           .resource_klass
-          .find_by_key(
-            params[:associated_key],
+          .find_by_keys(
+            params[:associated_keys],
             context: context
           )
-        related_record = related_resource._model unless related_resource.nil?
 
-        authorizer.remove_to_many_relationship(
-          source_record,
-          related_record,
-          relationship_type
-        )
+        # find_by_keys doesn't raise if no records, so raise explicitly here
+        if related_resources.empty?
+          fail JSONAPI::Exceptions::RecordNotFound.new(params[:associated_keys])
+        else
+          related_records = related_resources.map { |resource| resource._model }
+        end
+
+        related_records.each do |related_record|
+          authorizer.remove_to_many_relationship(
+            source_record,
+            related_record
+          )
+        end
       end
 
       def authorize_remove_to_one_relationship
