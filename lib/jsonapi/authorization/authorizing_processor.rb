@@ -16,7 +16,11 @@ module JSONAPI
       set_callback :create_to_many_relationships, :before, :authorize_create_to_many_relationships
       set_callback :replace_to_many_relationships, :before, :authorize_replace_to_many_relationships
       set_callback :remove_to_many_relationships, :before, :authorize_remove_to_many_relationships
-      set_callback :replace_polymorphic_to_one_relationship, :before, :authorize_replace_polymorphic_to_one_relationship
+      set_callback(
+        :replace_polymorphic_to_one_relationship,
+        :before,
+        :authorize_replace_polymorphic_to_one_relationship
+      )
 
       [
         :find,
