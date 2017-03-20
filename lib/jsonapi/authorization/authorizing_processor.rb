@@ -208,13 +208,11 @@ module JSONAPI
           related_records = related_resources.map { |resource| resource._model }
         end
 
-        related_records.each do |related_record|
-          authorizer.remove_to_many_relationship(
-            source_record,
-            related_record,
-            params[:relationship_type]
-          )
-        end
+        authorizer.remove_to_many_relationship(
+          source_record,
+          related_records,
+          params[:relationship_type]
+        )
       end
 
       def authorize_remove_to_one_relationship

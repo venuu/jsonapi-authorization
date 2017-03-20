@@ -178,9 +178,9 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +related_record+ - The record which will be disassociated from +source_record+
       # * +relationship_type+ - The relationship type
-      def remove_to_many_relationship(source_record, related_record, relationship_type)
+      def remove_to_many_relationship(source_record, related_records, relationship_type)
         relationship_method = "remove_from_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, related_record)
+        authorize_relationship_operation(source_record, relationship_method, related_records)
       end
 
       # <tt>DELETE /resources/:id/relationships/another-resource</tt>
