@@ -203,7 +203,7 @@ module JSONAPI
 
         # find_by_keys doesn't raise if no records, so raise explicitly here
         if related_resources.empty?
-          fail JSONAPI::Exceptions::RecordNotFound.new(params[:associated_keys])
+          fail JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
         else
           related_records = related_resources.map(&:_model)
         end
