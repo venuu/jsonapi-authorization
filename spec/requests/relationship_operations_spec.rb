@@ -282,7 +282,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
     context 'unauthorized for remove_to_many_relationship' do
       before do
-        disallow_operation('remove_to_many_relationship', article, kind_of(Comment), :comments)
+        disallow_operation('remove_to_many_relationship', article, kind_of(Comment), "comments")
       end
 
       it { is_expected.to be_forbidden }
@@ -291,9 +291,7 @@ RSpec.describe 'Relationship operations', type: :request do
     context 'authorized for remove_to_many_relationship' do
       context 'not limited by policy scopes' do
         before do
-          allow_operations('remove_to_many_relationship', [
-            [article, kind_of(Comment)]
-          ])
+          allow_operation('remove_to_many_relationship', article, kind_of(Comment), "comments")
         end
 
         it { is_expected.to be_successful }

@@ -207,7 +207,8 @@ module JSONAPI
         related_records.each do |related_record|
           authorizer.remove_to_many_relationship(
             source_record,
-            related_record
+            related_record,
+            params[:relationship_type]
           )
         end
       end
