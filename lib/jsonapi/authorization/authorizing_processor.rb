@@ -205,7 +205,7 @@ module JSONAPI
         if related_resources.empty?
           fail JSONAPI::Exceptions::RecordNotFound.new(params[:associated_keys])
         else
-          related_records = related_resources.map { |resource| resource._model }
+          related_records = related_resources.map(&:_model)
         end
 
         authorizer.remove_to_many_relationship(
