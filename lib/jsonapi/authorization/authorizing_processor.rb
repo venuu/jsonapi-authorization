@@ -3,12 +3,6 @@ require 'pundit'
 module JSONAPI
   module Authorization
     class AuthorizingProcessor < JSONAPI::Processor
-      AMBIGUOUS_CALLBACKS = [
-        :create_to_many_relationship,
-        :replace_to_many_relationship,
-        :remove_to_many_relationship
-      ]
-
       set_callback :find, :before, :authorize_find
       set_callback :show, :before, :authorize_show
       set_callback :show_relationship, :before, :authorize_show_relationship
@@ -19,6 +13,9 @@ module JSONAPI
       set_callback :replace_fields, :before, :authorize_replace_fields
       set_callback :replace_to_one_relationship, :before, :authorize_replace_to_one_relationship
       set_callback :remove_to_one_relationship, :before, :authorize_remove_to_one_relationship
+      set_callback :create_to_many_relationships, :before, :authorize_create_to_many_relationships
+      set_callback :replace_to_many_relationships, :before, :authorize_replace_to_many_relationships
+      set_callback :remove_to_many_relationships, :before, :authorize_remove_to_many_relationships
       set_callback :replace_polymorphic_to_one_relationship, :before, :authorize_replace_polymorphic_to_one_relationship
 
       [
@@ -30,22 +27,6 @@ module JSONAPI
         :replace_fields
       ].each do |op_name|
         set_callback op_name, :after, :authorize_include_directive
-      end
-
-      def self.set_relationship_callback(singular_name, preposition, callback)
-        callback_hook = "#{preposition}_#{singular_name}"
-
-        if respond_to?(callback_hook)
-          method_to_callback_from = singular_name
-        else
-          method_to_callback_from = singular_name.to_s + "s"
-        end
-
-        set_callback method_to_callback_from, preposition, callback
-      end
-
-      AMBIGUOUS_CALLBACKS.each do |op_name|
-        set_relationship_callback(op_name, :before, "authorize_" + op_name.to_s)
       end
 
       def authorize_include_directive
@@ -172,7 +153,7 @@ module JSONAPI
         )
       end
 
-      def authorize_create_to_many_relationship
+      def authorize_create_to_many_relationships
         source_record = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
@@ -184,7 +165,7 @@ module JSONAPI
         authorizer.create_to_many_relationship(source_record, related_models, relationship_type)
       end
 
-      def authorize_replace_to_many_relationship
+      def authorize_replace_to_many_relationships
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
@@ -201,7 +182,7 @@ module JSONAPI
         )
       end
 
-        def authorize_remove_to_many_relationship
+      def authorize_remove_to_many_relationships
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
