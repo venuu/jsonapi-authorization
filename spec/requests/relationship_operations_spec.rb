@@ -310,7 +310,7 @@ RSpec.describe 'Relationship operations', type: :request do
           last_response
         end
 
-        it { is_expected.not_to be_not_found }
+        it { is_expected.to be_successful }
       end
 
       # If this happens in real life, it's mostly a bug. We want to document the
