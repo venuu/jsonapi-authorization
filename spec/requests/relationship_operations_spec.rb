@@ -299,7 +299,11 @@ RSpec.describe 'Relationship operations', type: :request do
 
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
-        it { is_expected.to be_not_found }
+
+        it "calls 'remove_to_many_relationship' with no comments in scope" do
+          expect_operation('remove_to_many_relationship', article, [], "comments")
+          last_response
+        end
       end
 
       # If this happens in real life, it's mostly a bug. We want to document the
