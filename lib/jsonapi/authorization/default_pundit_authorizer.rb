@@ -90,30 +90,7 @@ module JSONAPI
       # the relationship name, an Array of new related records.
       def replace_fields(source_record, related_records_with_context)
         ::Pundit.authorize(user, source_record, 'update?')
-        related_records_with_context.each do |data|
-          relationship  = data[:relationship]
-          relation_name = data[:relation_name]
-          records = data[:records]
-
-          # Authorize removing old records
-          case relationship
-          when JSONAPI::Relationship::ToMany
-            old_records = source_record.send relation_name
-            authorize_relationship_operation(
-              source_record,
-              relationship_method(data, prefix: 'remove'),
-              old_records
-            )
-          else
-            authorize_relationship_operation(
-              source_record,
-              relationship_method(data, prefix: 'remove')
-            )
-          end
-
-          # Authorize adding new records
-          authorize_relationship_operation(source_record, relationship_method(data), records)
-        end
+        authorize_related_records(source_record, related_records_with_context)
       end
 
       # <tt>POST /resources</tt>
@@ -126,11 +103,7 @@ module JSONAPI
       # will contain the records specified in the "relationships" key in the request
       def create_resource(source_class, related_records_with_context)
         ::Pundit.authorize(user, source_class, 'create?')
-        related_records_with_context.each do |data|
-          records = data[:records]
-          add_method_name = relationship_method(data)
-          authorize_relationship_operation(source_class, add_method_name, records)
-        end
+        authorize_related_records(source_class, related_records_with_context)
       end
 
       # <tt>DELETE /resources/:id</tt>
@@ -264,20 +237,17 @@ module JSONAPI
         end
       end
 
-      def relationship_method(data, **options)
-        relationship = data[:relationship]
-        assoc_name   = data[:relation_name]
-        prefix       = options[:prefix] || 'add'
-
-        case relationship
-        when ->(rel) { rel.polymorphic }
-          polymorphic_type = data[:records].class.name.underscore
-          "#{prefix}_#{relationship.class_name.downcase}_#{polymorphic_type}?"
-        when JSONAPI::Relationship::ToOne
-          "#{prefix}_#{assoc_name}?"
-        else
-          prefix_preposition = prefix == 'add' ? 'to' : 'from'
-          "#{prefix}_#{prefix_preposition}_#{assoc_name}?"
+      def authorize_related_records(source_record, related_records_with_context)
+        related_records_with_context.each do |data|
+          relation_type = data[:relation_type]
+          relation_name = data[:relation_name]
+          records = data[:records]
+          case relation_type
+          when :to_many
+            replace_to_many_relationship(source_class, records, relation_name)
+          when :to_one
+            replace_to_one_relationship(source_record, records, relation_name)
+          end
         end
       end
     end

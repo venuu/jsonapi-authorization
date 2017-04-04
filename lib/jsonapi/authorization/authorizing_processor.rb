@@ -271,15 +271,16 @@ module JSONAPI
                 resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
                 resource_class.find_by_key(assoc_value[:id], context: context)._model
               when Array
-                resource_class = @resource_klass.resource_for(assoc_name.to_s)
+                resource_class = resource_class_for_relationship(assoc_name)
                 resource_class.find_by_keys(assoc_value, context: context).map(&:_model)
               else
                 resource_class = resource_class_for_relationship(assoc_name)
                 primary_key = resource_class._primary_key.to_sym
                 resource_class._model_class.find_by(primary_key => assoc_value)
               end
+
             {
-              relationship: @resource_klass._relationships[assoc_name],
+              relation_type: rel_type,
               relation_name: assoc_name,
               records: related_models
             }
