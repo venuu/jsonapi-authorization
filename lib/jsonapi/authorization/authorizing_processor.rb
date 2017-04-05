@@ -107,13 +107,11 @@ module JSONAPI
           params[:resource_id],
           context: context
         )._model
-
-        authorizer.replace_fields(source_record, related_models)
+        authorizer.replace_fields(source_record, related_models_with_context)
       end
 
       def authorize_create_resource
-        source_class = @resource_klass._model_class
-
+        source_class = resource_klass._model_class
         authorizer.create_resource(source_class, related_models)
       end
 
@@ -257,6 +255,34 @@ module JSONAPI
               primary_key = resource_class._primary_key
               resource_class._model_class.where(primary_key => assoc_value)
             end
+          end
+        end
+      end
+
+      def related_models_with_context
+        data = params[:data]
+        return { relationship: nil, relation_name: nil, records: nil } if data.nil?
+
+        [:to_one, :to_many].flat_map do |rel_type|
+          data[rel_type].flat_map do |assoc_name, assoc_value|
+            related_models =
+              case assoc_value
+              when Hash # polymorphic relationship
+                resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
+                resource_class.find_by_key(assoc_value[:id], context: context)._model
+              when Array
+                resource_class = resource_class_for_relationship(assoc_name)
+                resource_class.find_by_keys(assoc_value, context: context).map(&:_model)
+              else
+                resource_class = resource_class_for_relationship(assoc_name)
+                resource_class.find_by_key(assoc_value[:id], context: context)._model
+              end
+
+            {
+              relation_type: rel_type,
+              relation_name: assoc_name,
+              records: related_models
+            }
           end
         end
       end

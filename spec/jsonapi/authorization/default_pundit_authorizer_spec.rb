@@ -161,8 +161,15 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#replace_fields' do
     let(:related_records) { Array.new(3) { Comment.new } }
+    let(:related_records_with_context) do
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: related_records
+      }]
+    end
     subject(:method_call) do
-      -> { authorizer.replace_fields(source_record, related_records) }
+      -> { authorizer.replace_fields(source_record, related_records_with_context) }
     end
 
     context 'authorized for update? on source record' do
@@ -173,18 +180,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.not_to raise_error }
       end
 
-      context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action(r, 'update?') } }
-        it { is_expected.not_to raise_error }
+      context 'authorized for replace_comments? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: true, update?: true) }
+        it { is_expected.not_to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'unauthorized for update? on any of the related records' do
-        let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before do
-          allow_action(related_records.first, 'update?')
-          disallow_action(related_records.last, 'update?')
-        end
-
+      context 'unauthorized for replace_comments? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: false, update?: true) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -197,18 +199,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action(r, 'update?') } }
+      context 'authorized for replace_comments? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: true, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'unauthorized for update? on any of the related records' do
-        let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before do
-          allow_action(related_records.first, 'update?')
-          disallow_action(related_records.last, 'update?')
-        end
-
+      context 'unauthorized for replace_comments? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: false, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
