@@ -17,3 +17,4 @@ matrix:
     - env: JSONAPI_RESOURCES_VERSION=master RAILS_VERSION=4.1.0
 script:
   - ./bin/phare
+  - bundle exec rake
