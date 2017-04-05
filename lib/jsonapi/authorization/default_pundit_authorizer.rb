@@ -98,12 +98,15 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The class of the record to be created
-      # * +related_records_with_context+ - A hash with the relationship,
-      # relation name, and records to be associated with the new record. This
-      # will contain the records specified in the "relationships" key in the request
-      def create_resource(source_class, related_records_with_context)
+      # * +related_records+ - An array of records to be associated to the new
+      #   record. This will contain the records specified in the
+      #   "relationships" key in the request
+      def create_resource(source_class, related_records)
         ::Pundit.authorize(user, source_class, 'create?')
-        authorize_related_records(source_class, related_records_with_context)
+
+        related_records.each do |record|
+          ::Pundit.authorize(user, record, 'update?')
+        end
       end
 
       # <tt>DELETE /resources/:id</tt>
