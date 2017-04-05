@@ -84,6 +84,16 @@
       "contributions": [
         "doc"
       ]
+    },
+    {
+      "login": "gnfisher",
+      "name": "Greg Fisher",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/4742306?v=3",
+      "profile": "https://github.com/gnfisher",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }
