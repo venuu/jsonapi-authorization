@@ -16,6 +16,11 @@ module JSONAPI
       set_callback :replace_to_many_relationship, :before, :authorize_replace_to_many_relationship
       set_callback :remove_to_many_relationship, :before, :authorize_remove_to_many_relationship
       set_callback :remove_to_one_relationship, :before, :authorize_remove_to_one_relationship
+      set_callback(
+        :replace_polymorphic_to_one_relationship,
+        :before,
+        :authorize_replace_polymorphic_to_one_relationship
+      )
 
       [
         :find,
@@ -212,6 +217,10 @@ module JSONAPI
         relationship_type = params[:relationship_type].to_sym
 
         authorizer.remove_to_one_relationship(source_record, relationship_type)
+      end
+
+      def authorize_replace_polymorphic_to_one_relationship
+        raise NotImplementedError
       end
 
       private
