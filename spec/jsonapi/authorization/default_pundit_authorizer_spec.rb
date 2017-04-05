@@ -162,9 +162,11 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   describe '#replace_fields' do
     let(:related_records) { Array.new(3) { Comment.new } }
     let(:related_records_with_context) do
-      Array.new(1) {
-        Hash[:relation_name, :comments, :relation_type, :to_many, :records, related_records]
-      }
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: related_records
+      }]
     end
     subject(:method_call) do
       -> { authorizer.replace_fields(source_record, related_records_with_context) }

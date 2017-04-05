@@ -93,9 +93,11 @@ RSpec.describe 'Tricky operations', type: :request do
       Array.new(2) { Comment.create }
     end
     let(:related_records_with_context) do
-      Array.new(1) {
-        Hash[:relation_name, :comments, :relation_type, :to_many, :records, new_comments]
-      }
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: new_comments
+      }]
     end
     let(:policy_scope) { Article.where(id: article.id) }
     let(:comments_policy_scope) { Comment.all }
