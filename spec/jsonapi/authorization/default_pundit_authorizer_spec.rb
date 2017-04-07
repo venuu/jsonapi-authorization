@@ -213,9 +213,16 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#create_resource' do
     let(:related_records) { Array.new(3) { Comment.new } }
+    let(:related_records_with_context) do
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: related_records
+      }]
+    end
     let(:source_class) { source_record.class }
     subject(:method_call) do
-      -> { authorizer.create_resource(source_class, related_records) }
+      -> { authorizer.create_resource(source_class, related_records_with_context) }
     end
 
     context 'authorized for create? on source class' do
@@ -226,8 +233,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.not_to raise_error }
       end
 
-      context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action(r, 'update?') } }
+      context 'authorized for create_with_<type>? on source class' do
+        before { stub_policy_actions(source_class, create_with_comments?:true, create?: true) }
         it { is_expected.not_to raise_error }
       end
 

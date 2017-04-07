@@ -105,7 +105,7 @@ module JSONAPI
         related_records_with_context.each do |data|
           relation_name = data[:relation_name]
           records = data[:records]
-          relationship_method = "create_with_#{relation_name}?"
+          jelationship_method = "create_with_#{relation_name}?"
           authorize_relationship_operation(source_class, relationship_method, records)
         end
       end
