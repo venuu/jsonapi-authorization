@@ -105,8 +105,16 @@ module JSONAPI
         related_records_with_context.each do |data|
           relation_name = data[:relation_name]
           records = data[:records]
-          jelationship_method = "create_with_#{relation_name}?"
-          authorize_relationship_operation(source_class, relationship_method, records)
+          relationship_method = "create_with_#{relation_name}?"
+          policy = ::Pundit.policy(user, source_class)
+          if policy.respond_to?(relationship_method)
+            unless policy.public_send(relationship_method, records)
+              raise ::Pundit::NotAuthorizedError,
+                    query: relationship_method,
+                    record: source_class,
+                    policy: policy
+            end
+          end
         end
       end
 

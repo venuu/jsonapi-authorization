@@ -238,12 +238,9 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on any of the related records' do
+      context 'unauthorized for create_with_<type>? on source class' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before do
-          allow_action(related_records.first, 'update?')
-          disallow_action(related_records.last, 'update?')
-        end
+        before { stub_policy_actions(source_class, create_with_comments?:false, create?:true) }
 
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
@@ -257,18 +254,14 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'authorized for update? on all of the related records' do
-        before { related_records.each { |r| allow_action(r, 'update?') } }
+      context 'authorized for create_with_comments? on source class' do
+        before { stub_policy_actions(source_class, create_with_comments?:true, create?:false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'unauthorized for update? on any of the related records' do
+      context 'unauthorized for create_with_comments? on source class' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before do
-          allow_action(related_records.first, 'update?')
-          disallow_action(related_records.last, 'update?')
-        end
-
+        before { stub_policy_actions(source_class, create_with_comments?:false, create?:false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
