@@ -189,6 +189,10 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         before { stub_policy_actions(source_record, replace_comments?: false, update?: true) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
+
+      context 'were replace_<type>? is undefined' do
+        it { is_expected.not_to raise_error(::Pundit::NotAuthorizedError) }
+      end
     end
 
     context 'unauthorized for update? on source record' do
@@ -206,6 +210,10 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
       context 'unauthorized for replace_comments? on source record' do
         before { stub_policy_actions(source_record, replace_comments?: false, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'were replace_<type>? is undefined' do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
