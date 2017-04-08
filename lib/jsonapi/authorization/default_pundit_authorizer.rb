@@ -114,6 +114,10 @@ module JSONAPI
                     record: source_class,
                     policy: policy
             end
+          else
+            records.each do |record|
+              ::Pundit.authorize(user, record, 'update?')
+            end
           end
         end
       end
