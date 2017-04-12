@@ -275,7 +275,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         {
           relation_type: :to_one,
           relation_name: :author,
-          records: existing_author 
+          records: existing_author
         },
         {
           relation_type: :to_many,
@@ -320,7 +320,6 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     subject(:last_response) { post("/articles?include=#{include_query}", json) }
     let!(:chained_authorizer) do
       allow_operation('create_resource', Article, related_records_with_context)
-      #allow_operation('create_resource', Article, [existing_author, *existing_comments])
     end
 
     include_examples :include_directive_tests
