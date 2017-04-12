@@ -313,6 +313,8 @@ RSpec.describe 'Relationship operations', type: :request do
           allow_operation('remove_to_many_relationship', article, [], :comments)
         end
 
+        # This succeeds because the request isn't actually able to try removing any comments
+        # due to the comments-to-be-removed being an empty array
         it { is_expected.to be_successful }
       end
 
