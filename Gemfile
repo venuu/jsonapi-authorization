@@ -18,8 +18,6 @@ else
 end
 
 case jsonapi_resources_version
-when 'master'
-  gem 'jsonapi-resources', git: 'https://github.com/cerebris/jsonapi-resources.git'
 when 'default'
   gem 'jsonapi-resources', '0.9'
 else

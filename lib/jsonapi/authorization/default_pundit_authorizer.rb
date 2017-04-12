@@ -86,17 +86,11 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to be modified
-      # * +new_related_records+ - An array of records to be associated to the
-      #   +source_record+. This will contain the records specified in the
-      #   "relationships" key in the request
-      #--
-      # TODO: Should probably take old records as well
-      def replace_fields(source_record, new_related_records)
+      # * +related_records_with_context+ - A hash with the association type,
+      # the relationship name, an Array of new related records.
+      def replace_fields(source_record, related_records_with_context)
         ::Pundit.authorize(user, source_record, 'update?')
-
-        new_related_records.each do |record|
-          ::Pundit.authorize(user, record, 'update?')
-        end
+        authorize_related_records(source_record, related_records_with_context)
       end
 
       # <tt>POST /resources</tt>
@@ -243,6 +237,20 @@ module JSONAPI
           end
         else
           ::Pundit.authorize(user, source_record, 'update?')
+        end
+      end
+
+      def authorize_related_records(source_record, related_records_with_context)
+        related_records_with_context.each do |data|
+          relation_type = data[:relation_type]
+          relation_name = data[:relation_name]
+          records = data[:records]
+          case relation_type
+          when :to_many
+            replace_to_many_relationship(source_record, records, relation_name)
+          when :to_one
+            replace_to_one_relationship(source_record, records, relation_name)
+          end
         end
       end
     end

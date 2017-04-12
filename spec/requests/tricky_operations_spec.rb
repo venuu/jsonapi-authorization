@@ -92,6 +92,13 @@ RSpec.describe 'Tricky operations', type: :request do
     let!(:new_comments) do
       Array.new(2) { Comment.create }
     end
+    let(:related_records_with_context) do
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: new_comments
+      }]
+    end
     let(:policy_scope) { Article.where(id: article.id) }
     let(:comments_policy_scope) { Comment.all }
     before do
@@ -120,13 +127,13 @@ RSpec.describe 'Tricky operations', type: :request do
 
     context 'authorized for replace_fields on article and all new records' do
       context 'not limited by Comments policy scope' do
-        before { allow_operation('replace_fields', article, new_comments) }
+        before { allow_operation('replace_fields', article, related_records_with_context) }
         it { is_expected.to be_successful }
       end
 
       context 'limited by Comments policy scope' do
         let(:comments_policy_scope) { Comment.where("id NOT IN (?)", new_comments.map(&:id)) }
-        before { allow_operation('replace_fields', article, new_comments) }
+        before { allow_operation('replace_fields', article, related_records_with_context) }
 
         it do
           pending 'DISCUSS: Should this error out somehow?'
@@ -136,7 +143,7 @@ RSpec.describe 'Tricky operations', type: :request do
     end
 
     context 'unauthorized for replace_fields on article and all new records' do
-      before { disallow_operation('replace_fields', article, new_comments) }
+      before { disallow_operation('replace_fields', article, related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end

@@ -4,16 +4,11 @@ sudo: false
 env:
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.1.0
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.2.0
-  - JSONAPI_RESOURCES_VERSION=master RAILS_VERSION=4.2.0
-  - JSONAPI_RESOURCES_VERSION=master RAILS_VERSION=4.1.0
 rvm:
   - 2.1.2
 before_install: gem install bundler -v 1.11.2
 notifications:
   email: false
-matrix:
-  allow_failures:
-    - env: JSONAPI_RESOURCES_VERSION=master RAILS_VERSION=4.2.0
-    - env: JSONAPI_RESOURCES_VERSION=master RAILS_VERSION=4.1.0
 script:
   - ./bin/phare
+  - bundle exec rake
