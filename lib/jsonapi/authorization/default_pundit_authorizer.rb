@@ -165,12 +165,10 @@ module JSONAPI
       #
       # A request to disassociate elements of a +has_many+ association
       #
-      # NOTE: this is called once per related record, not all at once
-      #
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is modified
-      # * +related_record+ - The record which will be disassociated from +source_record+
+      # * +related_records+ - The records which will be disassociated from +source_record+
       # * +relationship_type+ - The relationship type
       def remove_to_many_relationship(source_record, related_records, relationship_type)
         relationship_method = "remove_from_#{relationship_type}?"
