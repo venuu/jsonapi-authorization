@@ -23,11 +23,4 @@ module AuthorizationStubs
 
     allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
   end
-
-  def expect_operation(operation, *args, authorizer: instance_double(AUTHORIZER_CLASS))
-    expect(authorizer).to receive(operation).with(*args)
-
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
-    authorizer
-  end
 end
