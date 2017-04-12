@@ -148,12 +148,17 @@ RSpec.describe 'Tricky operations', type: :request do
 
       context 'limited by Comments policy scope' do
         let(:comments_policy_scope) { Comment.where("id NOT IN (?)", new_comments.map(&:id)) }
+        let(:related_records_with_context) do
+          [{
+            relation_name: :comments,
+            relation_type: :to_many,
+            # Empty array of records as they were filtered out by the policy scope
+            records: []
+          }]
+        end
         before { allow_operation('replace_fields', article, related_records_with_context) }
 
-        it do
-          pending 'DISCUSS: Should this error out somehow?'
-          is_expected.to be_not_found
-        end
+        it { is_expected.to be_successful }
       end
     end
 
