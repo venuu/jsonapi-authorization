@@ -1,5 +1,5 @@
 module JSONAPI
   module Authorization
-    VERSION = "0.8.2".freeze
+    VERSION = "1.0.0.alpha1".freeze
   end
 end
