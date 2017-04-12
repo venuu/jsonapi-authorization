@@ -24,4 +24,8 @@ class ArticleResource < JSONAPI::Resource
   # Setting this attribute is an easy way to test that authorizations work even
   # when the model has validation errors
   attributes :blank_value
+
+  def self.creatable_fields(context)
+    super + [:id]
+  end
 end

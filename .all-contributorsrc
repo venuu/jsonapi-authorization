@@ -94,6 +94,16 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "handlers",
+      "name": "Sam",
+      "avatar_url": "https://avatars3.githubusercontent.com/u/370182?v=3",
+      "profile": "http://samlh.com",
+      "contributions": [
+        "code",
+        "test"
+      ]
     }
   ]
 }

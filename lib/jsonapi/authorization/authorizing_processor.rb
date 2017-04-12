@@ -12,10 +12,10 @@ module JSONAPI
       set_callback :remove_resource, :before, :authorize_remove_resource
       set_callback :replace_fields, :before, :authorize_replace_fields
       set_callback :replace_to_one_relationship, :before, :authorize_replace_to_one_relationship
-      set_callback :create_to_many_relationship, :before, :authorize_create_to_many_relationship
-      set_callback :replace_to_many_relationship, :before, :authorize_replace_to_many_relationship
-      set_callback :remove_to_many_relationship, :before, :authorize_remove_to_many_relationship
       set_callback :remove_to_one_relationship, :before, :authorize_remove_to_one_relationship
+      set_callback :create_to_many_relationships, :before, :authorize_create_to_many_relationships
+      set_callback :replace_to_many_relationships, :before, :authorize_replace_to_many_relationships
+      set_callback :remove_to_many_relationships, :before, :authorize_remove_to_many_relationships
 
       [
         :find,
@@ -150,7 +150,7 @@ module JSONAPI
         )
       end
 
-      def authorize_create_to_many_relationship
+      def authorize_create_to_many_relationships
         source_record = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
@@ -162,7 +162,7 @@ module JSONAPI
         authorizer.create_to_many_relationship(source_record, related_models, relationship_type)
       end
 
-      def authorize_replace_to_many_relationship
+      def authorize_replace_to_many_relationships
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
@@ -179,7 +179,7 @@ module JSONAPI
         )
       end
 
-      def authorize_remove_to_many_relationship
+      def authorize_remove_to_many_relationships
         source_resource = @resource_klass.find_by_key(
           params[:resource_id],
           context: context
@@ -187,18 +187,20 @@ module JSONAPI
         source_record = source_resource._model
 
         relationship_type = params[:relationship_type].to_sym
-        related_resource = @resource_klass
+
+        related_resources = @resource_klass
           ._relationship(relationship_type)
           .resource_klass
-          .find_by_key(
-            params[:associated_key],
+          .find_by_keys(
+            params[:associated_keys],
             context: context
           )
-        related_record = related_resource._model unless related_resource.nil?
+
+        related_records = related_resources.map(&:_model)
 
         authorizer.remove_to_many_relationship(
           source_record,
-          related_record,
+          related_records,
           relationship_type
         )
       end

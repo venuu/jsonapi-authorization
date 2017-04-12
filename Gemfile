@@ -19,7 +19,7 @@ end
 
 case jsonapi_resources_version
 when 'default'
-  gem 'jsonapi-resources', '0.8.0.beta1'
+  gem 'jsonapi-resources', '0.9'
 else
   gem 'jsonapi-resources', jsonapi_resources_version
 end
