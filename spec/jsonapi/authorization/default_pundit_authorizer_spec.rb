@@ -244,8 +244,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
     context 'unauthorized for create? on source class and related records is empty' do
       let(:related_records) { [] }
-      before { stub_policy_actions(source_class, create?: true) }
-      it { is_expected.not_to raise_error(::Pundit::NotAuthorizedError) }
+      before { stub_policy_actions(source_class, create?: false) }
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'unauthorized for create? and authorized for create_with_comments? on source class' do
@@ -265,13 +265,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
           stub_policy_actions(source_class, create?: true)
           related_records.each { |r| stub_policy_actions(r, update?: true) }
         end
-        it { is_expected.not_to raise_error(::Pundit::NotAuthorizedError) }
+        it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on related records' do
+      context 'unauthorized for update? on any related records' do
         before do
           stub_policy_actions(source_class, create?: true)
-          related_records.each { |r| stub_policy_actions(r, update?: false) }
+          stub_policy_actions(related_records.first, update?: false)
         end
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
