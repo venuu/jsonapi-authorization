@@ -98,14 +98,27 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The class of the record to be created
-      # * +related_records+ - An array of records to be associated to the new
-      #   record. This will contain the records specified in the
-      #   "relationships" key in the request
-      def create_resource(source_class, related_records)
+      # * +related_records_with_context+ - A has with the association type,
+      # the relationship name, and an Array of new related records.
+      def create_resource(source_class, related_records_with_context)
         ::Pundit.authorize(user, source_class, 'create?')
-
-        related_records.each do |record|
-          ::Pundit.authorize(user, record, 'update?')
+        related_records_with_context.each do |data|
+          relation_name = data[:relation_name]
+          records = data[:records]
+          relationship_method = "create_with_#{relation_name}?"
+          policy = ::Pundit.policy(user, source_class)
+          if policy.respond_to?(relationship_method)
+            unless policy.public_send(relationship_method, records)
+              raise ::Pundit::NotAuthorizedError,
+                    query: relationship_method,
+                    record: source_class,
+                    policy: policy
+            end
+          else
+            records.each do |record|
+              ::Pundit.authorize(user, record, 'update?')
+            end
+          end
         end
       end
 

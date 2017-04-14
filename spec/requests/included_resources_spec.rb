@@ -9,6 +9,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
   let(:comments_policy_scope) { Comment.none }
   let(:article_policy_scope) { Article.all }
+  let(:user_policy_scope) { User.all }
 
   before do
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve).and_return(
@@ -16,6 +17,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     )
     allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(
       comments_policy_scope
+    )
+    allow_any_instance_of(UserPolicy::Scope).to receive(:resolve).and_return(
+      user_policy_scope
     )
   end
 
@@ -266,6 +270,25 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     let(:existing_comments) do
       Array.new(2) { Comment.create }
     end
+    let(:related_records_with_context) do
+      [
+        {
+          relation_type: :to_one,
+          relation_name: :author,
+          records: existing_author
+        },
+        {
+          relation_type: :to_many,
+          relation_name: :comments,
+          # Relax the constraints of expected records here. Lower level tests modify the
+          # available policy scope for comments, so we will get a different amount of records deep
+          # down in the other specs.
+          #
+          # This is fine, because we test resource create relationships with specific matcher
+          records: kind_of(Array)
+        }
+      ]
+    end
 
     let(:attributes_json) { '{}' }
     let(:json) do
@@ -296,7 +319,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     subject(:last_response) { post("/articles?include=#{include_query}", json) }
     let!(:chained_authorizer) do
-      allow_operation('create_resource', Article, [existing_author, *existing_comments])
+      allow_operation('create_resource', Article, related_records_with_context)
     end
 
     include_examples :include_directive_tests

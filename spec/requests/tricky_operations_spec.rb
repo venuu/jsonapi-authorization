@@ -37,17 +37,24 @@ RSpec.describe 'Tricky operations', type: :request do
       }
       EOS
     end
+    let(:related_records_with_context) do
+      [{
+        relation_name: :article,
+        relation_type: :to_one,
+        records: article
+      }]
+    end
 
-    context 'authorized for create_resource on Comment and [article]' do
+    context 'authorized for create_resource on Comment and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { allow_operation('create_resource', Comment, [article]) }
+      before { allow_operation('create_resource', Comment, related_records_with_context) }
 
       it { is_expected.to be_successful }
     end
 
-    context 'unauthorized for create_resource on Comment and [article]' do
+    context 'unauthorized for create_resource on Comment and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { disallow_operation('create_resource', Comment, [article]) }
+      before { disallow_operation('create_resource', Comment, related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -73,16 +80,24 @@ RSpec.describe 'Tricky operations', type: :request do
       EOS
     end
 
-    context 'authorized for create_resource on Tag and [article]' do
+    let(:related_records_with_context) do
+      [{
+        relation_name: :taggable,
+        relation_type: :to_one,
+        records: article
+      }]
+    end
+
+    context 'authorized for create_resource on Tag and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { allow_operation('create_resource', Tag, [article]) }
+      before { allow_operation('create_resource', Tag, related_records_with_context) }
 
       it { is_expected.to be_successful }
     end
 
-    context 'unauthorized for create_resource on Tag and [article]' do
+    context 'unauthorized for create_resource on Tag and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { disallow_operation('create_resource', Tag, [article]) }
+      before { disallow_operation('create_resource', Tag, related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -133,12 +148,17 @@ RSpec.describe 'Tricky operations', type: :request do
 
       context 'limited by Comments policy scope' do
         let(:comments_policy_scope) { Comment.where("id NOT IN (?)", new_comments.map(&:id)) }
+        let(:related_records_with_context) do
+          [{
+            relation_name: :comments,
+            relation_type: :to_many,
+            # Empty array of records as they were filtered out by the policy scope
+            records: []
+          }]
+        end
         before { allow_operation('replace_fields', article, related_records_with_context) }
 
-        it do
-          pending 'DISCUSS: Should this error out somehow?'
-          is_expected.to be_not_found
-        end
+        it { is_expected.to be_successful }
       end
     end
 
