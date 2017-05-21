@@ -115,6 +115,7 @@ module JSONAPI
                     policy: policy
             end
           else
+	    records = records.is_a?(Array) ? records : [records]
             records.each do |record|
               ::Pundit.authorize(user, record, 'update?')
             end
