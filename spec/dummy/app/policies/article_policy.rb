@@ -32,6 +32,10 @@ class ArticlePolicy
     raise NotImplementedError
   end
 
+  def create_with_author?(_author)
+    raise NotImplementedError
+  end
+
   def create_with_comments?(_comments)
     raise NotImplementedError
   end

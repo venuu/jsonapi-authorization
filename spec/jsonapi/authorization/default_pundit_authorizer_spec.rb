@@ -160,6 +160,53 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   end
 
   describe '#replace_fields' do
+    describe 'with "relation_type: :to_one"' do
+      let(:related_record) { User.new }
+      let(:related_records_with_context) do
+        [{
+          relation_name: :author,
+          relation_type: :to_one,
+          records: related_record
+        }]
+      end
+
+      subject(:method_call) do
+        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+      end
+
+      context 'authorized for replace_author? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_author?: true, update?: true) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for replace_author? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_author?: false, update?: true) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for replace_author? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_author?: true, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for replace_author? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_author?: false, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'where replace_<type>? is undefined' do
+        context 'authorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: true) }
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: false) }
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
+      end
+    end
+
     describe 'with "relation_type: :to_many"' do
       let(:related_records) { Array.new(3) { Comment.new } }
       let(:related_records_with_context) do
@@ -221,6 +268,59 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   end
 
   describe '#create_resource' do
+    describe 'with "relation_type: :to_one"' do
+      let(:related_record) { User.new }
+      let(:related_records_with_context) do
+        [{
+          relation_name: :author,
+          relation_type: :to_one,
+          records: related_record
+        }]
+      end
+      let(:source_class) { source_record.class }
+      subject(:method_call) do
+        -> { authorizer.create_resource(source_class, related_records_with_context) }
+      end
+
+      context 'authorized for create? and authorized for create_with_<type>? on source class' do
+        before { stub_policy_actions(source_class, create_with_author?: true, create?: true) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'authorized for create? and unauthorized for create_with_<type>? on source class' do
+        before { stub_policy_actions(source_class, create_with_author?: false, create?: true) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for create? and authorized for create_with_author? on source class' do
+        before { stub_policy_actions(source_class, create_with_author?: true, create?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for create? and unauthorized for create_with_author? on source class' do
+        before { stub_policy_actions(source_class, create_with_author?: false, create?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for create? where create_with_<type>? is undefined' do
+        context 'authorized for update? on related record' do
+          before do
+            stub_policy_actions(source_class, create?: true)
+            stub_policy_actions(related_record, update?: true)
+          end
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on related record' do
+          before do
+            stub_policy_actions(source_class, create?: true)
+            stub_policy_actions(related_record, update?: false)
+          end
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
+      end
+    end
+
     describe 'with "relation_type: :to_many"' do
       let(:related_records) { Array.new(3) { Comment.new } }
       let(:related_records_with_context) do
