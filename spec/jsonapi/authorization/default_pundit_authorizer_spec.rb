@@ -160,127 +160,131 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   end
 
   describe '#replace_fields' do
-    let(:related_records) { Array.new(3) { Comment.new } }
-    let(:related_records_with_context) do
-      [{
-        relation_name: :comments,
-        relation_type: :to_many,
-        records: related_records
-      }]
-    end
+    describe 'with "relation_type: :to_many"' do
+      let(:related_records) { Array.new(3) { Comment.new } }
+      let(:related_records_with_context) do
+        [{
+          relation_name: :comments,
+          relation_type: :to_many,
+          records: related_records
+        }]
+      end
 
-    subject(:method_call) do
-      -> { authorizer.replace_fields(source_record, related_records_with_context) }
-    end
+      subject(:method_call) do
+        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+      end
 
-    context 'authorized for update? on source record and related records is empty' do
-      before { allow_action(source_record, 'update?') }
-      let(:related_records) { [] }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'unauthorized for update? on source record  and related records is empty' do
-      before { disallow_action(source_record, 'update?') }
-      let(:related_records) { [] }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'authorized for replace_comments? and authorized for update? on source record' do
-      before { stub_policy_actions(source_record, replace_comments?: true, update?: true) }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'unauthorized for replace_comments? and authorized for update? on source record' do
-      before { stub_policy_actions(source_record, replace_comments?: false, update?: true) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'authorized for replace_comments? and unauthorized for update? on source record' do
-      before { stub_policy_actions(source_record, replace_comments?: true, update?: false) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'unauthorized for replace_comments? and unauthorized for update? on source record' do
-      before { stub_policy_actions(source_record, replace_comments?: false, update?: false) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'where replace_<type>? is undefined' do
-      context 'authorized for update? on source record' do
-        before { stub_policy_actions(source_record, update?: true) }
+      context 'authorized for update? on source record and related records is empty' do
+        before { allow_action(source_record, 'update?') }
+        let(:related_records) { [] }
         it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on source record' do
-        before { stub_policy_actions(source_record, update?: false) }
+      context 'unauthorized for update? on source record  and related records is empty' do
+        before { disallow_action(source_record, 'update?') }
+        let(:related_records) { [] }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for replace_comments? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: true, update?: true) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for replace_comments? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: false, update?: true) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for replace_comments? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: true, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for replace_comments? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, replace_comments?: false, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'where replace_<type>? is undefined' do
+        context 'authorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: true) }
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: false) }
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
       end
     end
   end
 
   describe '#create_resource' do
-    let(:related_records) { Array.new(3) { Comment.new } }
-    let(:related_records_with_context) do
-      [{
-        relation_name: :comments,
-        relation_type: :to_many,
-        records: related_records
-      }]
-    end
-    let(:source_class) { source_record.class }
-    subject(:method_call) do
-      -> { authorizer.create_resource(source_class, related_records_with_context) }
-    end
+    describe 'with "relation_type: :to_many"' do
+      let(:related_records) { Array.new(3) { Comment.new } }
+      let(:related_records_with_context) do
+        [{
+          relation_name: :comments,
+          relation_type: :to_many,
+          records: related_records
+        }]
+      end
+      let(:source_class) { source_record.class }
+      subject(:method_call) do
+        -> { authorizer.create_resource(source_class, related_records_with_context) }
+      end
 
-    context 'authorized for create? on source class and related records is empty' do
-      before { stub_policy_actions(source_class, create?: true) }
-      let(:related_records) { [] }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for create? and authorized for create_with_<type>? on source class' do
-      before { stub_policy_actions(source_class, create_with_comments?: true, create?: true) }
-      it { is_expected.not_to raise_error }
-    end
-
-    context 'authorized for create? and unauthorized for create_with_<type>? on source class' do
-      let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-      before { stub_policy_actions(source_class, create_with_comments?: false, create?: true) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'unauthorized for create? on source class and related records is empty' do
-      let(:related_records) { [] }
-      before { stub_policy_actions(source_class, create?: false) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'unauthorized for create? and authorized for create_with_comments? on source class' do
-      before { stub_policy_actions(source_class, create_with_comments?: true, create?: false) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'unauthorized for create? and unauthorized for create_with_comments? on source class' do
-      let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-      before { stub_policy_actions(source_class, create_with_comments?: false, create?: false) }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-    end
-
-    context 'authorized for create? where create_with_<type>? is undefined' do
-      context 'authorized for update? on related records' do
-        before do
-          stub_policy_actions(source_class, create?: true)
-          related_records.each { |r| stub_policy_actions(r, update?: true) }
-        end
+      context 'authorized for create? on source class and related records is empty' do
+        before { stub_policy_actions(source_class, create?: true) }
+        let(:related_records) { [] }
         it { is_expected.not_to raise_error }
       end
 
-      context 'unauthorized for update? on any related records' do
-        before do
-          stub_policy_actions(source_class, create?: true)
-          stub_policy_actions(related_records.first, update?: false)
-        end
+      context 'authorized for create? and authorized for create_with_<type>? on source class' do
+        before { stub_policy_actions(source_class, create_with_comments?: true, create?: true) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'authorized for create? and unauthorized for create_with_<type>? on source class' do
+        let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
+        before { stub_policy_actions(source_class, create_with_comments?: false, create?: true) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for create? on source class and related records is empty' do
+        let(:related_records) { [] }
+        before { stub_policy_actions(source_class, create?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for create? and authorized for create_with_comments? on source class' do
+        before { stub_policy_actions(source_class, create_with_comments?: true, create?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for create? and unauthorized for create_with_comments? on source class' do
+        let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
+        before { stub_policy_actions(source_class, create_with_comments?: false, create?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for create? where create_with_<type>? is undefined' do
+        context 'authorized for update? on related records' do
+          before do
+            stub_policy_actions(source_class, create?: true)
+            related_records.each { |r| stub_policy_actions(r, update?: true) }
+          end
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on any related records' do
+          before do
+            stub_policy_actions(source_class, create?: true)
+            stub_policy_actions(related_records.first, update?: false)
+          end
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
       end
     end
   end
