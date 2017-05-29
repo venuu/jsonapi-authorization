@@ -127,30 +127,6 @@ describe 'Resource operations', type: :request do
         it { is_expected.to be_not_found }
       end
     end
-
-    context 'nullify relationship' do
-      let(:article) { articles(:article_with_author) }
-      let(:json) do
-        <<-EOS.strip_heredoc
-        {
-          "data": {
-            "id": "#{article.external_id}",
-            "type": "articles",
-            "relationships": { "author": null }
-          }
-        }
-        EOS
-      end
-      let(:user_policy_scope) { User.all }
-
-      before do
-        allow_any_instance_of(UserPolicy::Scope).to receive(:resolve)
-          .and_return(user_policy_scope)
-        allow_operation('replace_fields', article, [])
-      end
-
-      it { is_expected.to be_successful }
-    end
   end
 
   describe 'DELETE /articles/:id' do
