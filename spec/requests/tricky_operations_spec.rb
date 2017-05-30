@@ -189,7 +189,7 @@ RSpec.describe 'Tricky operations', type: :request do
       allow_operation(
         'replace_fields',
         article,
-        [ { relation_type: :to_one, relation_name: :author, records: nil } ]
+        [{ relation_type: :to_one, relation_name: :author, records: nil }]
       )
     end
 
