@@ -249,8 +249,6 @@ module JSONAPI
         [:to_one, :to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_value|
             case assoc_value
-            when nil
-              next
             when Hash # polymorphic relationship
               resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
               resource_class.find_by_key(assoc_value[:id], context: context)._model
@@ -259,7 +257,7 @@ module JSONAPI
               primary_key = resource_class._primary_key
               resource_class._model_class.where(primary_key => assoc_value)
             end
-          end.compact
+          end
         end
       end
 
@@ -272,7 +270,7 @@ module JSONAPI
             related_models =
               case assoc_value
               when nil
-                next
+                nil
               when Hash # polymorphic relationship
                 resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
                 resource_class.find_by_key(assoc_value[:id], context: context)._model
@@ -289,7 +287,7 @@ module JSONAPI
               relation_name: assoc_name,
               records: related_models
             }
-          end.compact
+          end
         end
       end
 

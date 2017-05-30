@@ -183,13 +183,14 @@ RSpec.describe 'Tricky operations', type: :request do
       EOS
     end
     let(:policy_scope) { Article.all }
-    let(:user_policy_scope) { User.all }
     subject(:last_response) { patch("/articles/#{article.external_id}", json) }
 
     before do
-      allow_any_instance_of(UserPolicy::Scope).to receive(:resolve)
-        .and_return(user_policy_scope)
-      allow_operation('replace_fields', article, [])
+      allow_operation(
+        'replace_fields',
+        article,
+        [ { relation_type: :to_one, relation_name: :author, records: nil } ]
+      )
     end
 
     it { is_expected.to be_successful }
