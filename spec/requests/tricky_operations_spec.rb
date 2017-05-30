@@ -168,4 +168,31 @@ RSpec.describe 'Tricky operations', type: :request do
       it { is_expected.to be_forbidden }
     end
   end
+
+  describe 'PATCH /articles/:id (nullifying to-one relationship)' do
+    let(:article) { articles(:article_with_author) }
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "id": "#{article.external_id}",
+          "type": "articles",
+          "relationships": { "author": null }
+        }
+      }
+      EOS
+    end
+    let(:policy_scope) { Article.all }
+    subject(:last_response) { patch("/articles/#{article.external_id}", json) }
+
+    before do
+      allow_operation(
+        'replace_fields',
+        article,
+        [{ relation_type: :to_one, relation_name: :author, records: nil }]
+      )
+    end
+
+    it { is_expected.to be_successful }
+  end
 end

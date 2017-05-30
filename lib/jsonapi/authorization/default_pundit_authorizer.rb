@@ -260,7 +260,11 @@ module JSONAPI
           when :to_many
             replace_to_many_relationship(source_record, records, relation_name)
           when :to_one
-            replace_to_one_relationship(source_record, records, relation_name)
+            if records.nil?
+              remove_to_one_relationship(source_record, relation_name)
+            else
+              replace_to_one_relationship(source_record, records, relation_name)
+            end
           end
         end
       end

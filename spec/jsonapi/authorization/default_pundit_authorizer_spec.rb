@@ -207,6 +207,52 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
     end
 
+    describe 'with "relation_type: :to_one" and records is nil' do
+      let(:related_records_with_context) do
+        [{
+          relation_name: :author,
+          relation_type: :to_one,
+          records: nil
+        }]
+      end
+
+      subject(:method_call) do
+        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+      end
+
+      context 'authorized for remove_<type>? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, remove_author?: true, update?: true) }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for remove_<type>? and authorized for update? on source record' do
+        before { stub_policy_actions(source_record, remove_author?: false, update?: true) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'authorized for remove_<type>? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, remove_author?: true, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for remove_<type>? and unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, remove_author?: false, update?: false) }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'where remove_<type>? is undefined' do
+        context 'authorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: true) }
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on source record' do
+          before { stub_policy_actions(source_record, update?: false) }
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
+      end
+    end
+
     describe 'with "relation_type: :to_many"' do
       let(:related_records) { Array.new(3) { Comment.new } }
       let(:related_records_with_context) do

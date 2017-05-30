@@ -104,6 +104,17 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "jpalumickas",
+      "name": "Justas Palumickas",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/2738630?v=3",
+      "profile": "https://jpalumickas.com",
+      "contributions": [
+        "bug",
+        "code",
+        "test"
+      ]
     }
   ]
 }
