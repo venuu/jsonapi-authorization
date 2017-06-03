@@ -501,21 +501,23 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
-    context 'where replace_<type>? not defined' do
-      # CommentPolicy does not define #replace_article?, so #update? should determine authorization
-      let(:source_record) { comments(:comment_1) }
-      let(:related_records) { Article.new }
-      subject(:method_call) do
-        -> { authorizer.replace_to_one_relationship(source_record, related_record, :article) }
+    context 'where replace_<type>? is undefined' do
+      context 'authorized for update? on source record' do
+        before { stub_policy_actions(source_record, update?: true) }
+
+        context 'authorized for update? on new related record' do
+          before { stub_policy_actions(related_record, update?: true) }
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on new related record' do
+          before { stub_policy_actions(related_record, update?: false) }
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
       end
 
-      context 'authorized for update? on record' do
-        before { allow_action(source_record, 'update?') }
-        it { is_expected.not_to raise_error }
-      end
-
-      context 'unauthorized for update? on record' do
-        before { disallow_action(source_record, 'update?') }
+      context 'unauthorized for update? on source record' do
+        before { stub_policy_actions(source_record, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
