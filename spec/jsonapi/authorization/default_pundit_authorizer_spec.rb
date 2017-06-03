@@ -197,7 +197,16 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       context 'where replace_<type>? is undefined' do
         context 'authorized for update? on source record' do
           before { stub_policy_actions(source_record, update?: true) }
-          it { is_expected.not_to raise_error }
+
+          context 'authorized for update? on new related record' do
+            before { stub_policy_actions(related_record, update?: true) }
+            it { is_expected.not_to raise_error }
+          end
+
+          context 'unauthorized for update? on new related record' do
+            before { stub_policy_actions(related_record, update?: false) }
+            it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+          end
         end
 
         context 'unauthorized for update? on source record' do
