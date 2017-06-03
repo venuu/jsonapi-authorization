@@ -596,19 +596,28 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where replace_<type>? not defined' do
-      # ArticlePolicy does not define #replace_tags?, so #update? should determine authorization
-      let(:new_tags) { Array.new(3) { Tag.new } }
-      subject(:method_call) do
-        -> { authorizer.replace_to_many_relationship(article, new_tags, :tags) }
-      end
-
       context 'authorized for update? on record' do
-        before { allow_action(article, 'update?') }
-        it { is_expected.not_to raise_error }
+        before { stub_policy_actions(article, update?: true) }
+
+        context 'authorized for update? on all new related records' do
+          before do
+            new_comments.each { |r| stub_policy_actions(r, update?: true) }
+          end
+
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on any new related records' do
+          before do
+            stub_policy_actions(new_comments.first, update?: false)
+          end
+
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action(article, 'update?') }
+        before { stub_policy_actions(article, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
