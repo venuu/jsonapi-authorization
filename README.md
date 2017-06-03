@@ -14,6 +14,15 @@ branch. This may contain information that is not relevant to the release you are
   [jr]: https://github.com/cerebris/jsonapi-resources "A resource-focused Rails library for developing JSON API compliant servers."
   [pundit]: https://github.com/elabs/pundit "Minimal authorization through OO design and pure Ruby classes"
 
+The core design principle of `JSONAPI::Authorization` is:
+
+**Prefer being overly restrictive rather than too permissive by accident.**
+
+What follows is that we want to have:
+
+1. Whitelist over blacklist -approach for authorization
+2. Fall back on a more strict authorization
+
 ## Caveats
 
 Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn't the case, please [open an issue][issues].
