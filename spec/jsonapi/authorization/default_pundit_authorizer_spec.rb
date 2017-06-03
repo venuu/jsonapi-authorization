@@ -550,19 +550,28 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where add_to_<type>? not defined' do
-      # ArticlePolicy does not define #add_to_tags?, so #update? should determine authorization
-      let(:related_records) { Array.new(3) { Tag.new } }
-      subject(:method_call) do
-        -> { authorizer.create_to_many_relationship(source_record, related_records, :tags) }
-      end
-
       context 'authorized for update? on record' do
-        before { allow_action(source_record, 'update?') }
-        it { is_expected.not_to raise_error }
+        before { stub_policy_actions(source_record, update?: true) }
+
+        context 'authorized for update? on all new related records' do
+          before do
+            related_records.each { |r| stub_policy_actions(r, update?: true) }
+          end
+
+          it { is_expected.not_to raise_error }
+        end
+
+        context 'unauthorized for update? on any new related records' do
+          before do
+            stub_policy_actions(related_records.first, update?: false)
+          end
+
+          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+        end
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action(source_record, 'update?') }
+        before { stub_policy_actions(source_record, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
