@@ -9,6 +9,7 @@ As JA runs the authorization checks _before_ any changes are made (even to in-me
 * [Example setup](#example-setup)
 * [Changing a `has-one` relationship](#change-has-one-relationship-op)
 * [Removing a `has-one` relationship](#remove-has-one-relationship-op)
+* [Changing resource and a `has-one` relationship](#change-has-one-resource-op)
 
 <a name="example-setup"></a>
 
@@ -116,5 +117,51 @@ article_1 = Article.create(id: 'article-1', user: user_1)
 ### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
+
+**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
+
+<a name="change-has-one-resource-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Changing resource and a `has-one` relationship
+
+Setup:
+
+```rb
+user_1 = User.create(id: 'user-1')
+article_1 = Article.create(id: 'article-1', user: user_1)
+user_2 = User.create(id: 'user-2')
+```
+
+> `PATCH /articles/article-1`
+> 
+> ```json
+> {
+>   "type": "articles",
+>   "id": "article-1",
+>   "relationships": {
+>     "author": {
+>       "data": {
+>         "type": "users",
+>         "id": "user-2"
+>       }
+>     }
+>   }
+> }
+> ```
+
+### Always calls
+
+* `ArticlePolicy.new(current_user, article_1).update?`
+
+### Custom relationship authorization method
+
+* `ArticlePolicy.new(current_user, article_1).replace_author?(user_2)`
+
+### Fallback
+
+* `ArticlePolicy.new(current_user, article_1).update?`
+* `UserPolicy.new(current_user, user_2).update?`
 
 **Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
