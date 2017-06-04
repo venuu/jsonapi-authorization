@@ -10,6 +10,7 @@ As JA runs the authorization checks _before_ any changes are made (even to in-me
 * [Changing a `has-one` relationship](#change-has-one-relationship-op)
 * [Removing a `has-one` relationship](#remove-has-one-relationship-op)
 * [Changing resource and a `has-one` relationship](#change-has-one-resource-op)
+* [Creating a resource with a `has-one` relationship](#create-has-one-resource-op)
 
 <a name="example-setup"></a>
 
@@ -165,3 +166,45 @@ user_2 = User.create(id: 'user-2')
 * `UserPolicy.new(current_user, user_2).update?`
 
 **Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
+
+<a name="create-has-one-resource-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Creating a resource with a `has-one` relationship
+
+Setup:
+
+```rb
+user_1 = User.create(id: 'user-1')
+```
+
+> `POST /articles`
+> 
+> ```json
+> {
+>   "type": "articles",
+>   "relationships": {
+>     "author": {
+>       "data": {
+>         "type": "users",
+>         "id": "user-1"
+>       }
+>     }
+>   }
+> }
+> ```
+
+### Always calls
+
+* `ArticlePolicy.new(current_user, Article).create?`
+
+**Note:** The second parameter for the policy is the `Article` _class_, not the new record. This is because JA runs the authorization checks _before_ any changes are made, even changes to in-memory objects.
+
+### Custom relationship authorization method
+
+* `ArticlePolicy.new(current_user, Article).create_with_author?(user_1)`
+
+### Fallback
+
+* `UserPolicy.new(current_user, user_1).update?`
