@@ -237,10 +237,15 @@ module JSONAPI
 
       private
 
-      def authorize_relationship_operation(source_record, relationship_method, *args)
+      def authorize_relationship_operation(
+        source_record,
+        relationship_method,
+        related_record_or_records = nil
+      )
         policy = ::Pundit.policy(user, source_record)
         if policy.respond_to?(relationship_method)
-          unless policy.public_send(relationship_method, *args)
+          args = [relationship_method, related_record_or_records].reject(&:nil?)
+          unless policy.public_send(*args)
             raise ::Pundit::NotAuthorizedError,
                   query: relationship_method,
                   record: source_record,
@@ -248,6 +253,11 @@ module JSONAPI
           end
         else
           ::Pundit.authorize(user, source_record, 'update?')
+          if related_record_or_records
+            Array(related_record_or_records).each do |related_record|
+              ::Pundit.authorize(user, related_record, 'update?')
+            end
+          end
         end
       end
 
