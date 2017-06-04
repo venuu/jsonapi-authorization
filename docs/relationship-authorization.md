@@ -1,4 +1,4 @@
-# Authorization of operations touching relationships
+# Authorization of operations touching relationships <a name="doc-top"></a>
 
 `JSONAPI::Authorization` (JA) is unique in the way it considers relationship changes to change the underlying models. Whenever an incoming requests changes associated resources, JA will authorize those operations are OK.
 
@@ -11,6 +11,9 @@ As JA runs the authorization checks _before_ any changes are made (even to in-me
 * [Removing a `has-one` relationship](#remove-has-one-relationship-op)
 
 <a name="example-setup"></a>
+
+[back to top ↑](#doc-top)
+
 ## Example models and resources
 
 The examples on this page use these models:
@@ -56,6 +59,9 @@ end
 ```
 
 <a name="change-has-one-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
 ## Changing a `has-one` relationship with a relationship operation
 
 Setup:
@@ -87,6 +93,9 @@ user_2 = User.create(id: 'user-2')
 **Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
 
 <a name="remove-has-one-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
 ## Removing a `has-one` relationship with a relationship operation
 
 Setup:
