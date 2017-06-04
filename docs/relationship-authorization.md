@@ -7,10 +7,18 @@ As JA runs the authorization checks _before_ any changes are made (even to in-me
 **Table of contents**
 
 * [Example setup](#example-setup)
-* [Changing a `has-one` relationship](#change-has-one-relationship-op)
-* [Removing a `has-one` relationship](#remove-has-one-relationship-op)
-* [Changing resource and a `has-one` relationship](#change-has-one-resource-op)
-* [Creating a resource with a `has-one` relationship](#create-has-one-resource-op)
+* `has-one` relationships
+  - [Changing a `has-one` relationship](#change-has-one-relationship-op)
+  - [Removing a `has-one` relationship](#remove-has-one-relationship-op)
+  - [Changing resource and a `has-one` relationship](#change-has-one-resource-op)
+  - [Creating a resource with a `has-one` relationship](#create-has-one-resource-op)
+* `has-many` relationships
+  - [Adding to a `has-many` relationship](#add-to-has-many-relationship-op)
+  - [Removing from a `has-many` relationship](#remove-from-has-many-relationship-op)
+  - [Replacing a `has-many` relationship](#replace-has-many-relationship-op)
+  - [Removing a `has-many` relationship](#remove-has-many-relationship-op)
+  - [Changing resource and a `has-many` relationship](#change-has-many-resource-op)
+  - [Creating a resource with a `has-many` relationship](#create-has-many-resource-op)
 
 <a name="example-setup"></a>
 
@@ -208,3 +216,169 @@ user_1 = User.create(id: 'user-1')
 ### Fallback
 
 * `UserPolicy.new(current_user, user_1).update?`
+
+<a name="add-to-has-many-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Adding to a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
+
+<a name="remove-from-has-many-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Removing from a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
+
+<a name="replace-has-many-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Replacing a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
+
+<a name="remove-has-many-relationship-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Removing a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
+
+<a name="change-has-many-resource-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Changing resource and a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Always calls
+
+* `ArticlePolicy.new(current_user, article_1).update?`
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
+
+<a name="create-has-many-resource-op"></a>
+
+[back to top ↑](#doc-top)
+
+## Creating a resource with a `has-many` relationship
+
+Setup:
+
+```rb
+# TODO
+```
+
+> `HTTP CALL TODO`
+>
+> ```json
+> "todo"
+> ```
+
+### Always calls
+
+* `ArticlePolicy.new(current_user, Article).create?`
+
+**Note:** The second parameter for the policy is the `Article` _class_, not the new record. This is because JA runs the authorization checks _before_ any changes are made, even changes to in-memory objects.
+
+### Custom relationship authorization method
+
+TODO
+
+### Fallback
+
+TODO
