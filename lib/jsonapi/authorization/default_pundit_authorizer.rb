@@ -253,7 +253,7 @@ module JSONAPI
           end
         else
           ::Pundit.authorize(user, source_record, 'update?')
-          if (related_record_or_records)
+          if related_record_or_records
             Array(related_record_or_records).each do |related_record|
               ::Pundit.authorize(user, related_record, 'update?')
             end
