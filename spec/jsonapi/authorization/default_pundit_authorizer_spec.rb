@@ -7,6 +7,38 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   let(:source_record) { Article.new }
   let(:authorizer) { described_class.new({}) }
 
+  shared_examples_for :update_singular_fallback do |related_record_method|
+    context 'authorized for update? on related record' do
+      before { stub_policy_actions(send(related_record_method), update?: true) }
+
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on related record' do
+      before { stub_policy_actions(send(related_record_method), update?: false) }
+
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+  end
+
+  shared_examples_for :update_multiple_fallback do |related_records_method|
+    context 'authorized for update? on all related records' do
+      before do
+        send(related_records_method).each { |r| stub_policy_actions(r, update?: true) }
+      end
+
+      it { is_expected.not_to raise_error }
+    end
+
+    context 'unauthorized for update? on any related records' do
+      before do
+        stub_policy_actions(send(related_records_method).first, update?: false)
+      end
+
+      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+    end
+  end
+
   describe '#find' do
     subject(:method_call) do
       -> { authorizer.find(source_record) }
@@ -197,16 +229,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       context 'where replace_<type>? is undefined' do
         context 'authorized for update? on source record' do
           before { stub_policy_actions(source_record, update?: true) }
-
-          context 'authorized for update? on new related record' do
-            before { stub_policy_actions(related_record, update?: true) }
-            it { is_expected.not_to raise_error }
-          end
-
-          context 'unauthorized for update? on new related record' do
-            before { stub_policy_actions(related_record, update?: false) }
-            it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-          end
+          include_examples :update_singular_fallback, :related_record
         end
 
         context 'unauthorized for update? on source record' do
@@ -311,22 +334,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       context 'where replace_<type>? is undefined' do
         context 'authorized for update? on source record' do
           before { stub_policy_actions(source_record, update?: true) }
-
-          context 'authorized for update? on all new related records' do
-            before do
-              related_records.each { |r| stub_policy_actions(r, update?: true) }
-            end
-
-            it { is_expected.not_to raise_error }
-          end
-
-          context 'unauthorized for update? on any new related records' do
-            before do
-              stub_policy_actions(related_records.first, update?: false)
-            end
-
-            it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-          end
+          include_examples :update_multiple_fallback, :related_records
         end
 
         context 'unauthorized for update? on source record' do
@@ -372,20 +380,14 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'authorized for create? where create_with_<type>? is undefined' do
-        context 'authorized for update? on related record' do
-          before do
-            stub_policy_actions(source_class, create?: true)
-            stub_policy_actions(related_record, update?: true)
-          end
-          it { is_expected.not_to raise_error }
+      context 'where create_with_<type>? is undefined' do
+        context 'authorized for create? on source class' do
+          before { stub_policy_actions(source_class, create?: true) }
+          include_examples :update_singular_fallback, :related_record
         end
 
-        context 'unauthorized for update? on related record' do
-          before do
-            stub_policy_actions(source_class, create?: true)
-            stub_policy_actions(related_record, update?: false)
-          end
+        context 'unauthorized for create? on source class' do
+          before { stub_policy_actions(source_class, create?: false) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -439,20 +441,14 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
-      context 'authorized for create? where create_with_<type>? is undefined' do
-        context 'authorized for update? on related records' do
-          before do
-            stub_policy_actions(source_class, create?: true)
-            related_records.each { |r| stub_policy_actions(r, update?: true) }
-          end
-          it { is_expected.not_to raise_error }
+      context 'where create_with_<type>? is undefined' do
+        context 'authorized for create? on source class' do
+          before { stub_policy_actions(source_class, create?: true) }
+          include_examples :update_multiple_fallback, :related_records
         end
 
-        context 'unauthorized for update? on any related records' do
-          before do
-            stub_policy_actions(source_class, create?: true)
-            stub_policy_actions(related_records.first, update?: false)
-          end
+        context 'unauthorized for create? on source class' do
+          before { stub_policy_actions(source_class, create?: false) }
           it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
         end
       end
@@ -504,16 +500,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     context 'where replace_<type>? is undefined' do
       context 'authorized for update? on source record' do
         before { stub_policy_actions(source_record, update?: true) }
-
-        context 'authorized for update? on new related record' do
-          before { stub_policy_actions(related_record, update?: true) }
-          it { is_expected.not_to raise_error }
-        end
-
-        context 'unauthorized for update? on new related record' do
-          before { stub_policy_actions(related_record, update?: false) }
-          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-        end
+        include_examples :update_singular_fallback, :related_record
       end
 
       context 'unauthorized for update? on source record' do
@@ -552,22 +539,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     context 'where add_to_<type>? not defined' do
       context 'authorized for update? on record' do
         before { stub_policy_actions(source_record, update?: true) }
-
-        context 'authorized for update? on all new related records' do
-          before do
-            related_records.each { |r| stub_policy_actions(r, update?: true) }
-          end
-
-          it { is_expected.not_to raise_error }
-        end
-
-        context 'unauthorized for update? on any new related records' do
-          before do
-            stub_policy_actions(related_records.first, update?: false)
-          end
-
-          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-        end
+        include_examples :update_multiple_fallback, :related_records
       end
 
       context 'unauthorized for update? on record' do
@@ -607,22 +579,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     context 'where replace_<type>? not defined' do
       context 'authorized for update? on record' do
         before { stub_policy_actions(article, update?: true) }
-
-        context 'authorized for update? on all new related records' do
-          before do
-            new_comments.each { |r| stub_policy_actions(r, update?: true) }
-          end
-
-          it { is_expected.not_to raise_error }
-        end
-
-        context 'unauthorized for update? on any new related records' do
-          before do
-            stub_policy_actions(new_comments.first, update?: false)
-          end
-
-          it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
-        end
+        include_examples :update_multiple_fallback, :new_comments
       end
 
       context 'unauthorized for update? on record' do
@@ -660,19 +617,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where remove_from_<type>? not defined' do
-      # ArticlePolicy does not define #remove_from_tags?, so #update? should determine authorization
-      let(:tags_to_remove) { article.tags.limit(2) }
-      subject(:method_call) do
-        -> { authorizer.create_to_many_relationship(article, tags_to_remove, :tags) }
-      end
-
       context 'authorized for update? on article' do
-        before { allow_action(article, 'update?') }
-        it { is_expected.not_to raise_error }
+        before { stub_policy_actions(article, update?: true) }
+        include_examples :update_multiple_fallback, :comments_to_remove
       end
 
       context 'unauthorized for update? on article' do
-        before { disallow_action(article, 'update?') }
+        before { stub_policy_actions(article, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
@@ -704,19 +655,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'where remove_<type>? not defined' do
-      # CommentPolicy does not define #remove_article?, so #update? should determine authorization
-      let(:source_record) { comments(:comment_1) }
-      subject(:method_call) do
-        -> { authorizer.remove_to_one_relationship(source_record, :article) }
-      end
-
       context 'authorized for update? on record' do
-        before { allow_action(source_record, 'update?') }
+        before { stub_policy_actions(source_record, update?: true) }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for update? on record' do
-        before { disallow_action(source_record, 'update?') }
+        before { stub_policy_actions(source_record, update?: false) }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
     end
