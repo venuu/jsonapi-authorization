@@ -1,4 +1,4 @@
-# Authorization of operations touching relationships <a name="doc-top"></a>
+# <a name="doc-top"></a>Authorization of operations touching relationships
 
 `JSONAPI::Authorization` (JA) is unique in the way it considers relationship changes to change the underlying models. Whenever an incoming requests changes associated resources, JA will authorize those operations are OK.
 
