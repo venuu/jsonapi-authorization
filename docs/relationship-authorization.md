@@ -1,6 +1,6 @@
 # <a name="doc-top"></a>Authorization of operations touching relationships
 
-`JSONAPI::Authorization` (JA) is unique in the way it considers relationship changes to change the underlying models. Whenever an incoming requests changes associated resources, JA will authorize those operations are OK.
+`JSONAPI::Authorization` (JA) is unique in the way it considers relationship changes to change the underlying models. Whenever an incoming request changes associated resources, JA will authorize those operations are OK.
 
 As JA runs the authorization checks _before_ any changes are made (even to in-memory objects), Pundit policies don't have the information needed to authorize changes to relationships. This is why JA provides special hooks to authorize relationship changes and falls back to checking `#update?` on all the related records.
 
