@@ -417,13 +417,24 @@ comment_3 = Comment.create(id: 'comment-3')
 Setup:
 
 ```rb
-# TODO
+comment_1 = Comment.create(id: 'comment-1')
+comment_2 = Comment.create(id: 'comment-2')
 ```
 
-> `HTTP CALL TODO`
+> `POST /articles`
 >
 > ```json
-> "todo"
+> {
+>   "type": "articles",
+>   "relationships": {
+>     "comments": {
+>       "data": [
+>         { "type": "comments", "id": "comment-1" },
+>         { "type": "comments", "id": "comment-2" }
+>       ]
+>     }
+>   }
+> }
 > ```
 
 ### Always calls
@@ -434,8 +445,9 @@ Setup:
 
 ### Custom relationship authorization method
 
-TODO
+* `ArticlePolicy.new(current_user, Article).create_with_comments?([comment_1, comment_2])`
 
 ### Fallback
 
-TODO
+* `CommentPolicy.new(current_user, comment_1).update?`
+* `CommentPolicy.new(current_user, comment_2).update?`
