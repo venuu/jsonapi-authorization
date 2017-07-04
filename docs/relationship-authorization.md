@@ -262,22 +262,32 @@ comment_3 = Comment.create(id: 'comment-3')
 Setup:
 
 ```rb
-# TODO
+comment_1 = Comment.create(id: 'comment-1')
+comment_2 = Comment.create(id: 'comment-2')
+comment_3 = Comment.create(id: 'comment-3')
+article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, comment_3])
 ```
 
-> `HTTP CALL TODO`
->
+> `DELETE /articles/article-1/relationships/comments`
+> 
 > ```json
-> "todo"
+> {
+>   "data": [
+>     { "type": "comments", "id": "comment-1" },
+>     { "type": "comments", "id": "comment-2" }
+>   ]
+> }
 > ```
 
 ### Custom relationship authorization method
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).remove_from_comments?([comment_1, comment_2])`
 
 ### Fallback
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).update?`
+* `CommentPolicy.new(current_user, comment_1).update?`
+* `CommentPolicy.new(current_user, comment_2).update?`
 
 <a name="replace-has-many-relationship-op"></a>
 
