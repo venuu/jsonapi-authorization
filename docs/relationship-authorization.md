@@ -100,7 +100,7 @@ user_2 = User.create(id: 'user-2')
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `UserPolicy.new(current_user, user_2).update?`
 
-**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
+**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be dissociated. This will likely be changed in the future.
 
 <a name="remove-has-one-relationship-op"></a>
 
@@ -127,7 +127,7 @@ article_1 = Article.create(id: 'article-1', user: user_1)
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
-**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
+**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be dissociated. This will likely be changed in the future.
 
 <a name="change-has-one-resource-op"></a>
 
@@ -173,7 +173,7 @@ user_2 = User.create(id: 'user-2')
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `UserPolicy.new(current_user, user_2).update?`
 
-**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be removed. This will likely be changed in the future.
+**Note:** Currently JA does not fallback to authorizing `UserPolicy#update?` on `user_1` that is about to be dissociated. This will likely be changed in the future.
 
 <a name="create-has-one-resource-op"></a>
 
