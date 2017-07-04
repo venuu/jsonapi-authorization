@@ -298,22 +298,34 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, com
 Setup:
 
 ```rb
-# TODO
+comment_1 = Comment.create(id: 'comment-1')
+article_1 = Article.create(id: 'article-1', comments: [comment_1])
+comment_2 = Comment.create(id: 'comment-2')
+comment_3 = Comment.create(id: 'comment-3')
 ```
 
-> `HTTP CALL TODO`
->
+> `PATCH /articles/article-1/relationships/comments`
+> 
 > ```json
-> "todo"
+> {
+>   "data": [
+>     { "type": "comments", "id": "comment-2" },
+>     { "type": "comments", "id": "comment-3" }
+>   ]
+> }
 > ```
 
 ### Custom relationship authorization method
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).replace_comments?([comment_2, comment_3])`
 
 ### Fallback
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).update?`
+* `CommentPolicy.new(current_user, comment_2).update?`
+* `CommentPolicy.new(current_user, comment_3).update?`
+
+**Note:** Currently JA does not fallback to authorizing `CommentPolicy#update?` on `comment_1` that is about to be dissociated. This will likely be changed in the future.
 
 <a name="remove-has-many-relationship-op"></a>
 
