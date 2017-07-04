@@ -29,11 +29,11 @@ Make sure to test for authorization in your application, too. We should have cov
 
 If you're using custom processors, make sure that they extend `JSONAPI::Authorization::AuthorizingProcessor`, or authorization will not be performed for that resource.
 
-This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for [more complex cases][complex-case].
+This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for cases where you are touching relationships.
+
+**If you are modifying relationships**, you should read the [relationship authorization documentation](docs/relationship-authorization.md).
 
 The API is subject to change between minor version bumps until we reach v1.0.0.
-
-  [complex-case]: https://github.com/venuu/jsonapi-authorization/issues/15
 
 ## Installation
 
