@@ -336,22 +336,29 @@ comment_3 = Comment.create(id: 'comment-3')
 Setup:
 
 ```rb
-# TODO
+comment_1 = Comment.create(id: 'comment-1')
+article_1 = Article.create(id: 'article-1', comments: [comment_1])
 ```
 
-> `HTTP CALL TODO`
+> `PATCH /articles/article-1/relationships/comments`
 >
 > ```json
-> "todo"
+> {
+>   "data": []
+> }
 > ```
 
 ### Custom relationship authorization method
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).replace_comments?([])`
+
+**TODO:** We should probably call `remove_comments?` (with no arguments) instead. See https://github.com/venuu/jsonapi-authorization/issues/73 for more details and implementation progress.
 
 ### Fallback
 
-TODO
+* `ArticlePolicy.new(current_user, article_1).update?`
+
+**Note:** Currently JA does not fallback to authorizing `CommentPolicy#update?` on `comment_1` that is about to be dissociated. This will likely be changed in the future.
 
 <a name="change-has-many-resource-op"></a>
 
