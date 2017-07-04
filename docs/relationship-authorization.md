@@ -4,6 +4,10 @@
 
 As JA runs the authorization checks _before_ any changes are made (even to in-memory objects), Pundit policies don't have the information needed to authorize changes to relationships. This is why JA provides special hooks to authorize relationship changes and falls back to checking `#update?` on all the related records.
 
+Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.
+For example if you have a many-to-many relationship with users and projects make sure that
+`ProjectPolicy#add_to_users?(users)` and `UserPolicy#add_to_projects?(projects)` match up.
+
 **Table of contents**
 
 * [Example setup](#example-setup)
