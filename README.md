@@ -106,8 +106,7 @@ To check whether an action is allowed JSONAPI::Authorization calls the respectiv
 (`index?`, `show?`, `create?`, `update?`, `destroy?`).
 
 For relationship operations by default `update?` is being called for all affected resources.
-For a finer grained control you can define `add_to_<relation>?`, `replace_<relation>?`, and `remove_from_<relation>?`
-as the following example shows.
+For a finer grained control you can define methods to authorize relationship changes. For example:
 
 ```ruby
 class ArticlePolicy
@@ -129,9 +128,7 @@ class ArticlePolicy
 end
 ```
 
-Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.
-For example if you have a many-to-many relationship with users and projects make sure that
-`ProjectPolicy#add_to_users?(users)` and `UserPolicy#add_to_projects?(projects)` match up.
+For thorough documentation about custom policy methods, check out the [relationship authorization docs](docs/relationship-authorization.md).
 
 ## Configuration
 
