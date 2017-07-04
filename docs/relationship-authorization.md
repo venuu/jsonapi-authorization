@@ -83,7 +83,7 @@ user_2 = User.create(id: 'user-2')
 ```
 
 > `PATCH /articles/article-1/relationships/author`
-> 
+>
 > ```json
 > {
 >   "type": "users",
@@ -116,7 +116,7 @@ article_1 = Article.create(id: 'article-1', user: user_1)
 ```
 
 > `DELETE /articles/article-1/relationships/author`
-> 
+>
 > (empty body)
 
 ### Custom relationship authorization method
@@ -144,7 +144,7 @@ user_2 = User.create(id: 'user-2')
 ```
 
 > `PATCH /articles/article-1`
-> 
+>
 > ```json
 > {
 >   "type": "articles",
@@ -188,7 +188,7 @@ user_1 = User.create(id: 'user-1')
 ```
 
 > `POST /articles`
-> 
+>
 > ```json
 > {
 >   "type": "articles",
@@ -233,7 +233,7 @@ comment_3 = Comment.create(id: 'comment-3')
 ```
 
 > `POST /articles/article-1/relationships/comments`
-> 
+>
 > ```json
 > {
 >   "data": [
@@ -269,7 +269,7 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, com
 ```
 
 > `DELETE /articles/article-1/relationships/comments`
-> 
+>
 > ```json
 > {
 >   "data": [
@@ -305,7 +305,7 @@ comment_3 = Comment.create(id: 'comment-3')
 ```
 
 > `PATCH /articles/article-1/relationships/comments`
-> 
+>
 > ```json
 > {
 >   "data": [
@@ -376,7 +376,7 @@ comment_3 = Comment.create(id: 'comment-3')
 ```
 
 > `PATCH /articles/article-1`
-> 
+>
 > ```json
 > {
 >   "type": "articles",
