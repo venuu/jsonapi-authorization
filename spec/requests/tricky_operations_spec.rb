@@ -60,6 +60,57 @@ RSpec.describe 'Tricky operations', type: :request do
     end
   end
 
+  describe 'POST /articles (with relationships link to comments)' do
+    let!(:new_comments) do
+      Array.new(2) { Comment.create }
+    end
+    let(:related_records_with_context) do
+      [{
+        relation_name: :comments,
+        relation_type: :to_many,
+        records: new_comments
+      }]
+    end
+    let(:comments_policy_scope) { Comment.all }
+    before do
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_policy_scope)
+    end
+
+    let(:json) do
+      <<-EOS.strip_heredoc
+      {
+        "data": {
+          "id": "new-article-id",
+          "type": "articles",
+          "relationships": {
+            "comments": {
+              "data": [
+                { "id": "#{new_comments[0].id}", "type": "comments" },
+                { "id": "#{new_comments[1].id}", "type": "comments" }
+              ]
+            }
+          }
+        }
+      }
+      EOS
+    end
+    subject(:last_response) { post("/articles", json) }
+
+    context 'authorized for create_resource on Article and newly associated comments' do
+      let(:policy_scope) { Article.where(id: "new-article-id") }
+      before { allow_operation('create_resource', Article, related_records_with_context) }
+
+      it { is_expected.to be_successful }
+    end
+
+    context 'unauthorized for create_resource on Article and newly associated comments' do
+      let(:policy_scope) { Article.where(id: "new-article-id") }
+      before { disallow_operation('create_resource', Article, related_records_with_context) }
+
+      it { is_expected.to be_forbidden }
+    end
+  end
+
   describe 'POST /tags (with polymorphic relationship link to article)' do
     subject(:last_response) { post("/tags", json) }
     let(:json) do
