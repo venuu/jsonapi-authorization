@@ -222,7 +222,34 @@ module JSONAPI
       end
 
       def authorize_replace_polymorphic_to_one_relationship
-        raise NotImplementedError
+        return authorize_remove_to_one_relationship if params[:key_value].nil?
+
+        source_resource = @resource_klass.find_by_key(
+          params[:resource_id],
+          context: context
+        )
+        source_record = source_resource._model
+
+        relationship_type = params[:relationship_type].to_sym
+        relationship = @resource_klass._relationship(relationship_type)
+        relation_name = relationship.relation_name(context: context)
+        related_resource_klass = @resource_klass
+          .resource_for(
+            source_record.association(relation_name).klass.to_s
+          )
+
+        new_related_resource = related_resource_klass
+          .find_by_key(
+            params[:key_value],
+            context: context
+          )
+        new_related_record = new_related_resource._model unless new_related_resource.nil?
+
+        authorizer.replace_to_one_relationship(
+          source_record,
+          new_related_record,
+          relationship_type
+        )
       end
 
       private
