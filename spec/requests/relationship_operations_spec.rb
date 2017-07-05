@@ -263,13 +263,15 @@ RSpec.describe 'Relationship operations', type: :request do
   describe 'PATCH /tags/:id/relationships/taggable' do
     subject(:last_response) { patch("/tags/#{tag.id}/relationships/taggable", json) }
 
-    let!(:old_taggable) { Article.create(external_id: 'old-article-id') }
+    let!(:old_taggable) { Comment.create }
     let!(:tag) { Tag.create(taggable: old_taggable) }
     let(:policy_scope) { Article.all }
+    let(:comment_policy_scope) { Article.all }
     let(:tag_policy_scope) { Tag.all }
 
     before do
       allow_any_instance_of(TagPolicy::Scope).to receive(:resolve).and_return(tag_policy_scope)
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comment_policy_scope)
     end
 
     describe 'when replacing with a new taggable' do
