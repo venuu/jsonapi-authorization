@@ -84,7 +84,7 @@ Setup:
 
 ```rb
 user_1 = User.create(id: 'user-1')
-article_1 = Article.create(id: 'article-1', user: user_1)
+article_1 = Article.create(id: 'article-1', author: user_1)
 user_2 = User.create(id: 'user-2')
 ```
 
@@ -118,7 +118,7 @@ Setup:
 
 ```rb
 user_1 = User.create(id: 'user-1')
-article_1 = Article.create(id: 'article-1', user: user_1)
+article_1 = Article.create(id: 'article-1', author: user_1)
 ```
 
 > `DELETE /articles/article-1/relationships/author`
@@ -145,7 +145,7 @@ Setup:
 
 ```rb
 user_1 = User.create(id: 'user-1')
-article_1 = Article.create(id: 'article-1', user: user_1)
+article_1 = Article.create(id: 'article-1', author: user_1)
 user_2 = User.create(id: 'user-2')
 ```
 
@@ -191,7 +191,7 @@ Setup:
 
 ```rb
 user_1 = User.create(id: 'user-1')
-article_1 = Article.create(id: 'article-1', user: user_1)
+article_1 = Article.create(id: 'article-1', author: user_1)
 ```
 
 > `PATCH /articles/article-1`
