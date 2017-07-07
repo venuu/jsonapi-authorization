@@ -541,3 +541,5 @@ comment_2 = Comment.create(id: 'comment-2')
 
 * `CommentPolicy.new(current_user, comment_1).update?`
 * `CommentPolicy.new(current_user, comment_2).update?`
+
+[back to top ↑](#doc-top)
