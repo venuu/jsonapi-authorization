@@ -259,6 +259,86 @@ RSpec.describe 'Relationship operations', type: :request do
     end
   end
 
+  # Polymorphic has-one relationship replacing
+  describe 'PATCH /tags/:id/relationships/taggable' do
+    subject(:last_response) { patch("/tags/#{tag.id}/relationships/taggable", json) }
+
+    let!(:old_taggable) { Comment.create }
+    let!(:tag) { Tag.create(taggable: old_taggable) }
+    let(:policy_scope) { Article.all }
+    let(:comment_policy_scope) { Article.all }
+    let(:tag_policy_scope) { Tag.all }
+
+    before do
+      allow_any_instance_of(TagPolicy::Scope).to receive(:resolve).and_return(tag_policy_scope)
+      allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comment_policy_scope)
+    end
+
+    describe 'when replacing with a new taggable' do
+      let!(:new_taggable) { Article.create(external_id: 'new-article-id') }
+      let(:json) do
+        <<-EOS.strip_heredoc
+        {
+          "data": {
+            "type": "articles",
+            "id": "#{new_taggable.external_id}"
+          }
+        }
+        EOS
+      end
+
+      context 'unauthorized for replace_to_one_relationship' do
+        before { disallow_operation('replace_to_one_relationship', tag, new_taggable, :taggable) }
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'authorized for replace_to_one_relationship' do
+        before { allow_operation('replace_to_one_relationship', tag, new_taggable, :taggable) }
+        it { is_expected.to be_successful }
+
+        context 'limited by policy scope on taggable', skip: 'DISCUSS' do
+          let(:policy_scope) { Article.where.not(id: tag.taggable.id) }
+          it { is_expected.to be_not_found }
+        end
+
+        # If this happens in real life, it's mostly a bug. We want to document the
+        # behaviour in that case anyway, as it might be surprising.
+        context 'limited by policy scope on tag' do
+          let(:tag_policy_scope) { Tag.where.not(id: tag.id) }
+          it { is_expected.to be_not_found }
+        end
+      end
+    end
+
+    # https://github.com/cerebris/jsonapi-resources/issues/1081
+    describe 'when nullifying the taggable', skip: 'Broken upstream' do
+      let(:new_taggable) { nil }
+      let(:json) { '{ "data": null }' }
+
+      context 'unauthorized for remove_to_one_relationship' do
+        before { disallow_operation('remove_to_one_relationship', tag, :taggable) }
+        it { is_expected.to be_forbidden }
+      end
+
+      context 'authorized for remove_to_one_relationship' do
+        before { allow_operation('remove_to_one_relationship', tag, :taggable) }
+        it { is_expected.to be_successful }
+
+        context 'limited by policy scope on taggable', skip: 'DISCUSS' do
+          let(:policy_scope) { Article.where.not(id: tag.taggable.id) }
+          it { is_expected.to be_not_found }
+        end
+
+        # If this happens in real life, it's mostly a bug. We want to document the
+        # behaviour in that case anyway, as it might be surprising.
+        context 'limited by policy scope on tag' do
+          let(:tag_policy_scope) { Tag.where.not(id: tag.id) }
+          it { is_expected.to be_not_found }
+        end
+      end
+    end
+  end
+
   describe 'DELETE /articles/:id/relationships/comments' do
     let(:article) { articles(:article_with_comments) }
     let(:comments_to_remove) { article.comments.limit(2) }
