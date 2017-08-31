@@ -347,7 +347,7 @@ module JSONAPI
             next_resource_klass = relationship.resource_klass
             Array.wrap(
               source_record.public_send(
-                relationship.relation_name(context)
+                relationship.relation_name(context: context)
               )
             ).each do |next_source_record|
               deep.each do |next_include_item|
@@ -364,7 +364,7 @@ module JSONAPI
           case relationship
           when JSONAPI::Relationship::ToOne
             related_record = source_record.public_send(
-              relationship.relation_name(context)
+              relationship.relation_name(context: context)
             )
             return if related_record.nil?
             authorizer.include_has_one_resource(source_record, related_record)

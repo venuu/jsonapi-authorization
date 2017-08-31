@@ -31,7 +31,7 @@ module JSONAPI
 
       def fetch_relationship(association_name)
         relationships = self.class._relationships.select do |_k, v|
-          v.relation_name(context) == association_name
+          v.relation_name(context: context) == association_name
         end
         if relationships.empty?
           nil
