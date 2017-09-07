@@ -66,21 +66,20 @@ module JSONAPI
           params[:parent_key],
           context: context
         )
+        parent_record = parent_resource._model
 
         relationship = @resource_klass._relationship(params[:relationship_type].to_sym)
 
-        related_resource =
+        related_record =
           case relationship
           when JSONAPI::Relationship::ToOne
-            parent_resource.public_send(params[:relationship_type].to_sym)
+            parent_record.public_send(params[:relationship_type].to_sym)
           when JSONAPI::Relationship::ToMany
             # Do nothing — already covered by policy scopes
           else
             raise "Unexpected relationship type: #{relationship.inspect}"
           end
 
-        parent_record = parent_resource._model
-        related_record = related_resource._model unless related_resource.nil?
         authorizer.show_relationship(parent_record, related_record)
       end
 
@@ -91,10 +90,8 @@ module JSONAPI
 
         source_resource = source_klass.find_by_key(source_id, context: context)
 
-        related_resource = source_resource.public_send(relationship_type)
-
         source_record = source_resource._model
-        related_record = related_resource._model unless related_resource.nil?
+        related_record = source_record.public_send(relationship_type)
         authorizer.show_related_resource(source_record, related_record)
       end
 
