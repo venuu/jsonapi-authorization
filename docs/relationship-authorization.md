@@ -10,8 +10,8 @@ For example if you have a many-to-many relationship with users and projects make
 
 **Table of contents**
 
-* [Example setup](#example-setup)
 * `has-one` relationships
+  - [Example setup for `has-one` examples](#example-setup-has-one)
   - [`PATCH /articles/article-1/relationships/author`](#change-has-one-relationship-op)
     * Changing a `has-one` relationship
   - [`DELETE /articles/article-1/relationships/author`](#remove-has-one-relationship-op)
@@ -23,6 +23,7 @@ For example if you have a many-to-many relationship with users and projects make
   - [`POST /articles` with an `author` relationship](#create-has-one-resource-op)
     * Creating a resource with a `has-one` relationship
 * `has-many` relationships
+  - [Example setup for `has-many` examples](#example-setup-has-many)
   - [`POST /articles/article-1/relationships/comments`](#add-to-has-many-relationship-op)
     * Adding to a `has-many` relationship
   - [`DELETE /articles/article-1/relationships/comments`](#remove-from-has-many-relationship-op)
@@ -39,51 +40,33 @@ For example if you have a many-to-many relationship with users and projects make
     * Creating a resource with a `has-many` relationship
 
 
-<a name="example-setup"></a>
+<a name="example-setup-has-one"></a>
 
 [back to top ↑](#doc-top)
 
-## Example models and resources
+## Example setup for `has-one` examples
 
-The examples on this page use these models:
+The examples for `has-one` relationship authorization use these models and resources:
 
 ```rb
 class Article < ActiveRecord::Base
-  has_many :comments
   belongs_to :author, class_name: 'User'
 end
 
-class Comment < ActiveRecord::Base
-  belongs_to :article
-end
-
-class User < ActiveRecord::Base
-  has_many :articles, foreign_key: :author_id
+class ArticleResource < JSONAPI::Resource
+  include JSONAPI::Authorization::PunditScopedResource
+  has_one :author, class_name: 'User'
 end
 ```
 
-...and these resources:
-
 ```rb
-class ArticleResource < JSONAPI::Resource
-  include JSONAPI::Authorization::PunditScopedResource
-
-  # `acts_as_set` allows replacing all comments at once
-  has_many :comments, acts_as_set: true
-  has_one :author, class_name: 'User'
+class User < ActiveRecord::Base
+  has_many :articles, foreign_key: :author_id
 end
-
-class CommentResource < JSONAPI::Resource
-  include JSONAPI::Authorization::PunditScopedResource
-
-  has_one :article
-end
-
 
 class UserResource < JSONAPI::Resource
   include JSONAPI::Authorization::PunditScopedResource
-
-  has_many :comments
+  has_many :articles
 end
 ```
 
@@ -286,6 +269,38 @@ user_1 = User.create(id: 'user-1')
 ### Fallback
 
 * `UserPolicy.new(current_user, user_1).update?`
+
+
+<a name="example-setup-has-many"></a>
+
+[back to top ↑](#doc-top)
+
+## Example setup for `has-many` examples
+
+The examples for `has-many` relationship authorization use these models and resources:
+
+```rb
+class Article < ActiveRecord::Base
+  has_many :comments
+end
+
+class ArticleResource < JSONAPI::Resource
+  include JSONAPI::Authorization::PunditScopedResource
+  # `acts_as_set` allows replacing all comments at once
+  has_many :comments, acts_as_set: true
+end
+```
+
+```rb
+class Comment < ActiveRecord::Base
+  belongs_to :article
+end
+
+class CommentResource < JSONAPI::Resource
+  include JSONAPI::Authorization::PunditScopedResource
+  has_one :article
+end
+```
 
 <a name="add-to-has-many-relationship-op"></a>
 
