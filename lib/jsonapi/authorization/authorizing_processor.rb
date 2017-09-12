@@ -16,6 +16,11 @@ module JSONAPI
       set_callback :create_to_many_relationships, :before, :authorize_create_to_many_relationships
       set_callback :replace_to_many_relationships, :before, :authorize_replace_to_many_relationships
       set_callback :remove_to_many_relationships, :before, :authorize_remove_to_many_relationships
+      set_callback(
+        :replace_polymorphic_to_one_relationship,
+        :before,
+        :authorize_replace_polymorphic_to_one_relationship
+      )
 
       [
         :find,
@@ -216,6 +221,39 @@ module JSONAPI
         authorizer.remove_to_one_relationship(source_record, relationship_type)
       end
 
+      def authorize_replace_polymorphic_to_one_relationship
+        return authorize_remove_to_one_relationship if params[:key_value].nil?
+
+        source_resource = @resource_klass.find_by_key(
+          params[:resource_id],
+          context: context
+        )
+        source_record = source_resource._model
+
+        # Fetch the name of the new class based on the incoming polymorphic
+        # "type" value. This will fail if there is no associated resource for the
+        # incoming "type" value so this shouldn't leak constants
+        related_record_class_name = source_resource
+          .send(:_model_class_name, params[:key_type])
+
+        # Fetch the underlying Resource class for the new record to-be-associated
+        related_resource_klass = @resource_klass.resource_for(related_record_class_name)
+
+        new_related_resource = related_resource_klass
+          .find_by_key(
+            params[:key_value],
+            context: context
+          )
+        new_related_record = new_related_resource._model unless new_related_resource.nil?
+
+        relationship_type = params[:relationship_type].to_sym
+        authorizer.replace_to_one_relationship(
+          source_record,
+          new_related_record,
+          relationship_type
+        )
+      end
+
       private
 
       def authorizer
@@ -309,7 +347,7 @@ module JSONAPI
             next_resource_klass = relationship.resource_klass
             Array.wrap(
               source_record.public_send(
-                relationship.relation_name(context)
+                relationship.relation_name(context: context)
               )
             ).each do |next_source_record|
               deep.each do |next_include_item|
@@ -326,7 +364,7 @@ module JSONAPI
           case relationship
           when JSONAPI::Relationship::ToOne
             related_record = source_record.public_send(
-              relationship.relation_name(context)
+              relationship.relation_name(context: context)
             )
             return if related_record.nil?
             authorizer.include_has_one_resource(source_record, related_record)
