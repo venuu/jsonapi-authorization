@@ -12,19 +12,32 @@ For example if you have a many-to-many relationship with users and projects make
 
 * [Example setup](#example-setup)
 * `has-one` relationships
-  - [Changing a `has-one` relationship](#change-has-one-relationship-op)
-  - [Removing a `has-one` relationship](#remove-has-one-relationship-op)
-  - [Changing resource and replacing a `has-one` relationship](#change-and-replace-has-one-resource-op)
-  - [Changing resource and removing a `has-one` relationship](#change-and-remove-has-one-resource-op)
-  - [Creating a resource with a `has-one` relationship](#create-has-one-resource-op)
+  - [`PATCH /articles/article-1/relationships/author`](#change-has-one-relationship-op)
+    * Changing a `has-one` relationship
+  - [`DELETE /articles/article-1/relationships/author`](#remove-has-one-relationship-op)
+    * Removing a `has-one` relationship
+  - [`PATCH /articles/article-1/` with different `author` relationship](#change-and-replace-has-one-resource-op)
+    * Changing resource and replacing a `has-one` relationship
+  - [`PATCH /articles/article-1/` with null `author` relationship](#change-and-remove-has-one-resource-op)
+    * Changing resource and removing a `has-one` relationship
+  - [`POST /articles` with an `author` relationship](#create-has-one-resource-op)
+    * Creating a resource with a `has-one` relationship
 * `has-many` relationships
-  - [Adding to a `has-many` relationship](#add-to-has-many-relationship-op)
-  - [Removing from a `has-many` relationship](#remove-from-has-many-relationship-op)
-  - [Replacing a `has-many` relationship](#replace-has-many-relationship-op)
-  - [Removing a `has-many` relationship](#remove-has-many-relationship-op)
-  - [Changing resource and replacing a `has-many` relationship](#change-and-replace-has-many-resource-op)
-  - [Changing resource and removing a `has-many` relationship](#change-and-remove-has-many-resource-op)
-  - [Creating a resource with a `has-many` relationship](#create-has-many-resource-op)
+  - [`POST /articles/article-1/relationships/comments`](#add-to-has-many-relationship-op)
+    * Adding to a `has-many` relationship
+  - [`DELETE /articles/article-1/relationships/comments`](#remove-from-has-many-relationship-op)
+    * Removing from a `has-many` relationship
+  - [`PATCH /articles/article-1/relationships/comments` with different `comments`](#replace-has-many-relationship-op)
+    * Replacing a `has-many` relationship
+  - [`PATCH /articles/article-1/relationships/comments` with empty `comments`](#remove-has-many-relationship-op)
+    * Removing a `has-many` relationship
+  - [`PATCH /articles/article-1` with different `comments` relationship](#change-and-replace-has-many-resource-op)
+    * Changing resource and replacing a `has-many` relationship
+  - [`PATCH /articles/article-1` with empty `comments` relationship](#change-and-remove-has-many-resource-op)
+    * Changing resource and removing a `has-many` relationship
+  - [`POST /articles` with a `comments` relationship](#create-has-many-resource-op)
+    * Creating a resource with a `has-many` relationship
+
 
 <a name="example-setup"></a>
 
