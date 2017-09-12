@@ -44,7 +44,9 @@ For example if you have a many-to-many relationship with users and projects make
 
 [back to top ↑](#doc-top)
 
-## Example setup for `has-one` examples
+## `has-one` relationships
+
+### Example setup for `has-one` examples
 
 The examples for `has-one` relationship authorization use these models and resources:
 
@@ -74,7 +76,7 @@ end
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1/relationships/author`
+### `PATCH /articles/article-1/relationships/author`
 
 _Changing a `has-one` relationship with a relationship operation_
 
@@ -95,11 +97,11 @@ user_2 = User.create(id: 'user-2')
 > }
 > ```
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_author?(user_2)`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `UserPolicy.new(current_user, user_2).update?`
@@ -110,7 +112,7 @@ user_2 = User.create(id: 'user-2')
 
 [back to top ↑](#doc-top)
 
-## `DELETE /articles/article-1/relationships/author`
+### `DELETE /articles/article-1/relationships/author`
 
 _Removing a `has-one` relationship with a relationship operation_
 
@@ -125,11 +127,11 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 >
 > (empty body)
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).remove_author?`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
@@ -139,7 +141,7 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1/` with different `author` relationship
+### `PATCH /articles/article-1/` with different `author` relationship
 
 _Changing resource and replacing a `has-one` relationship_
 
@@ -168,15 +170,15 @@ user_2 = User.create(id: 'user-2')
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_author?(user_2)`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `UserPolicy.new(current_user, user_2).update?`
@@ -187,7 +189,7 @@ user_2 = User.create(id: 'user-2')
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1/` with null `author` relationship
+### `PATCH /articles/article-1/` with null `author` relationship
 
 _Changing resource and removing a `has-one` relationship_
 
@@ -212,15 +214,15 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).remove_author?`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
@@ -230,7 +232,7 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 
 [back to top ↑](#doc-top)
 
-## `POST /articles` with an `author` relationship
+### `POST /articles` with an `author` relationship
 
 _Creating a resource with a `has-one` relationship_
 
@@ -256,17 +258,17 @@ user_1 = User.create(id: 'user-1')
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, Article).create?`
 
 **Note:** The second parameter for the policy is the `Article` _class_, not the new record. This is because JA runs the authorization checks _before_ any changes are made, even changes to in-memory objects.
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, Article).create_with_author?(user_1)`
 
-### Fallback
+#### Fallback
 
 * `UserPolicy.new(current_user, user_1).update?`
 
@@ -275,7 +277,9 @@ user_1 = User.create(id: 'user-1')
 
 [back to top ↑](#doc-top)
 
-## Example setup for `has-many` examples
+## `has-many` relationships
+
+### Example setup for `has-many` examples
 
 The examples for `has-many` relationship authorization use these models and resources:
 
@@ -306,7 +310,7 @@ end
 
 [back to top ↑](#doc-top)
 
-## `POST /articles/article-1/relationships/comments`
+### `POST /articles/article-1/relationships/comments`
 
 _Adding to a `has-many` relationship_
 
@@ -330,11 +334,11 @@ comment_3 = Comment.create(id: 'comment-3')
 > }
 > ```
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).add_to_comments?([comment_2, comment_3])`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `CommentPolicy.new(current_user, comment_2).update?`
@@ -344,7 +348,7 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## `DELETE /articles/article-1/relationships/comments`
+### `DELETE /articles/article-1/relationships/comments`
 
 _Removing from a `has-many` relationship_
 
@@ -368,11 +372,11 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, com
 > }
 > ```
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).remove_from_comments?([comment_1, comment_2])`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `CommentPolicy.new(current_user, comment_1).update?`
@@ -382,7 +386,7 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, com
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1/relationships/comments` with different `comments`
+### `PATCH /articles/article-1/relationships/comments` with different `comments`
 
 _Replacing a `has-many` relationship_
 
@@ -406,11 +410,11 @@ comment_3 = Comment.create(id: 'comment-3')
 > }
 > ```
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_comments?([comment_2, comment_3])`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `CommentPolicy.new(current_user, comment_2).update?`
@@ -422,7 +426,7 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1/relationships/comments` with empty `comments`
+### `PATCH /articles/article-1/relationships/comments` with empty `comments`
 
 _Removing a `has-many` relationship_
 
@@ -441,13 +445,13 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 > }
 > ```
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_comments?([])`
 
 **TODO:** We should probably call `remove_comments?` (with no arguments) instead. See https://github.com/venuu/jsonapi-authorization/issues/73 for more details and implementation progress.
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
@@ -457,7 +461,7 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1` with different `comments` relationship
+### `PATCH /articles/article-1` with different `comments` relationship
 
 _Changing resource and replacing a `has-many` relationship_
 
@@ -487,15 +491,15 @@ comment_3 = Comment.create(id: 'comment-3')
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_comments?([comment_2, comment_3])`
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 * `CommentPolicy.new(current_user, comment_2).update?`
@@ -507,7 +511,7 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## `PATCH /articles/article-1` with empty `comments` relationship
+### `PATCH /articles/article-1` with empty `comments` relationship
 
 _Changing resource and removing a `has-many` relationship_
 
@@ -532,17 +536,17 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, article_1).replace_comments?([])`
 
 **TODO:** We should probably call `remove_comments?` (with no arguments) instead. See https://github.com/venuu/jsonapi-authorization/issues/73 for more details and implementation progress.
 
-### Fallback
+#### Fallback
 
 * `ArticlePolicy.new(current_user, article_1).update?`
 
@@ -552,7 +556,7 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 
 [back to top ↑](#doc-top)
 
-## `POST /articles` with a `comments` relationship
+### `POST /articles` with a `comments` relationship
 
 _Creating a resource with a `has-many` relationship_
 
@@ -579,17 +583,17 @@ comment_2 = Comment.create(id: 'comment-2')
 > }
 > ```
 
-### Always calls
+#### Always calls
 
 * `ArticlePolicy.new(current_user, Article).create?`
 
 **Note:** The second parameter for the policy is the `Article` _class_, not the new record. This is because JA runs the authorization checks _before_ any changes are made, even changes to in-memory objects.
 
-### Custom relationship authorization method
+#### Custom relationship authorization method
 
 * `ArticlePolicy.new(current_user, Article).create_with_comments?([comment_1, comment_2])`
 
-### Fallback
+#### Fallback
 
 * `CommentPolicy.new(current_user, comment_1).update?`
 * `CommentPolicy.new(current_user, comment_2).update?`
