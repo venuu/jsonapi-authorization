@@ -91,7 +91,9 @@ end
 
 [back to top ↑](#doc-top)
 
-## Changing a `has-one` relationship with a relationship operation
+## `PATCH /articles/article-1/relationships/author`
+
+_Changing a `has-one` relationship with a relationship operation_
 
 Setup:
 
@@ -125,7 +127,9 @@ user_2 = User.create(id: 'user-2')
 
 [back to top ↑](#doc-top)
 
-## Removing a `has-one` relationship with a relationship operation
+## `DELETE /articles/article-1/relationships/author`
+
+_Removing a `has-one` relationship with a relationship operation_
 
 Setup:
 
@@ -152,7 +156,9 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 
 [back to top ↑](#doc-top)
 
-## Changing resource and replacing a `has-one` relationship
+## `PATCH /articles/article-1/` with different `author` relationship
+
+_Changing resource and replacing a `has-one` relationship_
 
 Setup:
 
@@ -198,7 +204,9 @@ user_2 = User.create(id: 'user-2')
 
 [back to top ↑](#doc-top)
 
-## Changing resource and removing a `has-one` relationship
+## `PATCH /articles/article-1/` with null `author` relationship
+
+_Changing resource and removing a `has-one` relationship_
 
 Setup:
 
@@ -239,7 +247,9 @@ article_1 = Article.create(id: 'article-1', author: user_1)
 
 [back to top ↑](#doc-top)
 
-## Creating a resource with a `has-one` relationship
+## `POST /articles` with an `author` relationship
+
+_Creating a resource with a `has-one` relationship_
 
 Setup:
 
@@ -281,7 +291,9 @@ user_1 = User.create(id: 'user-1')
 
 [back to top ↑](#doc-top)
 
-## Adding to a `has-many` relationship
+## `POST /articles/article-1/relationships/comments`
+
+_Adding to a `has-many` relationship_
 
 Setup:
 
@@ -317,7 +329,9 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## Removing from a `has-many` relationship
+## `DELETE /articles/article-1/relationships/comments`
+
+_Removing from a `has-many` relationship_
 
 Setup:
 
@@ -353,7 +367,9 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1, comment_2, com
 
 [back to top ↑](#doc-top)
 
-## Replacing a `has-many` relationship
+## `PATCH /articles/article-1/relationships/comments` with different `comments`
+
+_Replacing a `has-many` relationship_
 
 Setup:
 
@@ -391,7 +407,9 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## Removing a `has-many` relationship
+## `PATCH /articles/article-1/relationships/comments` with empty `comments`
+
+_Removing a `has-many` relationship_
 
 Setup:
 
@@ -424,7 +442,9 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 
 [back to top ↑](#doc-top)
 
-## Changing resource and replacing a `has-many` relationship
+## `PATCH /articles/article-1` with different `comments` relationship
+
+_Changing resource and replacing a `has-many` relationship_
 
 Setup:
 
@@ -472,7 +492,9 @@ comment_3 = Comment.create(id: 'comment-3')
 
 [back to top ↑](#doc-top)
 
-## Changing resource and removing a `has-many` relationship
+## `PATCH /articles/article-1` with empty `comments` relationship
+
+_Changing resource and removing a `has-many` relationship_
 
 Setup:
 
@@ -515,7 +537,9 @@ article_1 = Article.create(id: 'article-1', comments: [comment_1])
 
 [back to top ↑](#doc-top)
 
-## Creating a resource with a `has-many` relationship
+## `POST /articles` with a `comments` relationship
+
+_Creating a resource with a `has-many` relationship_
 
 Setup:
 
