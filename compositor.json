@@ -7,31 +7,38 @@
   "title": "",
   "branch": "",
   "style": {
-    "name": "Material",
+    "name": "Future",
     "componentSet": {
-      "nav": "nav/DarkAbsoluteNav",
-      "header": "header/GradientHeader",
+      "nav": "nav/BasicNav",
+      "header": "header/BannerHeader",
       "article": "article/BasicArticle",
       "footer": "footer/BasicFooter"
     },
-    "fontFamily": "Roboto, sans-serif",
+    "fontFamily": "\"Avenir Next\", Helvetica, sans-serif",
     "heading": {
       "fontWeight": 500,
-      "letterSpacing": "-0.01em"
+      "textTransform": "uppercase",
+      "letterSpacing": "0.2em"
+    },
+    "alternativeText": {
+      "textTransform": "uppercase",
+      "fontWeight": 400,
+      "letterSpacing": "0.2em",
+      "opacity": 0.75
     },
     "colors": {
-      "text": "#212121",
+      "text": "#333",
       "background": "#fff",
-      "primary": "#2196f3",
-      "secondary": "#1565c0",
-      "highlight": "#ff4081",
-      "border": "#e0e0e0",
-      "muted": "#f5f5f5"
+      "primary": "#666",
+      "secondary": "#888",
+      "highlight": "#1f80ff",
+      "muted": "#f6f6f6",
+      "border": "#eee"
     },
     "layout": {
       "centered": true,
-      "bannerHeight": "80vh",
-      "maxWidth": 896
+      "maxWidth": 1024,
+      "bannerHeight": "80vh"
     }
   },
   "content": [
