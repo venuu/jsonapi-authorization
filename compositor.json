@@ -1,0 +1,89 @@
+{
+  "name": "venuu/jsonapi-authorization",
+  "version": "0.1.4",
+  "libraries": {
+    "xv": "^1.1.25"
+  },
+  "title": "",
+  "branch": "",
+  "style": {
+    "name": "Material",
+    "componentSet": {
+      "nav": "nav/DarkAbsoluteNav",
+      "header": "header/GradientHeader",
+      "article": "article/BasicArticle",
+      "footer": "footer/BasicFooter"
+    },
+    "fontFamily": "Roboto, sans-serif",
+    "heading": {
+      "fontWeight": 500,
+      "letterSpacing": "-0.01em"
+    },
+    "colors": {
+      "text": "#212121",
+      "background": "#fff",
+      "primary": "#2196f3",
+      "secondary": "#1565c0",
+      "highlight": "#ff4081",
+      "border": "#e0e0e0",
+      "muted": "#f5f5f5"
+    },
+    "layout": {
+      "centered": true,
+      "bannerHeight": "80vh",
+      "maxWidth": 896
+    }
+  },
+  "content": [
+    {
+      "component": "nav",
+      "links": [
+        {
+          "href": "http://www.rubydoc.info/github/venuu/jsonapi-authorization",
+          "text": "Home"
+        },
+        {
+          "href": "https://github.com/venuu/jsonapi-authorization",
+          "text": "GitHub"
+        }
+      ]
+    },
+    {
+      "component": "header",
+      "heading": "jsonapi-authorization",
+      "subhead": "Authorization for JSONAPI::Resource",
+      "children": [
+        {
+          "component": "ui/TweetButton",
+          "text": "jsonapi-authorization: Authorization for JSONAPI::Resource",
+          "url": "http://www.rubydoc.info/github/venuu/jsonapi-authorization"
+        },
+        {
+          "component": "ui/GithubButton",
+          "user": "venuu",
+          "repo": "jsonapi-authorization"
+        }
+      ]
+    },
+    {
+      "component": "article",
+      "metadata": {
+        "source": "github.readme"
+      },
+      "html": "<h1>JSONAPI::Authorization</h1>\n<p><a href=\"https://travis-ci.org/venuu/jsonapi-authorization\"><img src=\"https://img.shields.io/travis/venuu/jsonapi-authorization/master.svg?style=flat&amp;maxAge=3600\"></a> <a href=\"https://rubygems.org/gems/jsonapi-authorization\"><img src=\"https://img.shields.io/gem/v/jsonapi-authorization.svg?style=flat&amp;maxAge=3600\"></a></p>\n<p><strong>NOTE:</strong> This README is the documentation for <code>JSONAPI::Authorization</code>. If you are viewing this at the\n<a href=\"https://github.com/venuu/jsonapi-authorization\">project page on Github</a> you are viewing the documentation for the <code>master</code>\nbranch. This may contain information that is not relevant to the release you are using. Please see the README for the\n<a href=\"https://github.com/venuu/jsonapi-authorization/releases\">version</a> you are using.</p>\n<hr>\n<p><code>JSONAPI::Authorization</code> adds authorization to the <a href=\"https://github.com/cerebris/jsonapi-resources\">jsonapi-resources</a> (JR) gem using <a href=\"https://github.com/elabs/pundit\">Pundit</a>.</p>\n<h2>Caveats</h2>\n<p>Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn&apos;t the case, please <a href=\"https://github.com/venuu/jsonapi-authorization/issues\">open an issue</a>.</p>\n<p>If you&apos;re using custom processors, make sure that they extend <code>JSONAPI::Authorization::AuthorizingProcessor</code>, or authorization will not be performed for that resource.</p>\n<p>This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for <a href=\"https://github.com/venuu/jsonapi-authorization/issues/15\">more complex cases</a>.</p>\n<p>The API is subject to change between minor version bumps until we reach v1.0.0.</p>\n<h2>Installation</h2>\n<p>Add this line to your application&apos;s Gemfile:</p>\n<pre>gem <span class=\"hljs-string\">&apos;jsonapi-authorization&apos;</span></pre><p>And then execute:</p>\n<pre><span class=\"hljs-variable\">$ </span>bundle</pre><p>Or install it yourself as:</p>\n<pre>$ gem <span class=\"hljs-keyword\">install</span> jsonapi-authorization</pre><h2>Compatibility</h2>\n<ul>\n<li><code>v0.6.x</code> supports JR <code>v0.7.x</code></li>\n<li><code>v0.8.x</code> supports JR <code>v0.8.x</code></li>\n</ul>\n<p>We aim to support the same Ruby and Ruby on Rails versions as <code>jsonapi-resources</code> does. If that&apos;s not the case, please <a href=\"https://github.com/venuu/jsonapi-authorization/issues\">open an issue</a>.</p>\n<h2>Usage</h2>\n<p>First make sure you have a Pundit policy specified for every backing model that your JR resources use.</p>\n<p>Hook up this gem as the default processor for JR, and optionally allow rescuing from <code>Pundit::NotAuthorizedError</code> to output better errors for unauthorized requests:</p>\n<pre><span class=\"hljs-comment\"># config/initializers/jsonapi-resources.rb</span>\nJSONAPI.configure <span class=\"hljs-keyword\">do</span> <span class=\"hljs-params\">|config|</span>\n  config.default_processor_klass = JSONAPI::Authorization::AuthorizingProcessor\n  config.exception_class_whitelist = [Pundit::NotAuthorizedError]\n<span class=\"hljs-keyword\">end</span></pre><p>Make all your JR controllers specify the user in the <code>context</code> and rescue errors thrown by unauthorized requests:</p>\n<pre><span class=\"hljs-class\"><span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\">BaseResourceController</span> &lt; ActionController::Base</span>\n  <span class=\"hljs-keyword\">include</span> JSONAPI::ActsAsResourceController\n  rescue_from Pundit::NotAuthorizedError, <span class=\"hljs-symbol\">with:</span> <span class=\"hljs-symbol\">:user_not_authorized</span>\n\n  private\n\n  <span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">context</span></span>\n    {<span class=\"hljs-symbol\">user:</span> current_user}\n  <span class=\"hljs-keyword\">end</span>\n\n  <span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">user_not_authorized</span></span>\n    head <span class=\"hljs-symbol\">:forbidden</span>\n  <span class=\"hljs-keyword\">end</span>\n<span class=\"hljs-keyword\">end</span></pre><p>Have your JR resources include the <code>JSONAPI::Authorization::PunditScopedResource</code> module.</p>\n<pre><span class=\"hljs-class\"><span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\">BaseResource</span> &lt; JSONAPI::Resource</span>\n  <span class=\"hljs-keyword\">include</span> JSONAPI::Authorization::PunditScopedResource\n  abstract\n<span class=\"hljs-keyword\">end</span></pre><h3>Policies</h3>\n<p>To check whether an action is allowed JSONAPI::Authorization calls the respective actions of your pundit policies\n(<code>index?</code>, <code>show?</code>, <code>create?</code>, <code>update?</code>, <code>destroy?</code>).</p>\n<p>For relationship operations by default <code>update?</code> is being called for all affected resources.\nFor a finer grained control you can define <code>add_to_&lt;relation&gt;?</code>, <code>replace_&lt;relation&gt;?</code>, and <code>remove_from_&lt;relation&gt;?</code>\nas the following example shows.</p>\n<pre><span class=\"hljs-class\"><span class=\"hljs-keyword\">class</span> <span class=\"hljs-title\">ArticlePolicy</span></span>\n\n  <span class=\"hljs-comment\"># (...)</span>\n\n  <span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">add_to_comments?</span><span class=\"hljs-params\">(new_comments)</span></span>\n    record.published &amp;&amp; new_comments.all? { <span class=\"hljs-params\">|comment|</span> comment.author == user }\n  <span class=\"hljs-keyword\">end</span>\n\n  <span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">replace_comments?</span><span class=\"hljs-params\">(new_comments)</span></span>\n    allowed = record.comments.all? { <span class=\"hljs-params\">|comment|</span> new_comments.<span class=\"hljs-keyword\">include</span>?(comment) <span class=\"hljs-params\">||</span> add_to_comments?([comment])}\n    allowed &amp;&amp; new_comments.all? { <span class=\"hljs-params\">|comment|</span> record.comments.<span class=\"hljs-keyword\">include</span>?(comment) <span class=\"hljs-params\">||</span> remove_from_comments?(comment) }\n  <span class=\"hljs-keyword\">end</span>\n\n  <span class=\"hljs-function\"><span class=\"hljs-keyword\">def</span> <span class=\"hljs-title\">remove_from_comments?</span><span class=\"hljs-params\">(comment)</span></span>\n    comment.author == user <span class=\"hljs-params\">||</span> user.admin?\n  <span class=\"hljs-keyword\">end</span>\n<span class=\"hljs-keyword\">end</span></pre><p>Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.\nFor example if you have a many-to-many relationship with users and projects make sure that\n<code>ProjectPolicy#add_to_users?(users)</code> and <code>UserPolicy#add_to_projects?(projects)</code> match up.</p>\n<h2>Configuration</h2>\n<p>You can use a custom authorizer class by specifying a configure block in an initializer file. If using a custom authorizer class, be sure to require them at the top of the initializer before usage.</p>\n<pre>JSONAPI::Authorization.configure <span class=\"hljs-keyword\">do</span> <span class=\"hljs-params\">|config|</span>\n  config.authorizer = MyCustomAuthorizer\n<span class=\"hljs-keyword\">end</span></pre><p>By default JSONAPI::Authorization uses the <code>:user</code> key from the JSONAPI context hash as the Pundit user. If you would like to use <code>:current_user</code> or some other key, it can be configured as well.</p>\n<pre>JSONAPI::Authorization.configure <span class=\"hljs-keyword\">do</span> <span class=\"hljs-params\">|config|</span>\n  config.pundit_user = <span class=\"hljs-symbol\">:current_user</span>\n  <span class=\"hljs-comment\"># or a block can be provided</span>\n  config.pundit_user = -&gt;(context){ context[<span class=\"hljs-symbol\">:current_user</span>] }\n<span class=\"hljs-keyword\">end</span></pre><h2>Troubleshooting</h2>\n<h3>&quot;Unable to find policy&quot; exception for a request</h3>\n<p>The exception might look like this for resource class <code>ArticleResource</code> that is backed by <code>Article</code> model:</p>\n<pre>unable <span class=\"hljs-keyword\">to</span> find policy <span class=\"hljs-type\">`ArticlePolicy</span>` <span class=\"hljs-keyword\">for</span> <span class=\"hljs-type\">`Article&apos;</span></pre><p>This means that you don&apos;t have a policy class created for your model. Create one and the error should go away.</p>\n<h2>Development</h2>\n<p>After checking out the repo, run <code>bundle install</code> to install dependencies. Then, run <code>bundle exec rake spec</code> to run the tests. You can also run <code>bin/console</code> for an interactive prompt that will allow you to experiment.</p>\n<p>To install this gem onto your local machine, run <code>bundle exec rake install</code>. To release a new version, update the version number in <code>version.rb</code>, and then run <code>bundle exec rake release</code>, which will create a git tag for the version, push git commits and tags, and push the <code>.gem</code> file to <a href=\"https://rubygems.org\">rubygems.org</a>.</p>\n<h2>Credits</h2>\n<p>Originally based on discussion and code samples by <a href=\"https://github.com/barelyknown\">@barelyknown</a> and others in <a href=\"https://github.com/cerebris/jsonapi-resources/issues/16\">cerebris/jsonapi-resources#16</a>.</p>\n<h2>Contributing</h2>\n<p>Bug reports and pull requests are welcome on GitHub at <a href=\"https://github.com/venuu/jsonapi-authorization\">https://github.com/venuu/jsonapi-authorization</a>.</p>\n<h2>Contributors</h2>\n<p>Thanks goes to these wonderful people (<a href=\"https://github.com/kentcdodds/all-contributors#emoji-key\">emoji key</a>):</p>\n\n<table>\n<thead>\n<tr>\n<th><a href=\"http://vesalaakso.com\"><img src=\"https://avatars.githubusercontent.com/u/482561?v=3\"><br><sub>Vesa Laakso</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=valscion\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=valscion\">&#x1F4D6;</a> &#x1F687; <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=valscion\">&#x26A0;&#xFE0F;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/issues?q=author%3Avalscion\">&#x1F41B;</a> &#x1F4AC; &#x1F440;</th>\n<th><a href=\"https://github.com/lime\"><img src=\"https://avatars.githubusercontent.com/u/562204?v=3\"><br><sub>Emil S&#xE5;gfors</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=lime\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=lime\">&#x1F4D6;</a> &#x1F687; <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=lime\">&#x26A0;&#xFE0F;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/issues?q=author%3Alime\">&#x1F41B;</a> &#x1F4AC; &#x1F440;</th>\n<th><a href=\"https://github.com/matthias-g\"><img src=\"https://avatars.githubusercontent.com/u/1591161?v=3\"><br><sub>Matthias Grundmann</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=matthias-g\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=matthias-g\">&#x1F4D6;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=matthias-g\">&#x26A0;&#xFE0F;</a> &#x1F4AC;</th>\n<th><a href=\"http://thibaud.gg\"><img src=\"https://avatars.githubusercontent.com/u/1322?v=3\"><br><sub>Thibaud Guillaume-Gentil</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=thibaudgg\">&#x1F4BB;</a></th>\n<th><a href=\"http://netsteward.net\"><img src=\"https://avatars.githubusercontent.com/u/71660?v=3\"><br><sub>Daniel Schweigh&#xF6;fer</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=acid\">&#x1F4BB;</a></th>\n<th><a href=\"https://github.com/bsofiato\"><img src=\"https://avatars.githubusercontent.com/u/5076967?v=3\"><br><sub>Bruno Sofiato</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=bsofiato\">&#x1F4BB;</a></th>\n<th><a href=\"https://github.com/arcreative\"><img src=\"https://avatars.githubusercontent.com/u/1896026?v=3\"><br><sub>Adam Robertson</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=arcreative\">&#x1F4D6;</a></th>\n</tr>\n</thead>\n<tbody>\n<tr>\n<td><a href=\"https://github.com/gnfisher\"><img src=\"https://avatars3.githubusercontent.com/u/4742306?v=3\"><br><sub>Greg Fisher</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=gnfisher\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=gnfisher\">&#x26A0;&#xFE0F;</a></td>\n<td><a href=\"http://samlh.com\"><img src=\"https://avatars3.githubusercontent.com/u/370182?v=3\"><br><sub>Sam</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=handlers\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=handlers\">&#x26A0;&#xFE0F;</a></td>\n<td><a href=\"https://jpalumickas.com\"><img src=\"https://avatars0.githubusercontent.com/u/2738630?v=3\"><br><sub>Justas Palumickas</sub></a><br><a href=\"https://github.com/Venuu/jsonapi-authorization/issues?q=author%3Ajpalumickas\">&#x1F41B;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=jpalumickas\">&#x1F4BB;</a> <a href=\"https://github.com/Venuu/jsonapi-authorization/commits?author=jpalumickas\">&#x26A0;&#xFE0F;</a></td>\n</tr>\n</tbody>\n</table>\n\n<p>This project follows the <a href=\"https://github.com/kentcdodds/all-contributors\">all-contributors</a> specification. Contributions of any kind welcome!</p>\n"
+    },
+    {
+      "component": "footer",
+      "links": [
+        {
+          "href": "https://github.com/venuu/jsonapi-authorization",
+          "text": "GitHub"
+        },
+        {
+          "href": "https://github.com/venuu",
+          "text": "venuu"
+        }
+      ]
+    }
+  ]
+}
