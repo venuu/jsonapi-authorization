@@ -14,17 +14,26 @@ branch. This may contain information that is not relevant to the release you are
   [jr]: https://github.com/cerebris/jsonapi-resources "A resource-focused Rails library for developing JSON API compliant servers."
   [pundit]: https://github.com/elabs/pundit "Minimal authorization through OO design and pure Ruby classes"
 
+The core design principle of `JSONAPI::Authorization` is:
+
+**Prefer being overly restrictive rather than too permissive by accident.**
+
+What follows is that we want to have:
+
+1. Whitelist over blacklist -approach for authorization
+2. Fall back on a more strict authorization
+
 ## Caveats
 
 Make sure to test for authorization in your application, too. We should have coverage of all operations, though. If that isn't the case, please [open an issue][issues].
 
 If you're using custom processors, make sure that they extend `JSONAPI::Authorization::AuthorizingProcessor`, or authorization will not be performed for that resource.
 
-This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for [more complex cases][complex-case].
+This gem should work out-of-the box for simple cases. The default authorizer might be overly restrictive for cases where you are touching relationships.
+
+**If you are modifying relationships**, you should read the [relationship authorization documentation](docs/relationship-authorization.md).
 
 The API is subject to change between minor version bumps until we reach v1.0.0.
-
-  [complex-case]: https://github.com/venuu/jsonapi-authorization/issues/15
 
 ## Installation
 
@@ -97,8 +106,7 @@ To check whether an action is allowed JSONAPI::Authorization calls the respectiv
 (`index?`, `show?`, `create?`, `update?`, `destroy?`).
 
 For relationship operations by default `update?` is being called for all affected resources.
-For a finer grained control you can define `add_to_<relation>?`, `replace_<relation>?`, and `remove_from_<relation>?`
-as the following example shows.
+For a finer grained control you can define methods to authorize relationship changes. For example:
 
 ```ruby
 class ArticlePolicy
@@ -120,9 +128,7 @@ class ArticlePolicy
 end
 ```
 
-Caveat: In case a relationship is modifiable through multiple ways it is your responsibility to ensure consistency.
-For example if you have a many-to-many relationship with users and projects make sure that
-`ProjectPolicy#add_to_users?(users)` and `UserPolicy#add_to_projects?(projects)` match up.
+For thorough documentation about custom policy methods, check out the [relationship authorization docs](docs/relationship-authorization.md).
 
 ## Configuration
 
