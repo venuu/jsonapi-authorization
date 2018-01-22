@@ -2,8 +2,6 @@ source 'https://rubygems.org'
 
 gemspec
 
-gem 'sqlite3', '1.3.10'
-
 rails_version = ENV['RAILS_VERSION'] || 'default'
 jsonapi_resources_version = ENV['JSONAPI_RESOURCES_VERSION'] || 'default'
 
