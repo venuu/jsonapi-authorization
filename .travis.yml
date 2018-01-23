@@ -3,6 +3,7 @@ env:
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.0.0
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.1.0
 install:
+  - gem install bundler
   - bundle install
 rvm:
   - 2.3
