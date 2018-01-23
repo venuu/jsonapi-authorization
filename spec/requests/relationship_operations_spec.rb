@@ -357,7 +357,7 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:comments_scope) { Comment.all }
 
     before do
-      pending 'this are not supported yet?'
+      skip 'this are not supported yet?'
       allow_any_instance_of(CommentPolicy::Scope).to receive(:resolve).and_return(comments_scope)
     end
 
