@@ -28,7 +28,7 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "pry-doc"
   spec.add_development_dependency "pry-rails"
-  spec.add_development_dependency "rubocop", "~> 0.36.0"
-  spec.add_development_dependency "phare", "~> 0.7.1"
+  spec.add_development_dependency "rubocop", '~> 0.36.0'
+  spec.add_development_dependency "phare", "~> 1.0.1"
   spec.add_development_dependency "sqlite3"
 end
