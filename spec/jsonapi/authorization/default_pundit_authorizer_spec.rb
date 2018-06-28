@@ -73,7 +73,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show_relationship' do
     subject(:method_call) do
-      -> { authorizer.show_relationship(source_record, related_record) }
+      -> { authorizer.show_relationship(source_record: source_record, related_record: related_record) }
     end
 
     context 'authorized for show? on source record' do
@@ -474,7 +474,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   describe '#replace_to_one_relationship' do
     let(:related_record) { User.new }
     subject(:method_call) do
-      -> { authorizer.replace_to_one_relationship(source_record, related_record, :author) }
+      -> {
+        authorizer.replace_to_one_relationship(
+          source_record: source_record,
+          new_related_record: related_record,
+          relationship_type: :author
+        )
+      }
     end
 
     context 'authorized for replace_<type>? and update? on record' do

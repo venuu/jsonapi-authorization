@@ -51,7 +51,7 @@ module JSONAPI
       # * +related_record+ - The associated +has_one+ record to show or +nil+
       #   if the associated record was not found. For a +has_many+ association,
       #   this will always be +nil+
-      def show_relationship(source_record, related_record)
+      def show_relationship(source_record:, related_record:)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
       end
@@ -140,7 +140,7 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_record+ - The new record replacing the old record
       # * +relationship_type+ - The relationship type
-      def replace_to_one_relationship(source_record, new_related_record, relationship_type)
+      def replace_to_one_relationship(source_record:, new_related_record:, relationship_type:)
         relationship_method = "replace_#{relationship_type}?"
         authorize_relationship_operation(source_record, relationship_method, new_related_record)
       end
@@ -273,7 +273,11 @@ module JSONAPI
             if records.nil?
               remove_to_one_relationship(source_record, relation_name)
             else
-              replace_to_one_relationship(source_record, records, relation_name)
+              replace_to_one_relationship(
+                source_record: source_record,
+                new_related_record: records,
+                relationship_type: relation_name
+              )
             end
           end
         end

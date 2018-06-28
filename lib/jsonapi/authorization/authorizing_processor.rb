@@ -81,7 +81,7 @@ module JSONAPI
 
         parent_record = parent_resource._model
         related_record = related_resource._model unless related_resource.nil?
-        authorizer.show_relationship(parent_record, related_record)
+        authorizer.show_relationship(source_record: parent_record, related_record: related_record)
       end
 
       def authorize_show_related_resource
@@ -149,9 +149,9 @@ module JSONAPI
         new_related_record = new_related_resource._model unless new_related_resource.nil?
 
         authorizer.replace_to_one_relationship(
-          source_record,
-          new_related_record,
-          relationship_type
+          source_record: source_record,
+          new_related_record: new_related_record,
+          relationship_type: relationship_type
         )
       end
 
@@ -248,9 +248,9 @@ module JSONAPI
 
         relationship_type = params[:relationship_type].to_sym
         authorizer.replace_to_one_relationship(
-          source_record,
-          new_related_record,
-          relationship_type
+          source_record: source_record,
+          new_related_record: new_related_record,
+          relationship_type: relationship_type
         )
       end
 
