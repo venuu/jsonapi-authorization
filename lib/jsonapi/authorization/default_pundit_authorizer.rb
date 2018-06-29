@@ -18,7 +18,7 @@ module JSONAPI
       # ==== Parameters
       #
       # * +context+ - The context passed down from the controller layer
-      def initialize(context)
+      def initialize(context:)
         @user = JSONAPI::Authorization.configuration.user_context(context)
       end
 

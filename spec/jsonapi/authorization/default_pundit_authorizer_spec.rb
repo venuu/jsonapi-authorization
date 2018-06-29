@@ -5,7 +5,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   fixtures :all
 
   let(:source_record) { Article.new }
-  let(:authorizer) { described_class.new({}) }
+  let(:authorizer) { described_class.new(context: {}) }
 
   shared_examples_for :update_singular_fallback do |related_record_method|
     context 'authorized for update? on related record' do

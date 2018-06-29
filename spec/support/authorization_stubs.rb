@@ -6,7 +6,7 @@ module AuthorizationStubs
       kwargs.empty? ? x.with(*args) : x.with(*args, **kwargs)
     }.and_return(nil)
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
     authorizer
   end
 
@@ -15,7 +15,7 @@ module AuthorizationStubs
       kwargs.empty? ? x.with(*args) : x.with(*args, **kwargs)
     }.and_raise(Pundit::NotAuthorizedError)
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
     authorizer
   end
 
@@ -25,6 +25,6 @@ module AuthorizationStubs
       allow(authorizer).to receive(operation).with(*args).and_return(nil)
     end
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
   end
 end
