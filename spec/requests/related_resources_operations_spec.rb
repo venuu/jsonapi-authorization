@@ -31,12 +31,12 @@ RSpec.describe 'Related resources operations', type: :request do
     end
 
     context 'unauthorized for show_related_resources' do
-      before { disallow_operation('show_related_resources', article) }
+      before { disallow_operation('show_related_resources', source_record: article) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_related_resources' do
-      before { allow_operation('show_related_resources', article) }
+      before { allow_operation('show_related_resources', source_record: article) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the

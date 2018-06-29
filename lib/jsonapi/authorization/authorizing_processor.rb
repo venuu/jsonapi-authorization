@@ -106,7 +106,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show_related_resources(source_record)
+        authorizer.show_related_resources(source_record: source_record)
       end
 
       def authorize_replace_fields
