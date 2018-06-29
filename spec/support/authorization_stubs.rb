@@ -3,7 +3,7 @@ module AuthorizationStubs
 
   def allow_operation(operation, *args, authorizer: instance_double(AUTHORIZER_CLASS), **kwargs)
     allow(authorizer).to receive(operation).tap {|x|
-      if kwargs.empty? then x.with(*args) else x.with(*args, **kwargs) end
+      kwargs.empty? ? x.with(*args) : x.with(*args, **kwargs)
     }.and_return(nil)
 
     allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
@@ -12,7 +12,7 @@ module AuthorizationStubs
 
   def disallow_operation(operation, *args, authorizer: instance_double(AUTHORIZER_CLASS), **kwargs)
     allow(authorizer).to receive(operation).tap {|x|
-      if kwargs.empty? then x.with(*args) else x.with(*args, **kwargs) end
+      kwargs.empty? ? x.with(*args) : x.with(*args, **kwargs)
     }.and_raise(Pundit::NotAuthorizedError)
 
     allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
