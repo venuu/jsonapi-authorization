@@ -88,9 +88,12 @@ module JSONAPI
       # * +source_record+ - The record to be modified
       # * +related_records_with_context+ - A hash with the association type,
       # the relationship name, an Array of new related records.
-      def replace_fields(source_record, related_records_with_context)
+      def replace_fields(source_record:, related_records_with_context:)
         ::Pundit.authorize(user, source_record, 'update?')
-        authorize_related_records(source_record, related_records_with_context)
+        authorize_related_records(
+          source_record: source_record,
+          related_records_with_context: related_records_with_context
+        )
       end
 
       # <tt>POST /resources</tt>
@@ -100,7 +103,7 @@ module JSONAPI
       # * +source_class+ - The class of the record to be created
       # * +related_records_with_context+ - A has with the association type,
       # the relationship name, and an Array of new related records.
-      def create_resource(source_class, related_records_with_context)
+      def create_resource(source_class:, related_records_with_context:)
         ::Pundit.authorize(user, source_class, 'create?')
         related_records_with_context.each do |data|
           relation_name = data[:relation_name]
@@ -142,7 +145,11 @@ module JSONAPI
       # * +relationship_type+ - The relationship type
       def replace_to_one_relationship(source_record:, new_related_record:, relationship_type:)
         relationship_method = "replace_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, new_related_record)
+        authorize_relationship_operation(
+          source_record: source_record,
+          relationship_method: relationship_method,
+          related_record_or_records: new_related_record
+        )
       end
 
       # <tt>POST /resources/:id/relationships/other-resources</tt>
@@ -154,9 +161,13 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_records+ - The new records to be added to the association
       # * +relationship_type+ - The relationship type
-      def create_to_many_relationship(source_record, new_related_records, relationship_type)
+      def create_to_many_relationship(source_record:, new_related_records:, relationship_type:)
         relationship_method = "add_to_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, new_related_records)
+        authorize_relationship_operation(
+          source_record: source_record,
+          relationship_method: relationship_method,
+          related_record_or_records: new_related_records
+        )
       end
 
       # <tt>PATCH /resources/:id/relationships/other-resources</tt>
@@ -169,9 +180,13 @@ module JSONAPI
       # * +new_related_records+ - The new records replacing the entire +has_many+
       #   association
       # * +relationship_type+ - The relationship type
-      def replace_to_many_relationship(source_record, new_related_records, relationship_type)
+      def replace_to_many_relationship(source_record:, new_related_records:, relationship_type:)
         relationship_method = "replace_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, new_related_records)
+        authorize_relationship_operation(
+          source_record: source_record,
+          relationship_method: relationship_method,
+          related_record_or_records: new_related_records
+        )
       end
 
       # <tt>DELETE /resources/:id/relationships/other-resources</tt>
@@ -183,9 +198,13 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +related_records+ - The records which will be disassociated from +source_record+
       # * +relationship_type+ - The relationship type
-      def remove_to_many_relationship(source_record, related_records, relationship_type)
+      def remove_to_many_relationship(source_record:, related_records:, relationship_type:)
         relationship_method = "remove_from_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method, related_records)
+        authorize_relationship_operation(
+          source_record: source_record,
+          relationship_method: relationship_method,
+          related_record_or_records: related_records
+        )
       end
 
       # <tt>DELETE /resources/:id/relationships/another-resource</tt>
@@ -196,9 +215,12 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +relationship_type+ - The relationship type
-      def remove_to_one_relationship(source_record, relationship_type)
+      def remove_to_one_relationship(source_record:, relationship_type:)
         relationship_method = "remove_#{relationship_type}?"
-        authorize_relationship_operation(source_record, relationship_method)
+        authorize_relationship_operation(
+          source_record: source_record,
+          relationship_method: relationship_method
+        )
       end
 
       # Any request including <tt>?include=other-resources</tt>
@@ -216,9 +238,11 @@ module JSONAPI
       #                     article.comments check
       # * +record_class+ - The underlying record class for the relationships
       #                    resource.
-      def include_has_many_resource(_source_record, record_class)
+      # rubocop:disable Lint/UnusedMethodArgument
+      def include_has_many_resource(source_record:, record_class:)
         ::Pundit.authorize(user, record_class, 'index?')
       end
+      # rubocop:enable Lint/UnusedMethodArgument
 
       # Any request including <tt>?include=another-resource</tt>
       #
@@ -231,16 +255,18 @@ module JSONAPI
       # * +source_record+ — The source relationship record, e.g. an Article in
       #                     article.author check
       # * +related_record+ - The associated record to return
-      def include_has_one_resource(_source_record, related_record)
+      # rubocop:disable Lint/UnusedMethodArgument
+      def include_has_one_resource(source_record:, related_record:)
         ::Pundit.authorize(user, related_record, 'show?')
       end
+      # rubocop:enable Lint/UnusedMethodArgument
 
       private
 
       def authorize_relationship_operation(
-        source_record,
-        relationship_method,
-        related_record_or_records = nil
+        source_record:,
+        relationship_method:,
+        related_record_or_records: nil
       )
         policy = ::Pundit.policy(user, source_record)
         if policy.respond_to?(relationship_method)
@@ -261,17 +287,24 @@ module JSONAPI
         end
       end
 
-      def authorize_related_records(source_record, related_records_with_context)
+      def authorize_related_records(source_record:, related_records_with_context:)
         related_records_with_context.each do |data|
           relation_type = data[:relation_type]
           relation_name = data[:relation_name]
           records = data[:records]
           case relation_type
           when :to_many
-            replace_to_many_relationship(source_record, records, relation_name)
+            replace_to_many_relationship(
+              source_record: source_record,
+              new_related_records: records,
+              relationship_type: relation_name
+            )
           when :to_one
             if records.nil?
-              remove_to_one_relationship(source_record, relation_name)
+              remove_to_one_relationship(
+                source_record: source_record,
+                relationship_type: relation_name
+              )
             else
               replace_to_one_relationship(
                 source_record: source_record,
