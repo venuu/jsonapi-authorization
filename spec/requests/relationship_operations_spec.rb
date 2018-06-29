@@ -29,12 +29,12 @@ RSpec.describe 'Relationship operations', type: :request do
     subject(:last_response) { get("/articles/#{article.external_id}/relationships/comments") }
 
     context 'unauthorized for show_relationship' do
-      before { disallow_operation('show_relationship', {source_record: article, related_record: nil}) }
+      before { disallow_operation('show_relationship', source_record: article, related_record: nil) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_relationship' do
-      before { allow_operation('show_relationship', {source_record: article, related_record: nil}) }
+      before { allow_operation('show_relationship', source_record: article, related_record: nil) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -289,8 +289,11 @@ RSpec.describe 'Relationship operations', type: :request do
 
       context 'unauthorized for replace_to_one_relationship' do
         before {
-          disallow_operation('replace_to_one_relationship',
-            source_record: tag, new_related_record: new_taggable, relationship_type: :taggable
+          disallow_operation(
+            'replace_to_one_relationship',
+            source_record: tag,
+            new_related_record: new_taggable,
+            relationship_type: :taggable
           )
         }
         it { is_expected.to be_forbidden }
@@ -298,11 +301,12 @@ RSpec.describe 'Relationship operations', type: :request do
 
       context 'authorized for replace_to_one_relationship' do
         before {
-          allow_operation('replace_to_one_relationship',
+          allow_operation(
+            'replace_to_one_relationship',
             source_record: tag,
             new_related_record: new_taggable,
             relationship_type: :taggable
-          ) 
+          )
         }
         it { is_expected.to be_successful }
 
