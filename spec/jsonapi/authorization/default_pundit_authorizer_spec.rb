@@ -57,7 +57,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show' do
     subject(:method_call) do
-      -> { authorizer.show(source_record) }
+      -> { authorizer.show(source_record: source_record) }
     end
 
     context 'authorized for show? on record' do

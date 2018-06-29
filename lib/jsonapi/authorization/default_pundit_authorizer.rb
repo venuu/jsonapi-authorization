@@ -36,7 +36,7 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to show
-      def show(source_record)
+      def show(source_record:)
         ::Pundit.authorize(user, source_record, 'show?')
       end
 

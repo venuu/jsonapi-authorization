@@ -44,7 +44,7 @@ describe 'Resource operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show' do
-      before { disallow_operation('show', article) }
+      before { disallow_operation('show', source_record: article) }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -57,7 +57,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for show' do
-      before { allow_operation('show', article) }
+      before { allow_operation('show', source_record: article) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the

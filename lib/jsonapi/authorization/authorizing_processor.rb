@@ -58,7 +58,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show(record)
+        authorizer.show(source_record: record)
       end
 
       def authorize_show_relationship
