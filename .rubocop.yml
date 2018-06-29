@@ -1,4 +1,5 @@
 AllCops:
+  TargetRubyVersion: 2.1
   Exclude:
     - 'bin/*'
     - 'spec/dummy/db/schema.rb'
