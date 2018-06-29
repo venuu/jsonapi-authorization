@@ -127,7 +127,7 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to be removed
-      def remove_resource(source_record)
+      def remove_resource(source_record:)
         ::Pundit.authorize(user, source_record, 'destroy?')
       end
 

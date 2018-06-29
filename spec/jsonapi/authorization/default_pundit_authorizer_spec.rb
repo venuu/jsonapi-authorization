@@ -466,7 +466,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#remove_resource' do
     subject(:method_call) do
-      -> { authorizer.remove_resource(source_record) }
+      -> { authorizer.remove_resource(source_record: source_record) }
     end
 
     context 'authorized for destroy? on record' do

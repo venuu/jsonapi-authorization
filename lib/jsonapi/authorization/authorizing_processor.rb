@@ -128,7 +128,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.remove_resource(record)
+        authorizer.remove_resource(source_record: record)
       end
 
       def authorize_replace_to_one_relationship

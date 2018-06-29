@@ -134,7 +134,7 @@ describe 'Resource operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_resource' do
-      before { disallow_operation('remove_resource', article) }
+      before { disallow_operation('remove_resource', source_record: article) }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -147,7 +147,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for remove_resource' do
-      before { allow_operation('remove_resource', article) }
+      before { allow_operation('remove_resource', source_record: article) }
       it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the
