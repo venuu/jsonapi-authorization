@@ -22,12 +22,12 @@ describe 'Resource operations', type: :request do
     subject(:last_response) { get('/articles') }
 
     context 'unauthorized for find' do
-      before { disallow_operation('find', Article) }
+      before { disallow_operation('find', source_class: Article) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for find' do
-      before { allow_operation('find', Article) }
+      before { allow_operation('find', source_class: Article) }
       let(:policy_scope) { Article.where(id: article.id) }
 
       it { is_expected.to be_ok }

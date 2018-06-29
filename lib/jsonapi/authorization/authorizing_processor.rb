@@ -49,7 +49,7 @@ module JSONAPI
       end
 
       def authorize_find
-        authorizer.find(@resource_klass._model_class)
+        authorizer.find(source_class: @resource_klass._model_class)
       end
 
       def authorize_show

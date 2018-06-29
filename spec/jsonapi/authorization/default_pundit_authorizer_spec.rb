@@ -41,7 +41,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#find' do
     subject(:method_call) do
-      -> { authorizer.find(source_record) }
+      -> { authorizer.find(source_class: source_record) }
     end
 
     context 'authorized for index? on record' do

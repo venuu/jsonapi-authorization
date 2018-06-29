@@ -188,7 +188,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
   describe 'GET /articles' do
     subject(:last_response) { get("/articles?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('find', Article) }
+    let!(:chained_authorizer) { allow_operation('find', source_class: Article) }
 
     let(:article) {
       Article.create(

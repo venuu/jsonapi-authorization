@@ -27,7 +27,7 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The source class (e.g. +Article+ for +ArticleResource+)
-      def find(source_class)
+      def find(source_class:)
         ::Pundit.authorize(user, source_class, 'index?')
       end
 
