@@ -365,7 +365,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     }
 
     subject(:last_response) { get("/articles/#{article.external_id}/article?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('show_related_resource', article, article) }
+    let!(:chained_authorizer) { allow_operation('show_related_resource', source_record: article, related_record: article) }
 
     include_examples :include_directive_tests
   end

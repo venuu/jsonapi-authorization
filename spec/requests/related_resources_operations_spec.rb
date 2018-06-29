@@ -59,12 +59,12 @@ RSpec.describe 'Related resources operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show_related_resource' do
-      before { disallow_operation('show_related_resource', article, article.author) }
+      before { disallow_operation('show_related_resource', source_record: article, related_record: article.author) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_related_resource' do
-      before { allow_operation('show_related_resource', article, article.author) }
+      before { allow_operation('show_related_resource', source_record: article, related_record: article.author) }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.

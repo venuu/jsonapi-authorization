@@ -65,7 +65,7 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is queried
       # * +related_record+ - The associated record to show or +nil+ if the
       #   associated record was not found
-      def show_related_resource(source_record, related_record)
+      def show_related_resource(source_record:, related_record:)
         ::Pundit.authorize(user, source_record, 'show?')
         ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
       end

@@ -129,7 +129,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show_related_resource' do
     subject(:method_call) do
-      -> { authorizer.show_related_resource(source_record, related_record) }
+      lambda do
+        authorizer.show_related_resource(
+          source_record: source_record,
+          related_record: related_record
+        )
+      end
     end
 
     context 'authorized for show? on source record' do
