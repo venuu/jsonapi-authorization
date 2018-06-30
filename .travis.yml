@@ -2,11 +2,10 @@ language: ruby
 cache: bundler
 sudo: false
 env:
-  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.1.0
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.2.0
 rvm:
-  - 2.1.2
-before_install: gem install bundler -v 1.11.2
+  - 2.4.3
+before_install: gem install bundler -v 1.16.2
 notifications:
   email: false
 script:
