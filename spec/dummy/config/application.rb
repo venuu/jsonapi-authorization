@@ -25,6 +25,8 @@ class Application < Rails::Application
   # config.middleware.delete "ActionDispatch::BestStandardsSupport"
 
   config.secret_key_base = "correct-horse-battery-staple"
+
+  config.active_record.sqlite3.represent_boolean_as_integer = true
 end
 
 JSONAPI.configure do |config|
