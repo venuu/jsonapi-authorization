@@ -9,3 +9,4 @@
 /tmp/
 /spec/dummy/tmp/
 *.orig
+.ruby-version
