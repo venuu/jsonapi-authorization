@@ -115,6 +115,18 @@
         "code",
         "test"
       ]
+    },
+    {
+      "login": "nruth",
+      "name": "Nicholas Rutherford",
+      "avatar_url": "https://avatars1.githubusercontent.com/u/26158?v=4",
+      "profile": "http://www.google.co.uk/profiles/nick.rutherford",
+      "contributions": [
+        "code",
+        "tool",
+        "test"
+      ]
     }
-  ]
+  ],
+  "repoType": "github"
 }
