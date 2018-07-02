@@ -123,8 +123,8 @@
       "profile": "http://www.google.co.uk/profiles/nick.rutherford",
       "contributions": [
         "code",
-        "tool",
-        "test"
+        "test",
+        "infra"
       ]
     }
   ],
