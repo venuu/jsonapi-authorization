@@ -1,12 +1,13 @@
 language: ruby
 env:
   - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.2.0
+  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.0.0
+  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.1.0
+  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.2.0
 install:
   - bundle install
 rvm:
   - 2.3
-  - 2.4
-  - 2.5
 before_install: gem install bundler -v 1.16.2
 notifications:
   email: false
