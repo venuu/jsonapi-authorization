@@ -5,7 +5,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   fixtures :all
 
   let(:source_record) { Article.new }
-  let(:authorizer) { described_class.new({}) }
+  let(:authorizer) { described_class.new(context: {}) }
 
   shared_examples_for :update_singular_fallback do |related_record_method|
     context 'authorized for update? on related record' do
@@ -41,7 +41,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#find' do
     subject(:method_call) do
-      -> { authorizer.find(source_record) }
+      -> { authorizer.find(source_class: source_record) }
     end
 
     context 'authorized for index? on record' do
@@ -57,7 +57,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show' do
     subject(:method_call) do
-      -> { authorizer.show(source_record) }
+      -> { authorizer.show(source_record: source_record) }
     end
 
     context 'authorized for show? on record' do
@@ -73,7 +73,11 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show_relationship' do
     subject(:method_call) do
-      -> { authorizer.show_relationship(source_record, related_record) }
+      lambda do
+        authorizer.show_relationship(
+          source_record: source_record, related_record: related_record
+        )
+      end
     end
 
     context 'authorized for show? on source record' do
@@ -125,7 +129,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show_related_resource' do
     subject(:method_call) do
-      -> { authorizer.show_related_resource(source_record, related_record) }
+      lambda do
+        authorizer.show_related_resource(
+          source_record: source_record,
+          related_record: related_record
+        )
+      end
     end
 
     context 'authorized for show? on source record' do
@@ -177,7 +186,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#show_related_resources' do
     subject(:method_call) do
-      -> { authorizer.show_related_resources(source_record) }
+      -> { authorizer.show_related_resources(source_record: source_record) }
     end
 
     context 'authorized for show? on record' do
@@ -203,7 +212,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       subject(:method_call) do
-        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+        lambda do
+          authorizer.replace_fields(
+            source_record: source_record,
+            related_records_with_context: related_records_with_context
+          )
+        end
       end
 
       context 'authorized for replace_<type>? and authorized for update? on source record' do
@@ -249,7 +263,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       subject(:method_call) do
-        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+        lambda do
+          authorizer.replace_fields(
+            source_record: source_record,
+            related_records_with_context: related_records_with_context
+          )
+        end
       end
 
       context 'authorized for remove_<type>? and authorized for update? on source record' do
@@ -296,7 +315,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       subject(:method_call) do
-        -> { authorizer.replace_fields(source_record, related_records_with_context) }
+        lambda do
+          authorizer.replace_fields(
+            source_record: source_record,
+            related_records_with_context: related_records_with_context
+          )
+        end
       end
 
       context 'authorized for update? on source record and related records is empty' do
@@ -357,7 +381,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
       let(:source_class) { source_record.class }
       subject(:method_call) do
-        -> { authorizer.create_resource(source_class, related_records_with_context) }
+        lambda do
+          authorizer.create_resource(
+            source_class: source_class,
+            related_records_with_context: related_records_with_context
+          )
+        end
       end
 
       context 'authorized for create? and authorized for create_with_<type>? on source class' do
@@ -404,7 +433,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
       let(:source_class) { source_record.class }
       subject(:method_call) do
-        -> { authorizer.create_resource(source_class, related_records_with_context) }
+        lambda do
+          authorizer.create_resource(
+            source_class: source_class,
+            related_records_with_context: related_records_with_context
+          )
+        end
       end
 
       context 'authorized for create? on source class and related records is empty' do
@@ -457,7 +491,7 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#remove_resource' do
     subject(:method_call) do
-      -> { authorizer.remove_resource(source_record) }
+      -> { authorizer.remove_resource(source_record: source_record) }
     end
 
     context 'authorized for destroy? on record' do
@@ -474,7 +508,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   describe '#replace_to_one_relationship' do
     let(:related_record) { User.new }
     subject(:method_call) do
-      -> { authorizer.replace_to_one_relationship(source_record, related_record, :author) }
+      lambda do
+        authorizer.replace_to_one_relationship(
+          source_record: source_record,
+          new_related_record: related_record,
+          relationship_type: :author
+        )
+      end
     end
 
     context 'authorized for replace_<type>? and update? on record' do
@@ -513,7 +553,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   describe '#create_to_many_relationship' do
     let(:related_records) { Array.new(3) { Comment.new } }
     subject(:method_call) do
-      -> { authorizer.create_to_many_relationship(source_record, related_records, :comments) }
+      lambda do
+        authorizer.create_to_many_relationship(
+          source_record: source_record,
+          new_related_records: related_records,
+          relationship_type: :comments
+        )
+      end
     end
 
     context 'authorized for add_to_<type>? and update? on record' do
@@ -553,7 +599,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:article) { articles(:article_with_comments) }
     let(:new_comments) { Array.new(3) { Comment.new } }
     subject(:method_call) do
-      -> { authorizer.replace_to_many_relationship(article, new_comments, :comments) }
+      lambda do
+        authorizer.replace_to_many_relationship(
+          source_record: article,
+          new_related_records: new_comments,
+          relationship_type: :comments
+        )
+      end
     end
 
     context 'authorized for replace_<type>? and update? on record' do
@@ -593,7 +645,13 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:article) { articles(:article_with_comments) }
     let(:comments_to_remove) { article.comments.limit(2) }
     subject(:method_call) do
-      -> { authorizer.remove_to_many_relationship(article, comments_to_remove, :comments) }
+      lambda do
+        authorizer.remove_to_many_relationship(
+          source_record: article,
+          related_records: comments_to_remove,
+          relationship_type: :comments
+        )
+      end
     end
 
     context 'authorized for remove_from_<type>? and article? on article' do
@@ -631,7 +689,11 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
 
   describe '#remove_to_one_relationship' do
     subject(:method_call) do
-      -> { authorizer.remove_to_one_relationship(source_record, :author) }
+      lambda do
+        authorizer.remove_to_one_relationship(
+          source_record: source_record, relationship_type: :author
+        )
+      end
     end
 
     context 'authorized for remove_<type>? and article? on record' do
@@ -671,7 +733,11 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:record_class) { Article }
     let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_many_resource(source_record, record_class) }
+      lambda do
+        authorizer.include_has_many_resource(
+          source_record: source_record, record_class: record_class
+        )
+      end
     end
 
     context 'authorized for index? on record class' do
@@ -689,7 +755,12 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:related_record) { Article.new }
     let(:source_record) { Comment.new }
     subject(:method_call) do
-      -> { authorizer.include_has_one_resource(source_record, related_record) }
+      lambda do
+        authorizer.include_has_one_resource(
+          source_record: source_record,
+          related_record: related_record
+        )
+      end
     end
 
     context 'authorized for show? on record' do

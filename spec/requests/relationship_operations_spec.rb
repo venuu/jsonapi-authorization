@@ -29,12 +29,12 @@ RSpec.describe 'Relationship operations', type: :request do
     subject(:last_response) { get("/articles/#{article.external_id}/relationships/comments") }
 
     context 'unauthorized for show_relationship' do
-      before { disallow_operation('show_relationship', article, nil) }
+      before { disallow_operation('show_relationship', source_record: article, related_record: nil) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_relationship' do
-      before { allow_operation('show_relationship', article, nil) }
+      before { allow_operation('show_relationship', source_record: article, related_record: nil) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -58,12 +58,12 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show_relationship' do
-      before { disallow_operation('show_relationship', article, article.author) }
+      before { disallow_operation('show_relationship', source_record: article, related_record: article.author) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for show_relationship' do
-      before { allow_operation('show_relationship', article, article.author) }
+      before { allow_operation('show_relationship', source_record: article, related_record: article.author) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -96,12 +96,26 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'unauthorized for create_to_many_relationship' do
-      before { disallow_operation('create_to_many_relationship', article, new_comments, :comments) }
+      before {
+        disallow_operation(
+          'create_to_many_relationship',
+          source_record: article,
+          new_related_records: new_comments,
+          relationship_type: :comments
+        )
+      }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_to_many_relationship' do
-      before { allow_operation('create_to_many_relationship', article, new_comments, :comments) }
+      before {
+        allow_operation(
+          'create_to_many_relationship',
+          source_record: article,
+          new_related_records: new_comments,
+          relationship_type: :comments
+        )
+      }
       it { is_expected.to be_successful }
 
       context 'limited by policy scope on comments' do
@@ -141,7 +155,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
     context 'unauthorized for replace_to_many_relationship' do
       before do
-        disallow_operation('replace_to_many_relationship', article, new_comments, :comments)
+        disallow_operation('replace_to_many_relationship', source_record: article, new_related_records: new_comments, relationship_type: :comments)
       end
 
       it { is_expected.to be_forbidden }
@@ -150,7 +164,7 @@ RSpec.describe 'Relationship operations', type: :request do
     context 'authorized for replace_to_many_relationship' do
       context 'not limited by policy scopes' do
         before do
-          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
+          allow_operation('replace_to_many_relationship', source_record: article, new_related_records: new_comments, relationship_type: :comments)
         end
 
         it { is_expected.to be_successful }
@@ -159,7 +173,7 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
+          allow_operation('replace_to_many_relationship', source_record: article, new_related_records: new_comments, relationship_type: :comments)
         end
 
         it do
@@ -172,7 +186,12 @@ RSpec.describe 'Relationship operations', type: :request do
       # behaviour in that case anyway, as it might be surprising.
       context 'limited by policy scope on articles' do
         before do
-          allow_operation('replace_to_many_relationship', article, new_comments, :comments)
+          allow_operation(
+            'replace_to_many_relationship',
+            source_record: article,
+            new_related_records: new_comments,
+            relationship_type: :comments
+          )
         end
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
@@ -206,12 +225,12 @@ RSpec.describe 'Relationship operations', type: :request do
       end
 
       context 'unauthorized for replace_to_one_relationship' do
-        before { disallow_operation('replace_to_one_relationship', article, new_author, :author) }
+        before { disallow_operation('replace_to_one_relationship', source_record: article, new_related_record: new_author, relationship_type: :author) }
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for replace_to_one_relationship' do
-        before { allow_operation('replace_to_one_relationship', article, new_author, :author) }
+        before { allow_operation('replace_to_one_relationship', source_record: article, new_related_record: new_author, relationship_type: :author) }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on author', skip: 'DISCUSS' do
@@ -236,12 +255,12 @@ RSpec.describe 'Relationship operations', type: :request do
       let(:json) { '{ "data": null }' }
 
       context 'unauthorized for remove_to_one_relationship' do
-        before { disallow_operation('remove_to_one_relationship', article, :author) }
+        before { disallow_operation('remove_to_one_relationship', source_record: article, relationship_type: :author) }
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for remove_to_one_relationship' do
-        before { allow_operation('remove_to_one_relationship', article, :author) }
+        before { allow_operation('remove_to_one_relationship', source_record: article, relationship_type: :author) }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on author', skip: 'DISCUSS' do
@@ -288,12 +307,26 @@ RSpec.describe 'Relationship operations', type: :request do
       end
 
       context 'unauthorized for replace_to_one_relationship' do
-        before { disallow_operation('replace_to_one_relationship', tag, new_taggable, :taggable) }
+        before {
+          disallow_operation(
+            'replace_to_one_relationship',
+            source_record: tag,
+            new_related_record: new_taggable,
+            relationship_type: :taggable
+          )
+        }
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for replace_to_one_relationship' do
-        before { allow_operation('replace_to_one_relationship', tag, new_taggable, :taggable) }
+        before {
+          allow_operation(
+            'replace_to_one_relationship',
+            source_record: tag,
+            new_related_record: new_taggable,
+            relationship_type: :taggable
+          )
+        }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on taggable', skip: 'DISCUSS' do
@@ -316,12 +349,12 @@ RSpec.describe 'Relationship operations', type: :request do
       let(:json) { '{ "data": null }' }
 
       context 'unauthorized for remove_to_one_relationship' do
-        before { disallow_operation('remove_to_one_relationship', tag, :taggable) }
+        before { disallow_operation('remove_to_one_relationship', source_record: tag, relationship_type: :taggable) }
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for remove_to_one_relationship' do
-        before { allow_operation('remove_to_one_relationship', tag, :taggable) }
+        before { allow_operation('remove_to_one_relationship', source_record: tag, relationship_type: :taggable) }
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on taggable', skip: 'DISCUSS' do
@@ -364,9 +397,9 @@ RSpec.describe 'Relationship operations', type: :request do
       before do
         disallow_operation(
           'remove_to_many_relationship',
-          article,
-          [comments_to_remove.first, comments_to_remove.second],
-          :comments
+          source_record: article,
+          related_records: [comments_to_remove.first, comments_to_remove.second],
+          relationship_type: :comments
         )
       end
 
@@ -378,9 +411,9 @@ RSpec.describe 'Relationship operations', type: :request do
         before do
           allow_operation(
             'remove_to_many_relationship',
-            article,
-            [comments_to_remove.first, comments_to_remove.second],
-            :comments
+            source_record: article,
+            related_records: [comments_to_remove.first, comments_to_remove.second],
+            relationship_type: :comments
           )
         end
 
@@ -390,7 +423,7 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('remove_to_many_relationship', article, [], :comments)
+          allow_operation('remove_to_many_relationship', source_record: article, related_records: [], relationship_type: :comments)
         end
 
         # This succeeds because the request isn't actually able to try removing any comments
@@ -404,9 +437,9 @@ RSpec.describe 'Relationship operations', type: :request do
         before do
           allow_operation(
             'remove_to_many_relationship',
-            article,
-            [comments_to_remove.first, comments_to_remove.second],
-            :comments
+            source_record: article,
+            related_records: [comments_to_remove.first, comments_to_remove.second],
+            relationship_type: :comments
           )
         end
         let(:policy_scope) { Article.where.not(id: article.id) }
@@ -422,12 +455,12 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_to_one_relationship' do
-      before { disallow_operation('remove_to_one_relationship', article, :author) }
+      before { disallow_operation('remove_to_one_relationship', source_record: article, relationship_type: :author) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for remove_to_one_relationship' do
-      before { allow_operation('remove_to_one_relationship', article, :author) }
+      before { allow_operation('remove_to_one_relationship', source_record: article, relationship_type: :author) }
       it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the

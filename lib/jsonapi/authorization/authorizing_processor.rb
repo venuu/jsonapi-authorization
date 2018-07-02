@@ -49,7 +49,7 @@ module JSONAPI
       end
 
       def authorize_find
-        authorizer.find(@resource_klass._model_class)
+        authorizer.find(source_class: @resource_klass._model_class)
       end
 
       def authorize_show
@@ -58,7 +58,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show(record)
+        authorizer.show(source_record: record)
       end
 
       def authorize_show_relationship
@@ -81,7 +81,7 @@ module JSONAPI
 
         parent_record = parent_resource._model
         related_record = related_resource._model unless related_resource.nil?
-        authorizer.show_relationship(parent_record, related_record)
+        authorizer.show_relationship(source_record: parent_record, related_record: related_record)
       end
 
       def authorize_show_related_resource
@@ -95,7 +95,9 @@ module JSONAPI
 
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
-        authorizer.show_related_resource(source_record, related_record)
+        authorizer.show_related_resource(
+          source_record: source_record, related_record: related_record
+        )
       end
 
       def authorize_show_related_resources
@@ -104,7 +106,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show_related_resources(source_record)
+        authorizer.show_related_resources(source_record: source_record)
       end
 
       def authorize_replace_fields
@@ -112,12 +114,18 @@ module JSONAPI
           params[:resource_id],
           context: context
         )._model
-        authorizer.replace_fields(source_record, related_models_with_context)
+        authorizer.replace_fields(
+          source_record: source_record,
+          related_records_with_context: related_models_with_context
+        )
       end
 
       def authorize_create_resource
         source_class = resource_klass._model_class
-        authorizer.create_resource(source_class, related_models_with_context)
+        authorizer.create_resource(
+          source_class: source_class,
+          related_records_with_context: related_models_with_context
+        )
       end
 
       def authorize_remove_resource
@@ -126,7 +134,7 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.remove_resource(record)
+        authorizer.remove_resource(source_record: record)
       end
 
       def authorize_replace_to_one_relationship
@@ -149,9 +157,9 @@ module JSONAPI
         new_related_record = new_related_resource._model unless new_related_resource.nil?
 
         authorizer.replace_to_one_relationship(
-          source_record,
-          new_related_record,
-          relationship_type
+          source_record: source_record,
+          new_related_record: new_related_record,
+          relationship_type: relationship_type
         )
       end
 
@@ -164,7 +172,11 @@ module JSONAPI
         relationship_type = params[:relationship_type].to_sym
         related_models = model_class_for_relationship(relationship_type).find(params[:data])
 
-        authorizer.create_to_many_relationship(source_record, related_models, relationship_type)
+        authorizer.create_to_many_relationship(
+          source_record: source_record,
+          new_related_records: related_models,
+          relationship_type: relationship_type
+        )
       end
 
       def authorize_replace_to_many_relationships
@@ -178,9 +190,9 @@ module JSONAPI
         new_related_records = model_class_for_relationship(relationship_type).find(params[:data])
 
         authorizer.replace_to_many_relationship(
-          source_record,
-          new_related_records,
-          relationship_type
+          source_record: source_record,
+          new_related_records: new_related_records,
+          relationship_type: relationship_type
         )
       end
 
@@ -204,9 +216,9 @@ module JSONAPI
         related_records = related_resources.map(&:_model)
 
         authorizer.remove_to_many_relationship(
-          source_record,
-          related_records,
-          relationship_type
+          source_record: source_record,
+          related_records: related_records,
+          relationship_type: relationship_type
         )
       end
 
@@ -218,7 +230,9 @@ module JSONAPI
 
         relationship_type = params[:relationship_type].to_sym
 
-        authorizer.remove_to_one_relationship(source_record, relationship_type)
+        authorizer.remove_to_one_relationship(
+          source_record: source_record, relationship_type: relationship_type
+        )
       end
 
       def authorize_replace_polymorphic_to_one_relationship
@@ -248,16 +262,16 @@ module JSONAPI
 
         relationship_type = params[:relationship_type].to_sym
         authorizer.replace_to_one_relationship(
-          source_record,
-          new_related_record,
-          relationship_type
+          source_record: source_record,
+          new_related_record: new_related_record,
+          relationship_type: relationship_type
         )
       end
 
       private
 
       def authorizer
-        @authorizer ||= ::JSONAPI::Authorization.configuration.authorizer.new(context)
+        @authorizer ||= ::JSONAPI::Authorization.configuration.authorizer.new(context: context)
       end
 
       # TODO: Communicate with upstream to fix this nasty hack
@@ -367,11 +381,13 @@ module JSONAPI
               relationship.relation_name(context: context)
             )
             return if related_record.nil?
-            authorizer.include_has_one_resource(source_record, related_record)
+            authorizer.include_has_one_resource(
+              source_record: source_record, related_record: related_record
+            )
           when JSONAPI::Relationship::ToMany
             authorizer.include_has_many_resource(
-              source_record,
-              relationship.resource_klass._model_class
+              source_record: source_record,
+              record_class: relationship.resource_klass._model_class
             )
           else
             raise "Unexpected relationship type: #{relationship.inspect}"

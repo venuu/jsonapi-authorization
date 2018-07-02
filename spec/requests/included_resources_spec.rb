@@ -34,13 +34,27 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:comments_policy_scope) { Comment.all }
 
       context 'unauthorized for include_has_many_resource for Comment' do
-        before { disallow_operation('include_has_many_resource', an_instance_of(Article), Comment, authorizer: chained_authorizer) }
+        before {
+          disallow_operation(
+            'include_has_many_resource',
+            source_record: an_instance_of(Article),
+            record_class: Comment,
+            authorizer: chained_authorizer
+          )
+        }
 
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for include_has_many_resource for Comment' do
-        before { allow_operation('include_has_many_resource', an_instance_of(Article), Comment, authorizer: chained_authorizer) }
+        before {
+          allow_operation(
+            'include_has_many_resource',
+            source_record: an_instance_of(Article),
+            record_class: Comment,
+            authorizer: chained_authorizer
+          )
+        }
 
         it { is_expected.to be_successful }
 
@@ -57,13 +71,27 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'author' }
 
       context 'unauthorized for include_has_one_resource for article.author' do
-        before { disallow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer) }
+        before {
+          disallow_operation(
+            'include_has_one_resource',
+            source_record: an_instance_of(Article),
+            related_record: an_instance_of(User),
+            authorizer: chained_authorizer
+          )
+        }
 
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for include_has_one_resource for article.author' do
-        before { allow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer) }
+        before {
+          allow_operation(
+            'include_has_one_resource',
+            source_record: an_instance_of(Article),
+            related_record: an_instance_of(User),
+            authorizer: chained_authorizer
+          )
+        }
 
         it { is_expected.to be_successful }
 
@@ -80,7 +108,12 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
       context 'unauthorized for include_has_one_resource for article.author' do
         before do
-          disallow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer)
+          disallow_operation(
+            'include_has_one_resource',
+            source_record: an_instance_of(Article),
+            related_record: an_instance_of(User),
+            authorizer: chained_authorizer
+          )
         end
 
         it { is_expected.to be_forbidden }
@@ -88,8 +121,8 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
       context 'unauthorized for include_has_many_resource for Comment' do
         before do
-          allow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer)
-          disallow_operation('include_has_many_resource', an_instance_of(Article), Comment, authorizer: chained_authorizer)
+          allow_operation('include_has_one_resource', source_record: an_instance_of(Article), related_record: an_instance_of(User), authorizer: chained_authorizer)
+          disallow_operation('include_has_many_resource', source_record: an_instance_of(Article), record_class: Comment, authorizer: chained_authorizer)
         end
 
         it { is_expected.to be_forbidden }
@@ -97,8 +130,8 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
       context 'authorized for both operations' do
         before do
-          allow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer)
-          allow_operation('include_has_many_resource', an_instance_of(Article), Comment, authorizer: chained_authorizer)
+          allow_operation('include_has_one_resource', source_record: an_instance_of(Article), related_record: an_instance_of(User), authorizer: chained_authorizer)
+          allow_operation('include_has_many_resource', source_record: an_instance_of(Article), record_class: Comment, authorizer: chained_authorizer)
         end
 
         it { is_expected.to be_successful }
@@ -122,22 +155,29 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'author.comments' }
 
       context 'unauthorized for first relationship' do
-        before { disallow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer) }
+        before {
+          disallow_operation(
+            'include_has_one_resource',
+            source_record: an_instance_of(Article),
+            related_record: an_instance_of(User),
+            authorizer: chained_authorizer
+          )
+        }
 
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for first relationship' do
-        before { allow_operation('include_has_one_resource', an_instance_of(Article), an_instance_of(User), authorizer: chained_authorizer) }
+        before { allow_operation('include_has_one_resource', source_record: an_instance_of(Article), related_record: an_instance_of(User), authorizer: chained_authorizer) }
 
         context 'unauthorized for second relationship' do
-          before { disallow_operation('include_has_many_resource', an_instance_of(User), Comment, authorizer: chained_authorizer) }
+          before { disallow_operation('include_has_many_resource', source_record: an_instance_of(User), record_class: Comment, authorizer: chained_authorizer) }
 
           it { is_expected.to be_forbidden }
         end
 
         context 'authorized for second relationship' do
-          before { allow_operation('include_has_many_resource', an_instance_of(User), Comment, authorizer: chained_authorizer) }
+          before { allow_operation('include_has_many_resource', source_record: an_instance_of(User), record_class: Comment, authorizer: chained_authorizer) }
 
           it { is_expected.to be_successful }
 
@@ -172,13 +212,13 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         let(:include_query) { 'empty-articles.comments' }
 
         context 'unauthorized for first relationship' do
-          before { disallow_operation('include_has_many_resource', an_instance_of(Article), Article, authorizer: chained_authorizer) }
+          before { disallow_operation('include_has_many_resource', source_record: an_instance_of(Article), record_class: Article, authorizer: chained_authorizer) }
 
           it { is_expected.to be_forbidden }
         end
 
         context 'authorized for first relationship' do
-          before { allow_operation('include_has_many_resource', an_instance_of(Article), Article, authorizer: chained_authorizer) }
+          before { allow_operation('include_has_many_resource', source_record: an_instance_of(Article), record_class: Article, authorizer: chained_authorizer) }
 
           it { is_expected.to be_successful }
         end
@@ -188,7 +228,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
   describe 'GET /articles' do
     subject(:last_response) { get("/articles?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('find', Article) }
+    let!(:chained_authorizer) { allow_operation('find', source_class: Article) }
 
     let(:article) {
       Article.create(
@@ -218,7 +258,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     }
 
     subject(:last_response) { get("/articles/#{article.external_id}?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('show', article) }
+    let!(:chained_authorizer) { allow_operation('show', source_record: article) }
 
     include_examples :include_directive_tests
   end
@@ -247,7 +287,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       EOS
     end
     subject(:last_response) { patch("/articles/#{article.external_id}?include=#{include_query}", json) }
-    let!(:chained_authorizer) { allow_operation('replace_fields', article, []) }
+    let!(:chained_authorizer) { allow_operation('replace_fields', source_record: article, related_records_with_context: []) }
 
     include_examples :include_directive_tests
 
@@ -319,7 +359,11 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     subject(:last_response) { post("/articles?include=#{include_query}", json) }
     let!(:chained_authorizer) do
-      allow_operation('create_resource', Article, related_records_with_context)
+      allow_operation(
+        'create_resource',
+        source_class: Article,
+        related_records_with_context: related_records_with_context
+      )
     end
 
     include_examples :include_directive_tests
@@ -348,7 +392,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     let(:article_policy_scope) { Article.where(id: article.id) }
 
     subject(:last_response) { get("/articles/#{article.external_id}/articles?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('show_related_resources', article) }
+    let!(:chained_authorizer) { allow_operation('show_related_resources', source_record: article) }
 
     include_examples :include_directive_tests
   end
@@ -365,7 +409,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     }
 
     subject(:last_response) { get("/articles/#{article.external_id}/article?include=#{include_query}") }
-    let!(:chained_authorizer) { allow_operation('show_related_resource', article, article) }
+    let!(:chained_authorizer) { allow_operation('show_related_resource', source_record: article, related_record: article) }
 
     include_examples :include_directive_tests
   end

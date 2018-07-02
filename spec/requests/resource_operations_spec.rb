@@ -22,12 +22,12 @@ describe 'Resource operations', type: :request do
     subject(:last_response) { get('/articles') }
 
     context 'unauthorized for find' do
-      before { disallow_operation('find', Article) }
+      before { disallow_operation('find', source_class: Article) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for find' do
-      before { allow_operation('find', Article) }
+      before { allow_operation('find', source_class: Article) }
       let(:policy_scope) { Article.where(id: article.id) }
 
       it { is_expected.to be_ok }
@@ -44,7 +44,7 @@ describe 'Resource operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for show' do
-      before { disallow_operation('show', article) }
+      before { disallow_operation('show', source_record: article) }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -57,7 +57,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for show' do
-      before { allow_operation('show', article) }
+      before { allow_operation('show', source_record: article) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
@@ -83,12 +83,12 @@ describe 'Resource operations', type: :request do
     end
 
     context 'unauthorized for create_resource' do
-      before { disallow_operation('create_resource', Article, []) }
+      before { disallow_operation('create_resource', source_class: Article, related_records_with_context: []) }
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_resource' do
-      before { allow_operation('create_resource', Article, []) }
+      before { allow_operation('create_resource', source_class: Article, related_records_with_context: []) }
       it { is_expected.to be_successful }
     end
   end
@@ -109,7 +109,7 @@ describe 'Resource operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'authorized for replace_fields' do
-      before { allow_operation('replace_fields', article, []) }
+      before { allow_operation('replace_fields', source_record: article, related_records_with_context: []) }
       it { is_expected.to be_successful }
 
       context 'limited by policy scope' do
@@ -119,7 +119,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'unauthorized for replace_fields' do
-      before { disallow_operation('replace_fields', article, []) }
+      before { disallow_operation('replace_fields', source_record: article, related_records_with_context: []) }
       it { is_expected.to be_forbidden }
 
       context 'limited by policy scope' do
@@ -134,7 +134,7 @@ describe 'Resource operations', type: :request do
     let(:policy_scope) { Article.all }
 
     context 'unauthorized for remove_resource' do
-      before { disallow_operation('remove_resource', article) }
+      before { disallow_operation('remove_resource', source_record: article) }
 
       context 'not limited by policy scope' do
         it { is_expected.to be_forbidden }
@@ -147,7 +147,7 @@ describe 'Resource operations', type: :request do
     end
 
     context 'authorized for remove_resource' do
-      before { allow_operation('remove_resource', article) }
+      before { allow_operation('remove_resource', source_record: article) }
       it { is_expected.to be_successful }
 
       # If this happens in real life, it's mostly a bug. We want to document the

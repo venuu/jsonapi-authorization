@@ -1,17 +1,17 @@
 module AuthorizationStubs
   AUTHORIZER_CLASS = JSONAPI::Authorization::DefaultPunditAuthorizer
 
-  def allow_operation(operation, *args, authorizer: instance_double(AUTHORIZER_CLASS))
-    allow(authorizer).to receive(operation).with(*args).and_return(nil)
+  def allow_operation(operation, authorizer: instance_double(AUTHORIZER_CLASS), **kwargs)
+    allow(authorizer).to receive(operation).with(**kwargs).and_return(nil)
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
     authorizer
   end
 
-  def disallow_operation(operation, *args, authorizer: instance_double(AUTHORIZER_CLASS))
-    allow(authorizer).to receive(operation).with(*args).and_raise(Pundit::NotAuthorizedError)
+  def disallow_operation(operation, authorizer: instance_double(AUTHORIZER_CLASS), **kwargs)
+    allow(authorizer).to receive(operation).with(**kwargs).and_raise(Pundit::NotAuthorizedError)
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
     authorizer
   end
 
@@ -21,6 +21,6 @@ module AuthorizationStubs
       allow(authorizer).to receive(operation).with(*args).and_return(nil)
     end
 
-    allow(AUTHORIZER_CLASS).to receive(:new).with(Hash).and_return(authorizer)
+    allow(AUTHORIZER_CLASS).to receive(:new).with(context: kind_of(Hash)).and_return(authorizer)
   end
 end

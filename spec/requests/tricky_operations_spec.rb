@@ -47,14 +47,14 @@ RSpec.describe 'Tricky operations', type: :request do
 
     context 'authorized for create_resource on Comment and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { allow_operation('create_resource', Comment, related_records_with_context) }
+      before { allow_operation('create_resource', source_class: Comment, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_successful }
     end
 
     context 'unauthorized for create_resource on Comment and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { disallow_operation('create_resource', Comment, related_records_with_context) }
+      before { disallow_operation('create_resource', source_class: Comment, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -98,14 +98,14 @@ RSpec.describe 'Tricky operations', type: :request do
 
     context 'authorized for create_resource on Article and newly associated comments' do
       let(:policy_scope) { Article.where(id: "new-article-id") }
-      before { allow_operation('create_resource', Article, related_records_with_context) }
+      before { allow_operation('create_resource', source_class: Article, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_successful }
     end
 
     context 'unauthorized for create_resource on Article and newly associated comments' do
       let(:policy_scope) { Article.where(id: "new-article-id") }
-      before { disallow_operation('create_resource', Article, related_records_with_context) }
+      before { disallow_operation('create_resource', source_class: Article, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -141,14 +141,14 @@ RSpec.describe 'Tricky operations', type: :request do
 
     context 'authorized for create_resource on Tag and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { allow_operation('create_resource', Tag, related_records_with_context) }
+      before { allow_operation('create_resource', source_class: Tag, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_successful }
     end
 
     context 'unauthorized for create_resource on Tag and newly associated article' do
       let(:policy_scope) { Article.where(id: article.id) }
-      before { disallow_operation('create_resource', Tag, related_records_with_context) }
+      before { disallow_operation('create_resource', source_class: Tag, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -193,7 +193,7 @@ RSpec.describe 'Tricky operations', type: :request do
 
     context 'authorized for replace_fields on article and all new records' do
       context 'not limited by Comments policy scope' do
-        before { allow_operation('replace_fields', article, related_records_with_context) }
+        before { allow_operation('replace_fields', source_record: article, related_records_with_context: related_records_with_context) }
         it { is_expected.to be_successful }
       end
 
@@ -207,14 +207,14 @@ RSpec.describe 'Tricky operations', type: :request do
             records: []
           }]
         end
-        before { allow_operation('replace_fields', article, related_records_with_context) }
+        before { allow_operation('replace_fields', source_record: article, related_records_with_context: related_records_with_context) }
 
         it { is_expected.to be_successful }
       end
     end
 
     context 'unauthorized for replace_fields on article and all new records' do
-      before { disallow_operation('replace_fields', article, related_records_with_context) }
+      before { disallow_operation('replace_fields', source_record: article, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
     end
@@ -239,8 +239,8 @@ RSpec.describe 'Tricky operations', type: :request do
     before do
       allow_operation(
         'replace_fields',
-        article,
-        [{ relation_type: :to_one, relation_name: :author, records: nil }]
+        source_record: article,
+        related_records_with_context: [{ relation_type: :to_one, relation_name: :author, records: nil }]
       )
     end
 
