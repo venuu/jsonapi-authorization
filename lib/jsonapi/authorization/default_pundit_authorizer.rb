@@ -27,8 +27,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_class+ - The source class (e.g. +Article+ for +ArticleResource+)
-      def find(source_class:)
-        ::Pundit.authorize(user, source_class, 'index?')
+      def find(source_class:, nested_path: false)
+        authorize(source_class, nested_path, 'index?')
       end
 
       # <tt>GET /resources/:id</tt>
@@ -36,8 +36,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to show
-      def show(source_record:)
-        ::Pundit.authorize(user, source_record, 'show?')
+      def show(source_record:, nested_path: false)
+        authorize(source_record, nested_path, 'show?')
       end
 
       # <tt>GET /resources/:id/relationships/other-resources</tt>
@@ -51,9 +51,9 @@ module JSONAPI
       # * +related_record+ - The associated +has_one+ record to show or +nil+
       #   if the associated record was not found. For a +has_many+ association,
       #   this will always be +nil+
-      def show_relationship(source_record:, related_record:)
-        ::Pundit.authorize(user, source_record, 'show?')
-        ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
+      def show_relationship(source_record:, nested_path: false, related_record:)
+        authorize(source_record, nested_path, 'show?')
+        authorize(related_record, nested_path, 'show?') unless related_record.nil?
       end
 
       # <tt>GET /resources/:id/another-resource</tt>
@@ -65,9 +65,9 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is queried
       # * +related_record+ - The associated record to show or +nil+ if the
       #   associated record was not found
-      def show_related_resource(source_record:, related_record:)
-        ::Pundit.authorize(user, source_record, 'show?')
-        ::Pundit.authorize(user, related_record, 'show?') unless related_record.nil?
+      def show_related_resource(source_record:, nested_path: false, related_record:)
+        authorize(source_record, nested_path, 'show?')
+        authorize(related_record, nested_path, 'show?') unless related_record.nil?
       end
 
       # <tt>GET /resources/:id/other-resources</tt>
@@ -77,8 +77,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is queried
-      def show_related_resources(source_record:)
-        ::Pundit.authorize(user, source_record, 'show?')
+      def show_related_resources(source_record:, nested_path: false)
+        authorize(source_record, nested_path, 'show?')
       end
 
       # <tt>PATCH /resources/:id</tt>
@@ -88,10 +88,11 @@ module JSONAPI
       # * +source_record+ - The record to be modified
       # * +related_records_with_context+ - A hash with the association type,
       # the relationship name, an Array of new related records.
-      def replace_fields(source_record:, related_records_with_context:)
-        ::Pundit.authorize(user, source_record, 'update?')
+      def replace_fields(source_record:, nested_path: false, related_records_with_context:)
+        authorize(source_record, nested_path, 'update?')
         authorize_related_records(
           source_record: source_record,
+          nested_path: nested_path,
           related_records_with_context: related_records_with_context
         )
       end
@@ -103,13 +104,13 @@ module JSONAPI
       # * +source_class+ - The class of the record to be created
       # * +related_records_with_context+ - A has with the association type,
       # the relationship name, and an Array of new related records.
-      def create_resource(source_class:, related_records_with_context:)
-        ::Pundit.authorize(user, source_class, 'create?')
+      def create_resource(source_class:, nested_path: false, related_records_with_context:)
+        authorize(source_class, nested_path, 'create?')
         related_records_with_context.each do |data|
           relation_name = data[:relation_name]
           records = data[:records]
           relationship_method = "create_with_#{relation_name}?"
-          policy = ::Pundit.policy(user, source_class)
+          policy = find_policy(source_class, nested_path)
           if policy.respond_to?(relationship_method)
             unless policy.public_send(relationship_method, records)
               raise ::Pundit::NotAuthorizedError,
@@ -119,7 +120,7 @@ module JSONAPI
             end
           else
             Array(records).each do |record|
-              ::Pundit.authorize(user, record, 'update?')
+              authorize(record, nested_path, 'update?')
             end
           end
         end
@@ -130,8 +131,8 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record to be removed
-      def remove_resource(source_record:)
-        ::Pundit.authorize(user, source_record, 'destroy?')
+      def remove_resource(source_record:, nested_path: false)
+        authorize(source_record, nested_path, 'destroy?')
       end
 
       # <tt>PATCH /resources/:id/relationships/another-resource</tt>
@@ -143,10 +144,16 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_record+ - The new record replacing the old record
       # * +relationship_type+ - The relationship type
-      def replace_to_one_relationship(source_record:, new_related_record:, relationship_type:)
+      def replace_to_one_relationship(
+        source_record:,
+        nested_path: false,
+        new_related_record:,
+        relationship_type:
+      )
         relationship_method = "replace_#{relationship_type}?"
         authorize_relationship_operation(
           source_record: source_record,
+          nested_path: nested_path,
           relationship_method: relationship_method,
           related_record_or_records: new_related_record
         )
@@ -161,10 +168,16 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +new_related_records+ - The new records to be added to the association
       # * +relationship_type+ - The relationship type
-      def create_to_many_relationship(source_record:, new_related_records:, relationship_type:)
+      def create_to_many_relationship(
+        source_record:,
+        nested_path: false,
+        new_related_records:,
+        relationship_type:
+      )
         relationship_method = "add_to_#{relationship_type}?"
         authorize_relationship_operation(
           source_record: source_record,
+          nested_path: nested_path,
           relationship_method: relationship_method,
           related_record_or_records: new_related_records
         )
@@ -180,10 +193,16 @@ module JSONAPI
       # * +new_related_records+ - The new records replacing the entire +has_many+
       #   association
       # * +relationship_type+ - The relationship type
-      def replace_to_many_relationship(source_record:, new_related_records:, relationship_type:)
+      def replace_to_many_relationship(
+        source_record:,
+        nested_path: false,
+        new_related_records:,
+        relationship_type:
+      )
         relationship_method = "replace_#{relationship_type}?"
         authorize_relationship_operation(
           source_record: source_record,
+          nested_path: nested_path,
           relationship_method: relationship_method,
           related_record_or_records: new_related_records
         )
@@ -198,10 +217,15 @@ module JSONAPI
       # * +source_record+ - The record whose relationship is modified
       # * +related_records+ - The records which will be disassociated from +source_record+
       # * +relationship_type+ - The relationship type
-      def remove_to_many_relationship(source_record:, related_records:, relationship_type:)
+      def remove_to_many_relationship(
+        source_record:,
+        nested_path: false,
+        related_records:, relationship_type:
+      )
         relationship_method = "remove_from_#{relationship_type}?"
         authorize_relationship_operation(
           source_record: source_record,
+          nested_path: nested_path,
           relationship_method: relationship_method,
           related_record_or_records: related_records
         )
@@ -215,10 +239,11 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is modified
       # * +relationship_type+ - The relationship type
-      def remove_to_one_relationship(source_record:, relationship_type:)
+      def remove_to_one_relationship(source_record:, nested_path: false, relationship_type:)
         relationship_method = "remove_#{relationship_type}?"
         authorize_relationship_operation(
           source_record: source_record,
+          nested_path: nested_path,
           relationship_method: relationship_method
         )
       end
@@ -239,8 +264,8 @@ module JSONAPI
       # * +record_class+ - The underlying record class for the relationships
       #                    resource.
       # rubocop:disable Lint/UnusedMethodArgument
-      def include_has_many_resource(source_record:, record_class:)
-        ::Pundit.authorize(user, record_class, 'index?')
+      def include_has_many_resource(source_record:, nested_path: false, record_class:)
+        authorize(record_class, nested_path, 'index?')
       end
       # rubocop:enable Lint/UnusedMethodArgument
 
@@ -256,19 +281,34 @@ module JSONAPI
       #                     article.author check
       # * +related_record+ - The associated record to return
       # rubocop:disable Lint/UnusedMethodArgument
-      def include_has_one_resource(source_record:, related_record:)
-        ::Pundit.authorize(user, related_record, 'show?')
+      def include_has_one_resource(source_record:, nested_path: false, related_record:)
+        authorize(related_record, nested_path, 'show?')
       end
       # rubocop:enable Lint/UnusedMethodArgument
 
       private
 
+      def authorize(source, nested_path, action)
+        policy_path = build_policy_path(source, nested_path)
+        ::Pundit.authorize(user, policy_path, action)
+      end
+
+      def find_policy(source_class, nested_path)
+        policy_path = build_policy_path(source_class, nested_path)
+        ::Pundit.policy(user, policy_path)
+      end
+
+      def build_policy_path(source_class, nested_path)
+        nested_path ? nested_path << source_class : source_class
+      end
+
       def authorize_relationship_operation(
         source_record:,
+        nested_path: false,
         relationship_method:,
         related_record_or_records: nil
       )
-        policy = ::Pundit.policy(user, source_record)
+        policy = find_policy(source_record, nested_path)
         if policy.respond_to?(relationship_method)
           args = [relationship_method, related_record_or_records].reject(&:nil?)
           unless policy.public_send(*args)
@@ -278,16 +318,20 @@ module JSONAPI
                   policy: policy
           end
         else
-          ::Pundit.authorize(user, source_record, 'update?')
+          authorize(source_record, nested_path, 'update?')
           if related_record_or_records
             Array(related_record_or_records).each do |related_record|
-              ::Pundit.authorize(user, related_record, 'update?')
+              authorize(related_record, nested_path, 'update?')
             end
           end
         end
       end
 
-      def authorize_related_records(source_record:, related_records_with_context:)
+      def authorize_related_records(
+        source_record:,
+        nested_path: false,
+        related_records_with_context:
+      )
         related_records_with_context.each do |data|
           relation_type = data[:relation_type]
           relation_name = data[:relation_name]
@@ -296,6 +340,7 @@ module JSONAPI
           when :to_many
             replace_to_many_relationship(
               source_record: source_record,
+              nested_path: nested_path,
               new_related_records: records,
               relationship_type: relation_name
             )
@@ -303,11 +348,13 @@ module JSONAPI
             if records.nil?
               remove_to_one_relationship(
                 source_record: source_record,
+                nested_path: nested_path,
                 relationship_type: relation_name
               )
             else
               replace_to_one_relationship(
                 source_record: source_record,
+                nested_path: nested_path,
                 new_related_record: records,
                 relationship_type: relation_name
               )
