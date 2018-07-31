@@ -49,7 +49,10 @@ module JSONAPI
       end
 
       def authorize_find
-        authorizer.find(source_class: @resource_klass._model_class)
+        authorizer.find(
+          source_class: @resource_klass._model_class,
+          nested_path: find_nested_path
+        )
       end
 
       def authorize_show
@@ -58,7 +61,10 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show(source_record: record)
+        authorizer.show(
+          source_record: record,
+          nested_path: find_nested_path
+        )
       end
 
       def authorize_show_relationship
@@ -81,7 +87,11 @@ module JSONAPI
 
         parent_record = parent_resource._model
         related_record = related_resource._model unless related_resource.nil?
-        authorizer.show_relationship(source_record: parent_record, related_record: related_record)
+        authorizer.show_relationship(
+          source_record: parent_record,
+          nested_path: find_nested_path,
+          related_record: related_record
+        )
       end
 
       def authorize_show_related_resource
@@ -96,7 +106,9 @@ module JSONAPI
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
         authorizer.show_related_resource(
-          source_record: source_record, related_record: related_record
+          source_record: source_record,
+          nested_path: find_nested_path,
+          related_record: related_record
         )
       end
 
@@ -106,7 +118,10 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.show_related_resources(source_record: source_record)
+        authorizer.show_related_resources(
+          source_record: source_record,
+          nested_path: find_nested_path
+        )
       end
 
       def authorize_replace_fields
@@ -116,6 +131,7 @@ module JSONAPI
         )._model
         authorizer.replace_fields(
           source_record: source_record,
+          nested_path: find_nested_path,
           related_records_with_context: related_models_with_context
         )
       end
@@ -124,6 +140,7 @@ module JSONAPI
         source_class = resource_klass._model_class
         authorizer.create_resource(
           source_class: source_class,
+          nested_path: find_nested_path,
           related_records_with_context: related_models_with_context
         )
       end
@@ -134,7 +151,10 @@ module JSONAPI
           context: context
         )._model
 
-        authorizer.remove_resource(source_record: record)
+        authorizer.remove_resource(
+          source_record: record,
+          nested_path: find_nested_path
+        )
       end
 
       def authorize_replace_to_one_relationship
@@ -158,6 +178,7 @@ module JSONAPI
 
         authorizer.replace_to_one_relationship(
           source_record: source_record,
+          nested_path: find_nested_path,
           new_related_record: new_related_record,
           relationship_type: relationship_type
         )
@@ -174,6 +195,7 @@ module JSONAPI
 
         authorizer.create_to_many_relationship(
           source_record: source_record,
+          nested_path: find_nested_path,
           new_related_records: related_models,
           relationship_type: relationship_type
         )
@@ -191,6 +213,7 @@ module JSONAPI
 
         authorizer.replace_to_many_relationship(
           source_record: source_record,
+          nested_path: find_nested_path,
           new_related_records: new_related_records,
           relationship_type: relationship_type
         )
@@ -217,6 +240,7 @@ module JSONAPI
 
         authorizer.remove_to_many_relationship(
           source_record: source_record,
+          nested_path: find_nested_path,
           related_records: related_records,
           relationship_type: relationship_type
         )
@@ -231,7 +255,9 @@ module JSONAPI
         relationship_type = params[:relationship_type].to_sym
 
         authorizer.remove_to_one_relationship(
-          source_record: source_record, relationship_type: relationship_type
+          source_record: source_record,
+          nested_path: find_nested_path,
+          relationship_type: relationship_type
         )
       end
 
@@ -263,6 +289,7 @@ module JSONAPI
         relationship_type = params[:relationship_type].to_sym
         authorizer.replace_to_one_relationship(
           source_record: source_record,
+          nested_path: find_nested_path,
           new_related_record: new_related_record,
           relationship_type: relationship_type
         )
@@ -272,6 +299,11 @@ module JSONAPI
 
       def authorizer
         @authorizer ||= ::JSONAPI::Authorization.configuration.authorizer.new(context: context)
+      end
+
+      def find_nested_path
+        nested_path = resource_klass.name.underscore.split('/')[0...-1].map(&:to_sym)
+        nested_path.any? ? nested_path.freeze : false
       end
 
       # TODO: Communicate with upstream to fix this nasty hack
@@ -382,11 +414,14 @@ module JSONAPI
             )
             return if related_record.nil?
             authorizer.include_has_one_resource(
-              source_record: source_record, related_record: related_record
+              source_record: source_record,
+              nested_path: find_nested_path,
+              related_record: related_record
             )
           when JSONAPI::Relationship::ToMany
             authorizer.include_has_many_resource(
               source_record: source_record,
+              nested_path: find_nested_path,
               record_class: relationship.resource_klass._model_class
             )
           else
