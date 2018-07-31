@@ -303,7 +303,7 @@ module JSONAPI
 
       def find_nested_path
         nested_path = resource_klass.name.underscore.split('/')[0...-1].map(&:to_sym)
-        nested_path.any? ? nested_path : false
+        nested_path.any? ? nested_path.freeze : false
       end
 
       # TODO: Communicate with upstream to fix this nasty hack

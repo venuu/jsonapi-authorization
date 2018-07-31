@@ -299,7 +299,7 @@ module JSONAPI
       end
 
       def build_policy_path(source_class, nested_path)
-        nested_path ? nested_path << source_class : source_class
+        nested_path ? nested_path + [source_class] : source_class
       end
 
       def authorize_relationship_operation(
