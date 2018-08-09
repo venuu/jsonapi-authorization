@@ -9,6 +9,7 @@ AllCops:
 Style/FileName:
   Exclude:
     - lib/jsonapi-authorization.rb
+    - Appraisals
 
 Metrics/LineLength:
   Enabled: true
