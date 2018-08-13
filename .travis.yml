@@ -1,13 +1,15 @@
 language: ruby
-env:
-  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=4.2.0
-  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.0.0
-  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.1.0
-  - JSONAPI_RESOURCES_VERSION=0.9 RAILS_VERSION=5.2.0
-install:
-  - bundle install
 rvm:
   - 2.3
+gemfile:
+  - gemfiles/rails_4_2_pundit_1.gemfile
+  - gemfiles/rails_5_0_pundit_1.gemfile
+  - gemfiles/rails_5_1_pundit_1.gemfile
+  - gemfiles/rails_5_2_pundit_1.gemfile
+  - gemfiles/rails_4_2_pundit_2.gemfile
+  - gemfiles/rails_5_0_pundit_2.gemfile
+  - gemfiles/rails_5_1_pundit_2.gemfile
+  - gemfiles/rails_5_2_pundit_2.gemfile
 before_install: gem install bundler -v 1.16.2
 notifications:
   email: false

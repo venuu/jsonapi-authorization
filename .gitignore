@@ -10,3 +10,4 @@
 /spec/dummy/tmp/
 *.orig
 .ruby-version
+/gemfiles/*.gemfile.lock
