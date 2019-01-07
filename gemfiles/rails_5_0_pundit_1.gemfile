@@ -3,7 +3,7 @@
 source "https://rubygems.org"
 
 gem "rails", "5.0.0"
-gem "jsonapi-resources", "0.9"
+gem "jsonapi-resources", "~> 0.9"
 gem "pundit", "~> 1.0"
 
 gemspec path: "../"
