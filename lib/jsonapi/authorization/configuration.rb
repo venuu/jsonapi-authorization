@@ -19,9 +19,9 @@ module JSONAPI
         end
       end
 
-      def name_space(context)
-        if context[:name_space] && context[:name_space].is_a?(Array)
-          context[:name_space]
+      def namespace(context)
+        if context[:namespace] && context[:namespace].is_a?(Array)
+          context[:namespace]
         else
           []
         end

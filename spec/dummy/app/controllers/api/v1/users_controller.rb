@@ -6,7 +6,7 @@ module Api::V1
     private
 
       def context
-        { user: nil, name_space: %i[api v1] }
+        { user: nil, namespace: %i[api v1] }
       end
 
       # https://github.com/cerebris/jsonapi-resources/pull/573

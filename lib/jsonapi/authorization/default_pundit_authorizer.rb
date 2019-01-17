@@ -12,7 +12,7 @@ module JSONAPI
     # affects which records end up being passed here.
     class DefaultPunditAuthorizer
       attr_reader :user
-      attr_reader :name_space
+      attr_reader :namespace
 
       # Creates a new DefaultPunditAuthorizer instance
       #
@@ -21,7 +21,7 @@ module JSONAPI
       # * +context+ - The context passed down from the controller layer
       def initialize(context:)
         @user = JSONAPI::Authorization.configuration.user_context(context)
-        @name_space = JSONAPI::Authorization.configuration.name_space(context)
+        @namespace = JSONAPI::Authorization.configuration.namespace(context)
       end
 
       # <tt>GET /resources</tt>
@@ -30,7 +30,7 @@ module JSONAPI
       #
       # * +source_class+ - The source class (e.g. +Article+ for +ArticleResource+)
       def find(source_class:)
-        ::Pundit.authorize(user, name_space + [source_class], 'index?')
+        ::Pundit.authorize(user, namespace + [source_class], 'index?')
       end
 
       # <tt>GET /resources/:id</tt>
@@ -39,7 +39,7 @@ module JSONAPI
       #
       # * +source_record+ - The record to show
       def show(source_record:)
-        ::Pundit.authorize(user, name_space + [source_record], 'show?')
+        ::Pundit.authorize(user, namespace + [source_record], 'show?')
       end
 
       # <tt>GET /resources/:id/relationships/other-resources</tt>
@@ -54,8 +54,8 @@ module JSONAPI
       #   if the associated record was not found. For a +has_many+ association,
       #   this will always be +nil+
       def show_relationship(source_record:, related_record:)
-        ::Pundit.authorize(user, name_space + [source_record], 'show?')
-        ::Pundit.authorize(user, name_space + [related_record], 'show?') unless related_record.nil?
+        ::Pundit.authorize(user, namespace + [source_record], 'show?')
+        ::Pundit.authorize(user, namespace + [related_record], 'show?') unless related_record.nil?
       end
 
       # <tt>GET /resources/:id/another-resource</tt>
@@ -68,8 +68,8 @@ module JSONAPI
       # * +related_record+ - The associated record to show or +nil+ if the
       #   associated record was not found
       def show_related_resource(source_record:, related_record:)
-        ::Pundit.authorize(user, name_space + [source_record], 'show?')
-        ::Pundit.authorize(user, name_space + [related_record], 'show?') unless related_record.nil?
+        ::Pundit.authorize(user, namespace + [source_record], 'show?')
+        ::Pundit.authorize(user, namespace + [related_record], 'show?') unless related_record.nil?
       end
 
       # <tt>GET /resources/:id/other-resources</tt>
@@ -80,7 +80,7 @@ module JSONAPI
       #
       # * +source_record+ - The record whose relationship is queried
       def show_related_resources(source_record:)
-        ::Pundit.authorize(user, name_space + [source_record], 'show?')
+        ::Pundit.authorize(user, namespace + [source_record], 'show?')
       end
 
       # <tt>PATCH /resources/:id</tt>
@@ -91,7 +91,7 @@ module JSONAPI
       # * +related_records_with_context+ - A hash with the association type,
       # the relationship name, an Array of new related records.
       def replace_fields(source_record:, related_records_with_context:)
-        ::Pundit.authorize(user, name_space + [source_record], 'update?')
+        ::Pundit.authorize(user, namespace + [source_record], 'update?')
         authorize_related_records(
           source_record: source_record,
           related_records_with_context: related_records_with_context
@@ -106,12 +106,12 @@ module JSONAPI
       # * +related_records_with_context+ - A has with the association type,
       # the relationship name, and an Array of new related records.
       def create_resource(source_class:, related_records_with_context:)
-        ::Pundit.authorize(user, name_space + [source_class], 'create?')
+        ::Pundit.authorize(user, namespace + [source_class], 'create?')
         related_records_with_context.each do |data|
           relation_name = data[:relation_name]
           records = data[:records]
           relationship_method = "create_with_#{relation_name}?"
-          policy = ::Pundit.policy(user, name_space + [source_class])
+          policy = ::Pundit.policy(user, namespace + [source_class])
           if policy.respond_to?(relationship_method)
             unless policy.public_send(relationship_method, records)
               raise ::Pundit::NotAuthorizedError,
@@ -121,7 +121,7 @@ module JSONAPI
             end
           else
             Array(records).each do |record|
-              ::Pundit.authorize(user, name_space + [record], 'update?')
+              ::Pundit.authorize(user, namespace + [record], 'update?')
             end
           end
         end
@@ -133,7 +133,7 @@ module JSONAPI
       #
       # * +source_record+ - The record to be removed
       def remove_resource(source_record:)
-        ::Pundit.authorize(user, name_space + [source_record], 'destroy?')
+        ::Pundit.authorize(user, namespace + [source_record], 'destroy?')
       end
 
       # <tt>PATCH /resources/:id/relationships/another-resource</tt>
@@ -242,7 +242,7 @@ module JSONAPI
       #                    resource.
       # rubocop:disable Lint/UnusedMethodArgument
       def include_has_many_resource(source_record:, record_class:)
-        ::Pundit.authorize(user, name_space + [record_class], 'index?')
+        ::Pundit.authorize(user, namespace + [record_class], 'index?')
       end
       # rubocop:enable Lint/UnusedMethodArgument
 
@@ -259,7 +259,7 @@ module JSONAPI
       # * +related_record+ - The associated record to return
       # rubocop:disable Lint/UnusedMethodArgument
       def include_has_one_resource(source_record:, related_record:)
-        ::Pundit.authorize(user, name_space + [related_record], 'show?')
+        ::Pundit.authorize(user, namespace + [related_record], 'show?')
       end
       # rubocop:enable Lint/UnusedMethodArgument
 
@@ -270,7 +270,7 @@ module JSONAPI
         relationship_method:,
         related_record_or_records: nil
       )
-        policy = ::Pundit.policy(user, name_space + [source_record])
+        policy = ::Pundit.policy(user, namespace + [source_record])
         if policy.respond_to?(relationship_method)
           args = [relationship_method, related_record_or_records].reject(&:nil?)
           unless policy.public_send(*args)
@@ -280,10 +280,10 @@ module JSONAPI
                   policy: policy
           end
         else
-          ::Pundit.authorize(user, name_space + [source_record], 'update?')
+          ::Pundit.authorize(user, namespace + [source_record], 'update?')
           if related_record_or_records
             Array(related_record_or_records).each do |related_record|
-              ::Pundit.authorize(user, name_space + [related_record], 'update?')
+              ::Pundit.authorize(user, namespace + [related_record], 'update?')
             end
           end
         end
