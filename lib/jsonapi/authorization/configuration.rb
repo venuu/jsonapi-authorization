@@ -18,6 +18,14 @@ module JSONAPI
           pundit_user.call(context)
         end
       end
+
+      def name_space(context)
+        if context[:name_space] && context[:name_space].is_a?(Array)
+          context[:name_space]
+        else
+          []
+        end
+      end
     end
 
     class << self
