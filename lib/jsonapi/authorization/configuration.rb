@@ -20,11 +20,8 @@ module JSONAPI
       end
 
       def namespace(context)
-        if context[:namespace] && context[:namespace].is_a?(Array)
-          context[:namespace]
-        else
-          []
-        end
+        return context[:namespace] if context[:namespace] && context[:namespace].is_a?(Array)
+        []
       end
     end
 
