@@ -100,7 +100,21 @@ class BaseResource < JSONAPI::Resource
   abstract
 end
 ```
-
+### namespaces
+ If the policies are inside a namespace, you can specify the namespace in the `context`
+```ruby
+ def context
+   {user: current_user, namespace: [:api, :v1] }
+ end
+```
+`/policies/api/v1/article_policy.rb`
+```ruby
+module Api::V1
+  class ArticlePolicy
+    # (...)
+  end
+end
+```
 ### Policies
 
 To check whether an action is allowed JSONAPI::Authorization calls the respective actions of your pundit policies
