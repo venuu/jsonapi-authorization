@@ -111,7 +111,7 @@ module JSONAPI
           relation_name = data[:relation_name]
           records = data[:records]
           relationship_method = "create_with_#{relation_name}?"
-          policy = ::Pundit.policy(user, source_class)
+          policy = ::Pundit.policy(user, name_space + [source_class])
           if policy.respond_to?(relationship_method)
             unless policy.public_send(relationship_method, records)
               raise ::Pundit::NotAuthorizedError,
@@ -270,7 +270,7 @@ module JSONAPI
         relationship_method:,
         related_record_or_records: nil
       )
-        policy = ::Pundit.policy(user, source_record)
+        policy = ::Pundit.policy(user, name_space + [source_record])
         if policy.respond_to?(relationship_method)
           args = [relationship_method, related_record_or_records].reject(&:nil?)
           unless policy.public_send(*args)
@@ -280,7 +280,7 @@ module JSONAPI
                   policy: policy
           end
         else
-          ::Pundit.authorize(user, source_record, 'update?')
+          ::Pundit.authorize(user, name_space + [source_record], 'update?')
           if related_record_or_records
             Array(related_record_or_records).each do |related_record|
               ::Pundit.authorize(user, name_space + [related_record], 'update?')

@@ -1,6 +1,7 @@
 module PunditStubs
   def allow_action(record, action)
     policy = ::Pundit::PolicyFinder.new(record).policy
+    record = record.kind_of?(Array) ? record.last : record
     allow(policy).to(
       receive(:new).with(any_args, record) { instance_double(policy, action => true) }
     )
@@ -8,6 +9,7 @@ module PunditStubs
 
   def disallow_action(record, action)
     policy = ::Pundit::PolicyFinder.new(record).policy
+    record = record.kind_of?(Array) ? record.last : record
     allow(policy).to(
       receive(:new).with(any_args, record) { instance_double(policy, action => false) }
     )
@@ -15,6 +17,7 @@ module PunditStubs
 
   def stub_policy_actions(record, actions_and_return_values)
     policy = ::Pundit::PolicyFinder.new(record).policy
+    record = record.kind_of?(Array) ? record.last : record
     allow(policy).to(
       receive(:new).with(any_args, record) do
         instance_double(policy).tap do |policy_double|
