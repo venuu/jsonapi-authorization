@@ -9,15 +9,18 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   let(:authorizer) { described_class.new(context: { namespace: namespace }) }
 
   shared_examples_for :update_singular_fallback do |related_record_method|
-
     context 'authorized for update? on related record' do
-      before { stub_policy_actions(namespace + [send(related_record_method)], update?: true) }
+      before {
+        stub_policy_actions(namespace + [send(related_record_method)], update?: true)
+      }
 
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for update? on related record' do
-      before { stub_policy_actions(namespace + [send(related_record_method)], update?: false) }
+      before {
+        stub_policy_actions(namespace + [send(related_record_method)], update?: false)
+      }
 
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
@@ -26,7 +29,8 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   shared_examples_for :update_multiple_fallback do |related_records_method|
     context 'authorized for update? on all related records' do
       before do
-        send(related_records_method).each { |r| stub_policy_actions(namespace + [r], update?: true) }
+        send(related_records_method)
+          .each { |r| stub_policy_actions(namespace + [r], update?: true) }
       end
 
       it { is_expected.not_to raise_error }
@@ -56,7 +60,6 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
   end
-
 
   describe '#show' do
     subject(:method_call) do
@@ -224,22 +227,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for replace_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_author?: true, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_author?: true, update?: true)
+        }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for replace_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_author?: false, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_author?: false, update?: true)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'authorized for replace_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_author?: true, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_author?: true, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for replace_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_author?: false, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_author?: false, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -275,28 +286,38 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for remove_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], remove_author?: true, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], remove_author?: true, update?: true)
+        }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for remove_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], remove_author?: false, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], remove_author?: false, update?: true)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'authorized for remove_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], remove_author?: true, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], remove_author?: true, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for remove_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], remove_author?: false, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], remove_author?: false, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'where remove_<type>? is undefined' do
         context 'authorized for update? on source record' do
-          before { stub_policy_actions(namespace + [source_record], update?: true) }
+          before {
+            stub_policy_actions(namespace + [source_record], update?: true)
+          }
           it { is_expected.not_to raise_error }
         end
 
@@ -339,22 +360,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for replace_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_comments?: true, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_comments?: true, update?: true)
+        }
         it { is_expected.not_to raise_error }
       end
 
       context 'unauthorized for replace_<type>? and authorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_comments?: false, update?: true) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_comments?: false, update?: true)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'authorized for replace_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_comments?: true, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_comments?: true, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for replace_<type>? and unauthorized for update? on source record' do
-        before { stub_policy_actions(namespace + [source_record], replace_comments?: false, update?: false) }
+        before {
+          stub_policy_actions(namespace + [source_record], replace_comments?: false, update?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -393,22 +422,32 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for create? and authorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_author?: true, create?: true) }
+        before {
+          stub_policy_actions(namespace + [source_class], create_with_author?: true, create?: true)
+        }
         it { is_expected.not_to raise_error }
       end
 
       context 'authorized for create? and unauthorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_author?: false, create?: true) }
+        before {
+          stub_policy_actions(namespace + [source_class], create_with_author?: false, create?: true)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for create? and authorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_author?: true, create?: false) }
+        before {
+          stub_policy_actions(namespace + [source_class], create_with_author?: true, create?: false)
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for create? and unauthorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_author?: false, create?: false) }
+        before {
+          stub_policy_actions(
+            namespace + [source_class], create_with_author?: false, create?: false
+          )
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -451,13 +490,21 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'authorized for create? and authorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_comments?: true, create?: true) }
+        before {
+          stub_policy_actions(
+            namespace + [source_class], create_with_comments?: true, create?: true
+          )
+        }
         it { is_expected.not_to raise_error }
       end
 
       context 'authorized for create? and unauthorized for create_with_<type>? on source class' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before { stub_policy_actions(namespace + [source_class], create_with_comments?: false, create?: true) }
+        before {
+          stub_policy_actions(
+            namespace + [source_class], create_with_comments?: false, create?: true
+          )
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -468,13 +515,21 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
       end
 
       context 'unauthorized for create? and authorized for create_with_<type>? on source class' do
-        before { stub_policy_actions(namespace + [source_class], create_with_comments?: true, create?: false) }
+        before {
+          stub_policy_actions(
+            namespace + [source_class], create_with_comments?: true, create?: false
+          )
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
       context 'unauthorized for create? and unauthorized for create_with_<type>? on source class' do
         let(:related_records) { [Comment.new(id: 1), Comment.new(id: 2)] }
-        before { stub_policy_actions(namespace + [source_class], create_with_comments?: false, create?: false) }
+        before {
+          stub_policy_actions(
+            namespace + [source_class], create_with_comments?: false, create?: false
+          )
+        }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
 
@@ -521,22 +576,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for replace_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [source_record], replace_author?: true, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], replace_author?: true, update?: true)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for replace_<type>? and authorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], replace_author?: false, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], replace_author?: false, update?: true)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'authorized for replace_<type>? and unauthorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], replace_author?: true, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], replace_author?: true, update?: false)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for replace_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [source_record], replace_author?: false, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], replace_author?: false, update?: false)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
@@ -566,22 +629,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for add_to_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [source_record], add_to_comments?: true, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], add_to_comments?: true, update?: true)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for add_to_<type>? and authorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], add_to_comments?: false, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], add_to_comments?: false, update?: true)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'authorized for add_to_<type>? and unauthorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], add_to_comments?: true, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], add_to_comments?: true, update?: false)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for add_to_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [source_record], add_to_comments?: false, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], add_to_comments?: false, update?: false)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
@@ -612,22 +683,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for replace_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [article], replace_comments?: true, update?: true) }
+      before {
+        stub_policy_actions(namespace + [article], replace_comments?: true, update?: true)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for replace_<type>? and authorized for update? on record' do
-      before { stub_policy_actions(namespace + [article], replace_comments?: false, update?: true) }
+      before {
+        stub_policy_actions(namespace + [article], replace_comments?: false, update?: true)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'authorized for replace_<type>? and unauthorized for update? on record' do
-      before { stub_policy_actions(namespace + [article], replace_comments?: true, update?: false) }
+      before {
+        stub_policy_actions(namespace + [article], replace_comments?: true, update?: false)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for replace_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [article], replace_comments?: false, update?: false) }
+      before {
+        stub_policy_actions(namespace + [article], replace_comments?: false, update?: false)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
@@ -658,22 +737,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for remove_from_<type>? and article? on article' do
-      before { stub_policy_actions(namespace + [article], remove_from_comments?: true, update?: true) }
+      before {
+        stub_policy_actions(namespace + [article], remove_from_comments?: true, update?: true)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for remove_from_<type>? and authorized for update? on article' do
-      before { stub_policy_actions(namespace + [article], remove_from_comments?: false, update?: true) }
+      before {
+        stub_policy_actions(namespace + [article], remove_from_comments?: false, update?: true)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'authorized for remove_from_<type>? and unauthorized for update? on article' do
-      before { stub_policy_actions(namespace + [article], remove_from_comments?: true, update?: false) }
+      before {
+        stub_policy_actions(namespace + [article], remove_from_comments?: true, update?: false)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for remove_from_<type>? and update? on article' do
-      before { stub_policy_actions(namespace + [article], remove_from_comments?: false, update?: false) }
+      before {
+        stub_policy_actions(namespace + [article], remove_from_comments?: false, update?: false)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
@@ -700,22 +787,30 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     end
 
     context 'authorized for remove_<type>? and article? on record' do
-      before { stub_policy_actions(namespace + [source_record], remove_author?: true, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], remove_author?: true, update?: true)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for remove_<type>? and authorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], remove_author?: false, update?: true) }
+      before {
+        stub_policy_actions(namespace + [source_record], remove_author?: false, update?: true)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
     context 'authorized for remove_<type>? and unauthorized for update? on record' do
-      before { stub_policy_actions(namespace + [source_record], remove_author?: true, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], remove_author?: true, update?: false)
+      }
       it { is_expected.not_to raise_error }
     end
 
     context 'unauthorized for remove_<type>? and update? on record' do
-      before { stub_policy_actions(namespace + [source_record], remove_author?: false, update?: false) }
+      before {
+        stub_policy_actions(namespace + [source_record], remove_author?: false, update?: false)
+      }
       it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
     end
 
