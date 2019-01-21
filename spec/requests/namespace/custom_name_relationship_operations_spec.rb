@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe 'including custom name relationships', type: :request do
+RSpec.describe 'including custom name relationships', type: :request, pundit: "2.0" do
   include AuthorizationStubs
   fixtures :all
 

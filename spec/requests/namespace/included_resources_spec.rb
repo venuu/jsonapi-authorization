@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe 'including resources alongside normal operations', type: :request do
+RSpec.describe 'including resources alongside normal operations', type: :request, pundit: "2.0" do
   include AuthorizationStubs
   fixtures :all
 

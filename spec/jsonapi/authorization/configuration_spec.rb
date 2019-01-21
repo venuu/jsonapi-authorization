@@ -33,7 +33,7 @@ RSpec.describe JSONAPI::Authorization::Configuration do
 
   describe "#namespace" do
     context "given a array of symbol" do
-      it "returns an array" do
+      it "returns an array", pundit: "1.0" do
         jsonapi_context = { namespace: %i[api v1] }
         namespace = JSONAPI::Authorization.configuration.namespace(jsonapi_context)
 

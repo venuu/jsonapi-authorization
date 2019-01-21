@@ -22,4 +22,8 @@ RSpec.configure do |config|
 
   config.example_status_persistence_file_path =
     File.expand_path("../../tmp/rspec-example-statuses.txt", __FILE__)
+
+  config.filter_run_excluding pundit: lambda { |v|
+    v.to_f != Pundit::VERSION.to_f
+  }
 end

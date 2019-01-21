@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-RSpec.describe 'Relationship operations', type: :request do
+RSpec.describe 'Relationship operations', type: :request, pundit: "2.0" do
   include AuthorizationStubs
   fixtures :all
 

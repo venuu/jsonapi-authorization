@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe 'Resource operations', type: :request do
+describe 'Resource operations', type: :request, pundit: "2.0" do
   include AuthorizationStubs
   fixtures :all
 
