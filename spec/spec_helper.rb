@@ -12,6 +12,7 @@ require "pry"
 require "rspec/rails"
 
 Dir[File.expand_path("../support/**/*.rb", __FILE__)].each { |f| require f }
+Dir[File.expand_path("../requests/shared/*.rb", __FILE__)].each { |f| require f }
 
 RSpec.configure do |config|
   config.include Rack::Test::Methods
