@@ -185,18 +185,40 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
   end
 
   describe '#show_related_resources' do
+    let(:related_record) { Comment.new }
+
     subject(:method_call) do
-      -> { authorizer.show_related_resources(source_record: source_record) }
+      -> { authorizer.show_related_resources(source_record: source_record, related_record_class: related_record) }
     end
 
-    context 'authorized for show? on record' do
+    context 'authorized for show? on source record' do
       before { allow_action(source_record, 'show?') }
-      it { is_expected.not_to raise_error }
+
+      context 'authorized for index? on related record' do
+        before { allow_action(related_record, 'index?') }
+        it { is_expected.not_to raise_error }
+      end
+
+      context 'unauthorized for index? on related record' do
+        before { disallow_action(related_record, 'index?') }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+
     end
 
     context 'unauthorized for show? on record' do
       before { disallow_action(source_record, 'show?') }
-      it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+
+      context 'authorized for index? on related record' do
+        before { allow_action(related_record, 'index?') }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
+
+      context 'unauthorized for index? on related record' do
+        before { disallow_action(related_record, 'index?') }
+        it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
+      end
     end
   end
 

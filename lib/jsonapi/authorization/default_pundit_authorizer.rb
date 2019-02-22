@@ -77,8 +77,10 @@ module JSONAPI
       # ==== Parameters
       #
       # * +source_record+ - The record whose relationship is queried
-      def show_related_resources(source_record:)
+      # * +related_record_class+ - The associated record class to show
+      def show_related_resources(source_record:, related_record_class:)
         ::Pundit.authorize(user, source_record, 'show?')
+        ::Pundit.authorize(user, related_record_class, 'index?')
       end
 
       # <tt>PATCH /resources/:id</tt>
