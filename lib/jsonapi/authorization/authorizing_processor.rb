@@ -101,12 +101,19 @@ module JSONAPI
       end
 
       def authorize_show_related_resources
-        source_record = params[:source_klass].find_by_key(
+        source_resource = params[:source_klass].find_by_key(
           params[:source_id],
           context: context
-        )._model
+        )
 
-        authorizer.show_related_resources(source_record: source_record)
+        source_record = source_resource._model
+
+        related_resource = source_resource.public_send(params[:relationship_type].to_sym)
+        related_class = related_resource.first.class
+
+        authorizer.show_related_resources(
+          source_record: source_record, related_record_class: related_class
+        )
       end
 
       def authorize_replace_fields
