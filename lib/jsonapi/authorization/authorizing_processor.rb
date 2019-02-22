@@ -109,7 +109,8 @@ module JSONAPI
         source_record = source_resource._model
 
         related_resource = source_resource.public_send(params[:relationship_type].to_sym)
-        related_class = related_resource.first.class
+        related_class = related_resource.first._model.class
+
 
         authorizer.show_related_resources(
           source_record: source_record, related_record_class: related_class
