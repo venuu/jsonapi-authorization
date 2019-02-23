@@ -188,7 +188,11 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
     let(:related_record) { Comment.new }
 
     subject(:method_call) do
-      -> { authorizer.show_related_resources(source_record: source_record, related_record_class: related_record) }
+      lambda {
+        authorizer.show_related_resources(source_record: source_record,
+                                          related_record_class: related_record
+      )
+      }
     end
 
     context 'authorized for show? on source record' do
@@ -203,8 +207,6 @@ RSpec.describe JSONAPI::Authorization::DefaultPunditAuthorizer do
         before { disallow_action(related_record, 'index?') }
         it { is_expected.to raise_error(::Pundit::NotAuthorizedError) }
       end
-
-
     end
 
     context 'unauthorized for show? on record' do
