@@ -108,11 +108,8 @@ module JSONAPI
 
         source_record = source_resource._model
 
-        related_resource_class = source_resource.class._relationship(params[:relationship_type])
-        related_model_class = related_resource_class.class_name.safe_constantize
-
         authorizer.show_related_resources(
-          source_record: source_record, related_record_class: related_model_class
+          source_record: source_record, related_record_class: @resource_klass._model_class
         )
       end
 
