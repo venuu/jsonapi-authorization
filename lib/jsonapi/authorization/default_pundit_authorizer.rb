@@ -3,10 +3,9 @@ module JSONAPI
     # An authorizer is a class responsible for linking JSONAPI operations to
     # your choice of authorization mechanism.
     #
-    # This class uses Pundit for authorization. It does not yet support all
-    # the available operations — you can use your own authorizer class instead
-    # if you have different needs. See the README.md for configuration
-    # information.
+    # This class uses Pundit for authorization. You can use your own authorizer
+    # class instead if you have different needs. See the README.md for
+    # configuration information.
     #
     # Fetching records is the concern of +PunditScopedResource+ which in turn
     # affects which records end up being passed here.
