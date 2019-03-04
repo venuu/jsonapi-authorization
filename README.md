@@ -55,7 +55,7 @@ Or install it yourself as:
 
 * `v0.6.x` supports JR `v0.7.x`
 * `v0.8.x` supports JR `v0.8.x`
-* `v1.0.x` releases support JR `v0.9.x`
+* `v1.x.x` and `v2.0.x` releases support JR `v0.9.x`
 
 We aim to support the same Ruby and Ruby on Rails versions as `jsonapi-resources` does. If that's not the case, please [open an issue][issues].
 
