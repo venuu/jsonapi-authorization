@@ -126,7 +126,19 @@
         "test",
         "infra"
       ]
+    },
+    {
+      "login": "Matthijsy",
+      "name": "Matthijsy",
+      "avatar_url": "https://avatars2.githubusercontent.com/u/5302372?v=4",
+      "profile": "https://github.com/Matthijsy",
+      "contributions": [
+        "bug",
+        "test",
+        "code"
+      ]
     }
   ],
-  "repoType": "github"
+  "repoType": "github",
+  "contributorsPerLine": 7
 }
