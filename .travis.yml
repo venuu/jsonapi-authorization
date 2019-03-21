@@ -11,7 +11,6 @@ gemfile:
   - gemfiles/rails_5_1_pundit_2.gemfile
   - gemfiles/rails_5_2_pundit_2.gemfile
 before_install:
-  - rvm @global do gem uninstall bundler -a -x
   - gem install bundler -v '< 2'
 notifications:
   email: false
