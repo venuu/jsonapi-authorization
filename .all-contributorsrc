@@ -137,6 +137,17 @@
         "test",
         "code"
       ]
+    },
+    {
+      "login": "brianswko",
+      "name": "brianswko",
+      "avatar_url": "https://avatars0.githubusercontent.com/u/3952486?v=4",
+      "profile": "https://github.com/brianswko",
+      "contributions": [
+        "bug",
+        "test",
+        "code"
+      ]
     }
   ],
   "repoType": "github",
