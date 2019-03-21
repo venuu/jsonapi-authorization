@@ -209,15 +209,10 @@ module JSONAPI
 
         relationship_type = params[:relationship_type].to_sym
 
-        related_resources = @resource_klass
-          ._relationship(relationship_type)
-          .resource_klass
-          .find_by_keys(
-            params[:associated_keys],
-            context: context
-          )
-
-        related_records = related_resources.map(&:_model)
+        related_resource_class = @resource_klass._relationship(relationship_type).resource_klass
+        related_records = related_resource_class._model_class.where(
+          related_resource_class._primary_key => params[:associated_keys]
+        )
 
         authorizer.remove_to_many_relationship(
           source_record: source_record,
