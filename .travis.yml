@@ -1,4 +1,7 @@
 language: ruby
+branches:
+  only:
+    - master
 rvm:
   - 2.3
 gemfile:
