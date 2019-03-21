@@ -315,7 +315,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         {
           relation_type: :to_one,
           relation_name: :author,
-          records: existing_author
+          records: [existing_author]
         },
         {
           relation_type: :to_many,
@@ -325,7 +325,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           # down in the other specs.
           #
           # This is fine, because we test resource create relationships with specific matcher
-          records: kind_of(Array)
+          records: kind_of(ActiveRecord::Relation)
         }
       ]
     end

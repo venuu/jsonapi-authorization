@@ -329,13 +329,12 @@ module JSONAPI
                 nil
               when Hash # polymorphic relationship
                 resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
-                resource_class.find_by_key(assoc_value[:id], context: context)._model
-              when Array
-                resource_class = resource_class_for_relationship(assoc_name)
-                resource_class.find_by_keys(assoc_value, context: context).map(&:_model)
+                primary_key = resource_class._primary_key
+                resource_class._model_class.where(primary_key => assoc_value[:id])
               else
                 resource_class = resource_class_for_relationship(assoc_name)
-                resource_class.find_by_key(assoc_value, context: context)._model
+                primary_key = resource_class._primary_key
+                resource_class._model_class.where(primary_key => assoc_value)
               end
 
             {
