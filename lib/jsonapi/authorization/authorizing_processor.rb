@@ -219,7 +219,7 @@ module JSONAPI
 
         related_records = related_resources.map(&:_model)
 
-        if related_records.count != params[:associated_keys].uniq.count
+        if related_records.size != params[:associated_keys].uniq.size
           fail JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
         end
 
