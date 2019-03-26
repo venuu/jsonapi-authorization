@@ -11,6 +11,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   let(:article_policy_scope) { Article.all }
   let(:user_policy_scope) { User.all }
 
+  # Take the stubbed scope and call merge(policy_scope.scope.all) so that the original
+  # scope's conditions are not lost. Without it, the stub will always return all records
+  # the user has access to regardless of context.
   before do
     allow_any_instance_of(ArticlePolicy::Scope).to receive(:resolve) do |policy_scope|
       article_policy_scope.merge(policy_scope.scope.all)
