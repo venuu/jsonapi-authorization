@@ -209,10 +209,18 @@ module JSONAPI
 
         relationship_type = params[:relationship_type].to_sym
 
-        related_resource_class = @resource_klass._relationship(relationship_type).resource_klass
-        related_records = related_resource_class._model_class.where(
-          related_resource_class._primary_key => params[:associated_keys]
-        )
+        related_resources = @resource_klass
+          ._relationship(relationship_type)
+          .resource_klass
+          .find_by_keys(
+            params[:associated_keys],
+            context: context
+          )
+        related_records = related_resources.map(&:_model)
+
+        if related_records.count != params[:associated_keys].uniq.count
+          fail JSONAPI::Exceptions::RecordNotFound.new(params[:associated_keys])
+        end
 
         authorizer.remove_to_many_relationship(
           source_record: source_record,
@@ -305,12 +313,15 @@ module JSONAPI
                 nil
               when Hash # polymorphic relationship
                 resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
-                primary_key = resource_class._primary_key
-                resource_class._model_class.where(primary_key => assoc_value[:id])
+                resource_class.find_by_key(assoc_value[:id], context: context)._model
               else
                 resource_class = resource_class_for_relationship(assoc_name)
-                primary_key = resource_class._primary_key
-                resource_class._model_class.where(primary_key => assoc_value)
+                resource_class.find_by_keys(assoc_value, context: context).map(&:_model).tap do |scoped_records|
+                  related_ids = Array.wrap(assoc_value).uniq
+                  if scoped_records.count != related_ids.count
+                    fail JSONAPI::Exceptions::RecordNotFound.new(related_ids)
+                  end
+                end
               end
 
             {

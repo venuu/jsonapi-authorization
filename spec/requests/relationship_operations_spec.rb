@@ -426,7 +426,7 @@ RSpec.describe 'Relationship operations', type: :request do
           disallow_operation('remove_to_many_relationship', source_record: article, related_records: comments_to_remove, relationship_type: :comments)
         end
 
-        it { is_expected.to be_forbidden }
+        it { is_expected.to be_not_found }
       end
 
       # If this happens in real life, it's mostly a bug. We want to document the
