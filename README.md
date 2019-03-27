@@ -59,6 +59,14 @@ Or install it yourself as:
 
 We aim to support the same Ruby and Ruby on Rails versions as `jsonapi-resources` does. If that's not the case, please [open an issue][issues].
 
+## Versioning and changelog
+
+`jsonapi-authorization` follows [Semantic Versioning](https://semver.org/). We prefer to make more major version bumps when we do changes that are likely to be backwards incompatible. That holds true even when it's likely the changes would be backwards compatible for a majority of our users.
+
+Given the nature of an authorization library, it is likely that most changes are major version bumps.
+
+Whenever we do changes, we strive to write good changelogs in the [GitHub releases page](https://github.com/venuu/jsonapi-authorization/releases).
+
 ## Usage
 
 First make sure you have a Pundit policy specified for every backing model that your JR resources use.
