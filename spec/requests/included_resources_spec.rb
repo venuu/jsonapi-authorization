@@ -63,7 +63,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           expect(json_included.length).to eq(article.comments.count)
           expect(
             json_included.map { |included| included["id"].to_i }
-          ).to eq(article.comments.map(&:id))
+          ).to match_array(article.comments.map(&:id))
         end
       end
     end
@@ -139,7 +139,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         it 'includes only comments allowed by policy scope and associated with the article' do
           json_comments = json_included.select { |item| item['type'] == 'comments' }
           expect(json_comments.length).to eq(article.comments.count)
-          expect(json_comments.map { |i| i['id'] }).to eq(article.comments.pluck(:id).map(&:to_s))
+          expect(
+            json_comments.map { |i| i['id'] }
+          ).to match_array(article.comments.pluck(:id).map(&:to_s))
         end
 
         it 'includes the associated author resource' do
@@ -188,7 +190,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
             it 'includes only resources allowed by policy scope' do
               second_level_items = json_included.select { |item| item['type'] == 'comments' }
               expect(second_level_items.length).to eq(article.author.comments.count)
-              expect(second_level_items.map { |i| i['id'] }).to eq(article.author.comments.pluck(:id).map(&:to_s))
+              expect(
+                second_level_items.map { |i| i['id'] }
+              ).to match_array(article.author.comments.pluck(:id).map(&:to_s))
             end
           end
         end
@@ -259,7 +263,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         it 'includes only comments allowed by policy scope and associated with the article' do
           json_comments = json_included.select { |item| item['type'] == 'comments' }
           expect(json_comments.length).to eq(comments_policy_scope.length)
-          expect(json_comments.map { |i| i['id'] }).to eq(comments_policy_scope.pluck(:id).map(&:to_s))
+          expect(
+            json_comments.map { |i| i['id'] }
+          ).to match_array(comments_policy_scope.pluck(:id).map(&:to_s))
         end
 
         it 'includes the associated author resource' do
@@ -290,7 +296,9 @@ RSpec.describe 'including resources alongside normal operations', type: :request
             it 'includes only resources allowed by policy scope' do
               second_level_items = json_included.select { |item| item['type'] == 'comments' }
               expect(second_level_items.length).to eq(comments_policy_scope.length)
-              expect(second_level_items.map { |i| i['id'] }).to eq(comments_policy_scope.pluck(:id).map(&:to_s))
+              expect(
+                second_level_items.map { |i| i['id'] }
+              ).to match_array(comments_policy_scope.pluck(:id).map(&:to_s))
             end
           end
         end
