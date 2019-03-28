@@ -423,12 +423,10 @@ RSpec.describe 'Relationship operations', type: :request do
       context 'limited by policy scope on comments' do
         let(:comments_scope) { Comment.none }
         before do
-          allow_operation('remove_to_many_relationship', source_record: article, related_records: [], relationship_type: :comments)
+          disallow_operation('remove_to_many_relationship', source_record: article, related_records: comments_to_remove, relationship_type: :comments)
         end
 
-        # This succeeds because the request isn't actually able to try removing any comments
-        # due to the comments-to-be-removed being an empty array
-        it { is_expected.to be_successful }
+        it { is_expected.to be_not_found }
       end
 
       # If this happens in real life, it's mostly a bug. We want to document the

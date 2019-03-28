@@ -41,7 +41,7 @@ RSpec.describe 'Tricky operations', type: :request do
       [{
         relation_name: :article,
         relation_type: :to_one,
-        records: article
+        records: [article]
       }]
     end
 
@@ -57,6 +57,12 @@ RSpec.describe 'Tricky operations', type: :request do
       before { disallow_operation('create_resource', source_class: Comment, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
+
+      context 'which is out of scope' do
+        let(:policy_scope) { Article.none }
+
+        it { is_expected.to be_not_found }
+      end
     end
   end
 
@@ -151,6 +157,12 @@ RSpec.describe 'Tricky operations', type: :request do
       before { disallow_operation('create_resource', source_class: Tag, related_records_with_context: related_records_with_context) }
 
       it { is_expected.to be_forbidden }
+
+      context 'which is out of scope' do
+        let(:policy_scope) { Article.none }
+
+        it { is_expected.to be_not_found }
+      end
     end
   end
 
@@ -203,13 +215,12 @@ RSpec.describe 'Tricky operations', type: :request do
           [{
             relation_name: :comments,
             relation_type: :to_many,
-            # Empty array of records as they were filtered out by the policy scope
-            records: []
+            records: new_comments
           }]
         end
-        before { allow_operation('replace_fields', source_record: article, related_records_with_context: related_records_with_context) }
+        before { disallow_operation('replace_fields', source_record: article, related_records_with_context: related_records_with_context) }
 
-        it { is_expected.to be_successful }
+        it { is_expected.to be_not_found }
       end
     end
 
