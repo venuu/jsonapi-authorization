@@ -315,7 +315,7 @@ module JSONAPI
               when Hash # polymorphic relationship
                 resource_class = @resource_klass.resource_for(assoc_value[:type].to_s)
                 resource_class.find_by_key(assoc_value[:id], context: context)._model
-              else
+              when Array
                 resource_class = resource_class_for_relationship(assoc_name)
                 resources = resource_class.find_by_keys(assoc_value, context: context)
                 resources.map(&:_model).tap do |scoped_records|
@@ -324,6 +324,9 @@ module JSONAPI
                     fail JSONAPI::Exceptions::RecordNotFound, related_ids
                   end
                 end
+              else
+                resource_class = resource_class_for_relationship(assoc_name)
+                resource_class.find_by_key(assoc_value, context: context)._model
               end
 
             {

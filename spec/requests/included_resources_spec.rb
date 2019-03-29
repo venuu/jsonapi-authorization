@@ -447,7 +447,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         {
           relation_type: :to_one,
           relation_name: :author,
-          records: [existing_author]
+          records: existing_author
         },
         {
           relation_type: :to_many,
