@@ -41,7 +41,7 @@ RSpec.describe 'Tricky operations', type: :request do
       [{
         relation_name: :article,
         relation_type: :to_one,
-        records: [article]
+        records: article
       }]
     end
 
