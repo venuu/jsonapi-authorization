@@ -33,8 +33,6 @@ This gem should work out-of-the box for simple cases. The default authorizer mig
 
 **If you are modifying relationships**, you should read the [relationship authorization documentation](docs/relationship-authorization.md).
 
-The API is subject to change between minor version bumps until we reach v1.0.0.
-
 ## Installation
 
 Add this line to your application's Gemfile:
