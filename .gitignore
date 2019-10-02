@@ -11,3 +11,4 @@
 *.orig
 .ruby-version
 /gemfiles/*.gemfile.lock
+/gemfiles/.bundle/
