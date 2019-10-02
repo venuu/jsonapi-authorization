@@ -54,6 +54,7 @@ Or install it yourself as:
 * `v0.6.x` supports JR `v0.7.x`
 * `v0.8.x` supports JR `v0.8.x`
 * Later releases support JR `v0.9.x`
+* **JR `v0.10.x` is NOT SUPPORTED.** See https://github.com/venuu/jsonapi-authorization/issues/64 for more details and to offer help.
 
 We aim to support the same Ruby and Ruby on Rails versions as `jsonapi-resources` does. If that's not the case, please [open an issue][issues].
 
