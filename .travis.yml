@@ -4,6 +4,7 @@ branches:
     - master
 rvm:
   - 2.3
+  - 2.5
 gemfile:
   - gemfiles/rails_4_2_pundit_1.gemfile
   - gemfiles/rails_5_0_pundit_1.gemfile
@@ -15,6 +16,16 @@ gemfile:
   - gemfiles/rails_5_1_pundit_2.gemfile
   - gemfiles/rails_5_2_pundit_2.gemfile
   - gemfiles/rails_6_0_pundit_2.gemfile
+matrix:
+  exclude:
+  - rvm: 2.5
+    gemfile: gemfiles/rails_4_2_pundit_1.gemfile
+  - rvm: 2.5
+    gemfile: gemfiles/rails_4_2_pundit_2.gemfile
+  - rvm: 2.3
+    gemfile: gemfiles/rails_6_0_pundit_1.gemfile
+  - rvm: 2.3
+    gemfile: gemfiles/rails_6_0_pundit_2.gemfile
 before_install:
   - gem install bundler -v '< 2'
 notifications:
