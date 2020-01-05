@@ -72,7 +72,7 @@ module JSONAPI
         related_resource =
           case relationship
           when JSONAPI::Relationship::ToOne
-            parent_resource.public_send(params[:relationship_type].to_sym)
+            resources_from_relationship(source_klass, source_id, relationship.type, context).first
           when JSONAPI::Relationship::ToMany
             # Do nothing — already covered by policy scopes
           else
@@ -91,7 +91,7 @@ module JSONAPI
 
         source_resource = source_klass.find_by_key(source_id, context: context)
 
-        related_resource = source_resource.public_send(relationship_type)
+        related_resource = resources_from_relationship(source_klass, source_id, relationship_type, context).first
 
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
@@ -280,6 +280,14 @@ module JSONAPI
 
       def authorizer
         @authorizer ||= ::JSONAPI::Authorization.configuration.authorizer.new(context: context)
+      end
+
+      def resources_from_relationship(source_klass, source_id, relationship_type, context)
+        rid = source_klass.find_related_fragments([JSONAPI::ResourceIdentity.new(source_klass, source_id)],
+                                                  relationship_type,
+                                                  context: context).keys.first
+
+        rid.resource_klass.find_to_populate_by_keys(rid.id)
       end
 
       # TODO: Communicate with upstream to fix this nasty hack

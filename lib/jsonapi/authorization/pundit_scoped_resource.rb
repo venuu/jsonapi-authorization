@@ -8,35 +8,19 @@ module JSONAPI
       module ClassMethods
         def records(options = {})
           user_context = JSONAPI::Authorization.configuration.user_context(options[:context])
-          ::Pundit.policy_scope!(user_context, _model_class)
+          ::Pundit.policy_scope!(user_context, super)
         end
-      end
 
-      def records_for(association_name)
-        record_or_records = @model.public_send(association_name)
-        relationship = fetch_relationship(association_name)
-
-        case relationship
-        when JSONAPI::Relationship::ToOne
-          record_or_records
-        when JSONAPI::Relationship::ToMany
-          user_context = JSONAPI::Authorization.configuration.user_context(context)
-          ::Pundit.policy_scope!(user_context, record_or_records)
-        else
-          raise "Unknown relationship type #{relationship.inspect}"
-        end
-      end
-
-      private
-
-      def fetch_relationship(association_name)
-        relationships = self.class._relationships.select do |_k, v|
-          v.relation_name(context: context) == association_name
-        end
-        if relationships.empty?
-          nil
-        else
-          relationships.values.first
+        def apply_joins(records, join_manager, options)
+          records = super
+          join_manager.join_details.each do |k, v|
+            next if k == '' || v[:join_type] == :root
+            v[:join_options][:relationship_details][:resource_klasses].each_key do |klass|
+              next unless klass.included_modules.include?(PunditScopedResource)
+              records = records.where(v[:alias] => { klass._primary_key => klass.records(options)})
+            end
+          end
+          records
         end
       end
     end
