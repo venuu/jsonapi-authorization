@@ -1,4 +1,4 @@
-class CommentsController < ActionController::Base
+class CommentsController < ApplicationController
   include JSONAPI::ActsAsResourceController
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
