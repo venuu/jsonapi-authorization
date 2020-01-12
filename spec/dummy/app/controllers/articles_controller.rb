@@ -1,4 +1,4 @@
-class ArticlesController < ActionController::Base
+class ArticlesController < ApplicationController
   include JSONAPI::ActsAsResourceController
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 

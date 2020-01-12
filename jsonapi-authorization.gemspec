@@ -31,5 +31,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "pry-rails"
   spec.add_development_dependency "rubocop", "~> 0.36.0"
   spec.add_development_dependency "phare", "~> 0.7.1"
-  spec.add_development_dependency "sqlite3", "~> 1.3.6"
+  spec.add_development_dependency "sqlite3", "~> 1.3"
 end
