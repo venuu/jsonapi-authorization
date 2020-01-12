@@ -32,4 +32,6 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rubocop", "~> 0.36.0"
   spec.add_development_dependency "phare", "~> 0.7.1"
   spec.add_development_dependency "sqlite3", "~> 1.3.6"
+  # Specs don't yet work with Rails 6, so enforce a lower version
+  spec.add_development_dependency "activerecord", "< 6.0.0"
 end
