@@ -91,7 +91,9 @@ module JSONAPI
 
         source_resource = source_klass.find_by_key(source_id, context: context)
 
-        related_resource = resources_from_relationship(source_klass, source_id, relationship_type, context).first
+        related_resource = resources_from_relationship(
+          source_klass, source_id, relationship_type, context
+        ).first
 
         source_record = source_resource._model
         related_record = related_resource._model unless related_resource.nil?
@@ -283,9 +285,11 @@ module JSONAPI
       end
 
       def resources_from_relationship(source_klass, source_id, relationship_type, context)
-        rid = source_klass.find_related_fragments([JSONAPI::ResourceIdentity.new(source_klass, source_id)],
-                                                  relationship_type,
-                                                  context: context).keys.first
+        rid = source_klass.find_related_fragments(
+          [JSONAPI::ResourceIdentity.new(source_klass, source_id)],
+          relationship_type,
+          context: context
+        ).keys.first
 
         rid.resource_klass.find_to_populate_by_keys(rid.id)
       end
