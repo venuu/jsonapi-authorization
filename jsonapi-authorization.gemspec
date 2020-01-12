@@ -17,7 +17,7 @@ Gem::Specification.new do |spec|
   spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "jsonapi-resources", "~> 0.9.0"
+  spec.add_dependency "jsonapi-resources", "~> 0.10.0"
   spec.add_dependency "pundit", ">= 1.0.0", "< 3.0.0"
 
   spec.add_development_dependency "appraisal"
