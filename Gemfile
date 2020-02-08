@@ -4,7 +4,7 @@ source 'https://rubygems.org'
 gem(
   'jsonapi-resources',
   git: 'https://github.com/cerebris/jsonapi-resources.git',
-  branch: 'track_join_options'
+  branch: 'use_records_for_joined_resources'
 )
 
 gemspec
