@@ -19,6 +19,7 @@ jobs:
     strategy:
       matrix:
         gemfile: [ rails_4_2_pundit_1 ]
+        ruby-version: ['2.6', '2.7', '3.0']
     env: 
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
