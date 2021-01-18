@@ -18,8 +18,8 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gemfile: [ rails_4_2_pundit_1 ]
-        ruby-version: ['2.4', '2.7', '3.0']
+        gemfile: [ rails_6_0_pundit_2 ]
+        ruby-version: ['2.7', '3.0']
     env: 
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
@@ -29,7 +29,7 @@ jobs:
     # change this to (see https://github.com/ruby/setup-ruby#versioning):
       uses: ruby/setup-ruby@v1
       with:
-        bundler: 1.11
+        bundler: 2
         ruby-version: ${{ matrix.ruby-version }}
         bundler-cache: true # runs 'bundle install' and caches installed gems automatically
     - name: Run tests
