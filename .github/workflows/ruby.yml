@@ -18,7 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        gemfile: [ rails_6_0_pundit_2 ]
+        gemfile: [ rails_5_2_pundit_2, rails_6_0_pundit_2 ]
         ruby-version: ['2.7', '3.0']
     env: 
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
