@@ -19,8 +19,8 @@ jobs:
     strategy:
       matrix:
         gemfile: [ rails_5_2_pundit_2, rails_6_0_pundit_2 ]
-        ruby-version: ['2.7']
-        # ruby-version: ['2.7', '3.0']
+        ruby-version: ['2.7', '3.0']
+    continue-on-error: true
     env: 
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
     steps:
