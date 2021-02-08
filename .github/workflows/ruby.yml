@@ -27,10 +27,11 @@ jobs:
           - rails_6_0_pundit_1
           - rails_6_0_pundit_2
         ruby-version: [ '2.5', '2.7' ]
+        # Include Rails 4.2 / Ruby 2.3 combo
         include:
-          - gemfile:
-              - rails_4_2_pundit_1
-              - rails_4_2_pundit_2
+          - gemfile: rails_4_2_pundit_1
+            ruby-version: '2.3'
+          - gemfile: rails_4_2_pundit_2
             ruby-version: '2.3'
     continue-on-error: true
     env:
