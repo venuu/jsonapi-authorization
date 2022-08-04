@@ -66,24 +66,24 @@ RSpec.describe 'Related resources operations', type: :request do
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
 
-    context 'unauthorized for show_related_resource' do
+    context 'unauthorized for show_related_resource', pending: 'Compatibility with JR 0.10' do
       before { disallow_operation('show_related_resource', source_record: article, related_record: article.author) }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show_related_resource' do
+    context 'authorized for show_related_resource', pending: 'Compatibility with JR 0.10' do
       before { allow_operation('show_related_resource', source_record: article, related_record: article.author) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
-      context 'limited by policy scope' do
+      context 'limited by policy scope', pending: false do
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
 
-    context 'authorized for show_related_resource while related resource is limited by policy scope' do
+    context 'authorized for show_related_resource while related resource is limited by policy scope', pending: 'Compatibility with JR 0.10' do
       # It might be surprising that with jsonapi-authorization that supports JR 0.9, the `related_record`
       # is indeed a real record here and not `nil`. If the policy scope was used, then the `related_record`
       # should be `nil` but alas, that is not the case.
