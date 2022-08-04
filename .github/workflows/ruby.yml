@@ -23,7 +23,7 @@ jobs:
           - rails_5_2_pundit_2
           - rails_6_0_pundit_1
           - rails_6_0_pundit_2
-        ruby-version: [ '2.5', '2.7' ]
+        ruby-version: [ '2.6', '2.7' ]
         bundler-version: [ '1.11' ]
         include:
           # Include Rails 6.0 / Ruby 3.0 combo
