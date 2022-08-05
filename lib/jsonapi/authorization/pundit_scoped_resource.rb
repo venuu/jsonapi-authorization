@@ -10,7 +10,7 @@ module JSONAPI
       module ClassMethods
         def records(options = {})
           user_context = JSONAPI::Authorization.configuration.user_context(options[:context])
-          ::Pundit.policy_scope!(user_context, _model_class)
+          ::Pundit.policy_scope!(user_context, super)
         end
       end
 

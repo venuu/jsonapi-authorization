@@ -533,7 +533,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     include_examples :scope_limited_directive_tests
   end
 
-  describe 'GET /articles/:id/article', pending: true do
+  describe 'GET /articles/:id/article' do
     let(:article) do
       Article.create(
         external_id: "indifferent_external_id",

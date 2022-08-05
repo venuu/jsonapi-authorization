@@ -65,29 +65,31 @@ RSpec.describe 'Related resources operations', type: :request do
     subject(:last_response) { get("/articles/#{article.external_id}/author") }
     let(:article) { articles(:article_with_author) }
     let(:policy_scope) { Article.all }
+    let(:user_policy_scope) { User.all }
 
-    context 'unauthorized for show_related_resource', pending: 'Compatibility with JR 0.10' do
+    before do
+      allow_any_instance_of(UserPolicy::Scope).to receive(:resolve).and_return(user_policy_scope)
+    end
+
+    context 'unauthorized for show_related_resource' do
       before { disallow_operation('show_related_resource', source_record: article, related_record: article.author) }
       it { is_expected.to be_forbidden }
     end
 
-    context 'authorized for show_related_resource', pending: 'Compatibility with JR 0.10' do
+    context 'authorized for show_related_resource' do
       before { allow_operation('show_related_resource', source_record: article, related_record: article.author) }
       it { is_expected.to be_ok }
 
       # If this happens in real life, it's mostly a bug. We want to document the
       # behaviour in that case anyway, as it might be surprising.
-      context 'limited by policy scope', pending: false do
+      context 'limited by policy scope' do
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
     end
 
-    context 'authorized for show_related_resource while related resource is limited by policy scope', pending: 'Compatibility with JR 0.10' do
-      # It might be surprising that with jsonapi-authorization that supports JR 0.9, the `related_record`
-      # is indeed a real record here and not `nil`. If the policy scope was used, then the `related_record`
-      # should be `nil` but alas, that is not the case.
-      before { allow_operation('show_related_resource', source_record: article, related_record: article.author) }
+    context 'authorized for show_related_resource while related resource is limited by policy scope' do
+      before { allow_operation('show_related_resource', source_record: article, related_record: nil) }
 
       let(:user_policy_scope) { User.where.not(id: article.author.id) }
 
