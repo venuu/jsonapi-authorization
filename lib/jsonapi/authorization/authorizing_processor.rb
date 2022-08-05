@@ -250,36 +250,9 @@ module JSONAPI
       end
 
       def authorize_replace_polymorphic_to_one_relationship
-        return authorize_remove_to_one_relationship if params[:key_value].nil?
-
-        source_resource = @resource_klass.find_by_key(
-          params[:resource_id],
-          context: context
-        )
-        source_record = source_resource._model
-
-        # Fetch the name of the new class based on the incoming polymorphic
-        # "type" value. This will fail if there is no associated resource for the
-        # incoming "type" value so this shouldn't leak constants
-        related_record_class_name = source_resource
-          .send(:_model_class_name, params[:key_type])
-
-        # Fetch the underlying Resource class for the new record to-be-associated
-        related_resource_klass = @resource_klass.resource_for(related_record_class_name)
-
-        new_related_resource = related_resource_klass
-          .find_by_key(
-            params[:key_value],
-            context: context
-          )
-        new_related_record = new_related_resource._model unless new_related_resource.nil?
-
-        relationship_type = params[:relationship_type].to_sym
-        authorizer.replace_to_one_relationship(
-          source_record: source_record,
-          new_related_record: new_related_record,
-          relationship_type: relationship_type
-        )
+        # rubocop:disable Layout/LineLength
+        raise NotImplementedError, "Finding polymorphic associations is broken in jsonapi-resources and thus jsonapi-authorization can't work: https://github.com/cerebris/jsonapi-resources/issues/1305"
+        # rubocop:enable Layout/LineLength
       end
 
       private

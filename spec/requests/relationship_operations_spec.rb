@@ -281,7 +281,8 @@ RSpec.describe 'Relationship operations', type: :request do
   end
 
   # Polymorphic has-one relationship replacing
-  describe 'PATCH /tags/:id/relationships/taggable' do
+  # Polymorphic associations are broken: https://github.com/cerebris/jsonapi-resources/issues/1305
+  describe 'PATCH /tags/:id/relationships/taggable', pending: 'Broken upstream' do
     subject(:last_response) { patch("/tags/#{tag.id}/relationships/taggable", json) }
 
     let!(:old_taggable) { Comment.create }
@@ -308,7 +309,7 @@ RSpec.describe 'Relationship operations', type: :request do
         JSON
       end
 
-      context 'unauthorized for replace_to_one_relationship', pending: 'Compatibility with JR 0.10' do
+      context 'unauthorized for replace_to_one_relationship' do
         before do
           disallow_operation(
             'replace_to_one_relationship',
@@ -320,7 +321,7 @@ RSpec.describe 'Relationship operations', type: :request do
         it { is_expected.to be_forbidden }
       end
 
-      context 'authorized for replace_to_one_relationship', pending: 'Compatibility with JR 0.10' do
+      context 'authorized for replace_to_one_relationship' do
         before do
           allow_operation(
             'replace_to_one_relationship',
@@ -338,7 +339,7 @@ RSpec.describe 'Relationship operations', type: :request do
 
         # If this happens in real life, it's mostly a bug. We want to document the
         # behaviour in that case anyway, as it might be surprising.
-        context 'limited by policy scope on tag', pending: false do
+        context 'limited by policy scope on tag' do
           let(:tag_policy_scope) { Tag.where.not(id: tag.id) }
           it { is_expected.to be_not_found }
         end

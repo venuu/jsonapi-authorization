@@ -58,6 +58,12 @@ Or install it yourself as:
 
 We aim to support the same Ruby and Ruby on Rails versions as `jsonapi-resources` does. If that's not the case, please [open an issue][issues].
 
+> ### NOTE: Replacing polymorphic associations is BROKEN
+>
+> This is because of an issue in `jsonapi-resources` gem itself: https://github.com/cerebris/jsonapi-resources/issues/1305
+>
+> This gem will always raise an error if an operation is tried which would replace a polymorphic association as allowing the operation to continue would not be possible to authorize against.
+
 ## Versioning and changelog
 
 `jsonapi-authorization` follows [Semantic Versioning](https://semver.org/). We prefer to make more major version bumps when we do changes that are likely to be backwards incompatible. That holds true even when it's likely the changes would be backwards compatible for a majority of our users.
