@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ArticleResource < JSONAPI::Resource
   include JSONAPI::Authorization::PunditScopedResource
 

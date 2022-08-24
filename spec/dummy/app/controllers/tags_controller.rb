@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TagsController < ApplicationController
   include JSONAPI::ActsAsResourceController
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized

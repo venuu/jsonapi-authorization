@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentPolicy
   Scope = Struct.new(:user, :scope) do
     def resolve

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class UserPolicy
   Scope = Struct.new(:user, :scope) do
     def resolve

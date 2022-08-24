@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # Add better debuggability to be_forbidden failures
 RSpec::Matchers.define :be_forbidden do
   match(&:forbidden?)

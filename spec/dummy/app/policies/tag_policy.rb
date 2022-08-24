@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class TagPolicy
   Scope = Struct.new(:user, :scope) do
     def resolve

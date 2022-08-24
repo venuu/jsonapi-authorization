@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JSONAPI
   module Authorization
     # An authorizer is a class responsible for linking JSONAPI operations to

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Article < ActiveRecord::Base
   has_many :comments
   has_many :tags, as: :taggable

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'jsonapi/authorization/default_pundit_authorizer'
 
 module JSONAPI

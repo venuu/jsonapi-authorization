@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # http://jsonapi-resources.com/v0.9/guide/resources.html#Relationships
 #
 # > The polymorphic relationship will require the resource
