@@ -3,8 +3,7 @@ require 'jsonapi/authorization/default_pundit_authorizer'
 module JSONAPI
   module Authorization
     class Configuration
-      attr_accessor :authorizer
-      attr_accessor :pundit_user
+      attr_accessor :authorizer, :pundit_user
 
       def initialize
         self.authorizer  = ::JSONAPI::Authorization::DefaultPunditAuthorizer
