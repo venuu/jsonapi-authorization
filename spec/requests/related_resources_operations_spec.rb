@@ -7,6 +7,11 @@ RSpec.describe 'Related resources operations', type: :request do
   let(:article) { Article.all.sample }
   let(:authorizations) { {} }
   let(:policy_scope) { Article.none }
+  let(:user_policy_scope) { User.all }
+
+  before do
+    allow_any_instance_of(UserPolicy::Scope).to receive(:resolve).and_return(user_policy_scope)
+  end
 
   let(:json_data) { JSON.parse(last_response.body)["data"] }
 
@@ -74,6 +79,17 @@ RSpec.describe 'Related resources operations', type: :request do
         let(:policy_scope) { Article.where.not(id: article.id) }
         it { is_expected.to be_not_found }
       end
+    end
+
+    context 'authorized for show_related_resource while related resource is limited by policy scope' do
+      # It might be surprising that with jsonapi-authorization that supports JR 0.9, the `related_record`
+      # is indeed a real record here and not `nil`. If the policy scope was used, then the `related_record`
+      # should be `nil` but alas, that is not the case.
+      before { allow_operation('show_related_resource', source_record: article, related_record: article.author) }
+
+      let(:user_policy_scope) { User.where.not(id: article.author.id) }
+
+      it { is_expected.to be_ok }
     end
   end
 end
