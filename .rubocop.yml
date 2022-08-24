@@ -2,6 +2,7 @@ AllCops:
   TargetRubyVersion: 2.1
   Exclude:
     - 'bin/*'
+    - 'gemfiles/*'
     - 'spec/dummy/db/schema.rb'
     - 'vendor/bundle/**/*'
     - 'tmp/**/*'
