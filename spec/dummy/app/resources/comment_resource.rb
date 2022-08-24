@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CommentResource < JSONAPI::Resource
   include JSONAPI::Authorization::PunditScopedResource
 

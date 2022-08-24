@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require "jsonapi-resources"
 require "jsonapi/authorization/authorizing_processor"
 require "jsonapi/authorization/configuration"

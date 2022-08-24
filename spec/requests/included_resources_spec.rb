@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'including resources alongside normal operations', type: :request do
@@ -35,27 +37,27 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'comments' }
 
       context 'unauthorized for include_has_many_resource for Comment' do
-        before {
+        before do
           disallow_operation(
             'include_has_many_resource',
             source_record: an_instance_of(Article),
             record_class: Comment,
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for include_has_many_resource for Comment' do
-        before {
+        before do
           allow_operation(
             'include_has_many_resource',
             source_record: an_instance_of(Article),
             record_class: Comment,
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_successful }
 
@@ -72,27 +74,27 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'author' }
 
       context 'unauthorized for include_has_one_resource for article.author' do
-        before {
+        before do
           disallow_operation(
             'include_has_one_resource',
             source_record: an_instance_of(Article),
             related_record: an_instance_of(User),
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for include_has_one_resource for article.author' do
-        before {
+        before do
           allow_operation(
             'include_has_one_resource',
             source_record: an_instance_of(Article),
             related_record: an_instance_of(User),
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_successful }
 
@@ -155,14 +157,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'author.comments' }
 
       context 'unauthorized for first relationship' do
-        before {
+        before do
           disallow_operation(
             'include_has_one_resource',
             source_record: an_instance_of(Article),
             related_record: an_instance_of(User),
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_forbidden }
       end
@@ -230,14 +232,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'comments' }
 
       context 'authorized for include_has_many_resource for Comment' do
-        before {
+        before do
           allow_operation(
             'include_has_many_resource',
             source_record: an_instance_of(Article),
             record_class: Comment,
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_successful }
 
@@ -312,14 +314,14 @@ RSpec.describe 'including resources alongside normal operations', type: :request
       let(:include_query) { 'comments' }
 
       context 'authorized for include_has_many_resource for Comment' do
-        before {
+        before do
           allow_operation(
             'include_has_many_resource',
             source_record: an_instance_of(Article),
             record_class: Comment,
             authorizer: chained_authorizer
           )
-        }
+        end
 
         it { is_expected.to be_not_found }
       end
@@ -359,7 +361,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
     subject(:last_response) { get("/articles?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('find', source_class: Article) }
 
-    let(:article) {
+    let(:article) do
       Article.create(
         external_id: "indifferent_external_id",
         author: User.create(
@@ -367,7 +369,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         ),
         comments: Array.new(2) { Comment.create }
       )
-    }
+    end
 
     let(:article_policy_scope) { Article.where(id: article.id) }
 
@@ -377,7 +379,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id' do
-    let(:article) {
+    let(:article) do
       Article.create(
         external_id: "indifferent_external_id",
         author: User.create(
@@ -385,7 +387,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         ),
         comments: Array.new(2) { Comment.create }
       )
-    }
+    end
 
     subject(:last_response) { get("/articles/#{article.external_id}?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('show', source_record: article) }
@@ -395,7 +397,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'PATCH /articles/:id' do
-    let(:article) {
+    let(:article) do
       Article.create(
         external_id: "indifferent_external_id",
         author: User.create(
@@ -403,11 +405,11 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         ),
         comments: Array.new(2) { Comment.create }
       )
-    }
+    end
 
     let(:attributes_json) { '{}' }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "articles",
@@ -415,7 +417,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           "attributes": #{attributes_json}
         }
       }
-      EOS
+      JSON
     end
     subject(:last_response) { patch("/articles/#{article.external_id}?include=#{include_query}", json) }
     let!(:chained_authorizer) { allow_operation('replace_fields', source_record: article, related_records_with_context: []) }
@@ -464,7 +466,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:attributes_json) { '{}' }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "articles",
@@ -485,7 +487,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           }
         }
       }
-      EOS
+      JSON
     end
     let(:article) { existing_author.articles.first }
 
@@ -512,7 +514,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id/articles' do
-    let(:article) {
+    let(:article) do
       Article.create(
         external_id: "indifferent_external_id",
         author: User.create(
@@ -520,7 +522,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         ),
         comments: Array.new(2) { Comment.create }
       )
-    }
+    end
 
     let(:article_policy_scope) { Article.where(id: article.id) }
 
@@ -532,7 +534,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
   end
 
   describe 'GET /articles/:id/article' do
-    let(:article) {
+    let(:article) do
       Article.create(
         external_id: "indifferent_external_id",
         author: User.create(
@@ -540,7 +542,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
         ),
         comments: Array.new(2) { Comment.create }
       )
-    }
+    end
 
     subject(:last_response) { get("/articles/#{article.external_id}/article?include=#{include_query}") }
     let!(:chained_authorizer) { allow_operation('show_related_resource', source_record: article, related_record: article) }

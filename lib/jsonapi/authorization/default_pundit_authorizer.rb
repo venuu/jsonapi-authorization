@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module JSONAPI
   module Authorization
     # An authorizer is a class responsible for linking JSONAPI operations to
@@ -271,7 +273,7 @@ module JSONAPI
       )
         policy = ::Pundit.policy(user, source_record)
         if policy.respond_to?(relationship_method)
-          args = [relationship_method, related_record_or_records].reject(&:nil?)
+          args = [relationship_method, related_record_or_records].compact
           unless policy.public_send(*args)
             raise ::Pundit::NotAuthorizedError,
                   query: relationship_method,

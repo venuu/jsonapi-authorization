@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module AuthorizationStubs
   AUTHORIZER_CLASS = JSONAPI::Authorization::DefaultPunditAuthorizer
 

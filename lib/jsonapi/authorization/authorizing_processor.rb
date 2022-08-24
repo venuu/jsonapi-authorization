@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'pundit'
 
 module JSONAPI
@@ -22,19 +24,20 @@ module JSONAPI
         :authorize_replace_polymorphic_to_one_relationship
       )
 
-      [
-        :find,
-        :show,
-        :show_related_resource,
-        :show_related_resources,
-        :create_resource,
-        :replace_fields
+      %i[
+        find
+        show
+        show_related_resource
+        show_related_resources
+        create_resource
+        replace_fields
       ].each do |op_name|
         set_callback op_name, :after, :authorize_include_directive
       end
 
       def authorize_include_directive
         return if result.is_a?(::JSONAPI::ErrorsOperationResult)
+
         resources = Array.wrap(
           if result.respond_to?(:resources)
             result.resources
@@ -220,7 +223,7 @@ module JSONAPI
         related_records = related_resources.map(&:_model)
 
         if related_records.size != params[:associated_keys].uniq.size
-          fail JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
+          raise JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
         end
 
         authorizer.remove_to_many_relationship(
@@ -306,7 +309,7 @@ module JSONAPI
         data = params[:data]
         return { relationship: nil, relation_name: nil, records: nil } if data.nil?
 
-        [:to_one, :to_many].flat_map do |rel_type|
+        %i[to_one to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_value|
             related_models =
               case assoc_value
@@ -321,7 +324,7 @@ module JSONAPI
                 resources.map(&:_model).tap do |scoped_records|
                   related_ids = Array.wrap(assoc_value).uniq
                   if scoped_records.count != related_ids.count
-                    fail JSONAPI::Exceptions::RecordNotFound, related_ids
+                    raise JSONAPI::Exceptions::RecordNotFound, related_ids
                   end
                 end
               else
@@ -339,10 +342,10 @@ module JSONAPI
       end
 
       def authorize_model_includes(source_record)
-        if params[:include_directives]
-          params[:include_directives].model_includes.each do |include_item|
-            authorize_include_item(@resource_klass, source_record, include_item)
-          end
+        return unless params[:include_directives]
+
+        params[:include_directives].model_includes.each do |include_item|
+          authorize_include_item(@resource_klass, source_record, include_item)
         end
       end
 
@@ -376,6 +379,7 @@ module JSONAPI
               relationship.relation_name(context: context)
             )
             return if related_record.nil?
+
             authorizer.include_has_one_resource(
               source_record: source_record, related_record: related_record
             )

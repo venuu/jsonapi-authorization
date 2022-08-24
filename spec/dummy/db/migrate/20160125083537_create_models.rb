@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class CreateModels < ActiveRecord::Migration
   def change
     create_table :comments do |t|
@@ -6,8 +8,7 @@ class CreateModels < ActiveRecord::Migration
       t.belongs_to :reviewing_user, references: :user
     end
 
-    create_table :users do |t|
-    end
+    create_table :users
 
     create_table :articles do |t|
       t.string :external_id, null: false

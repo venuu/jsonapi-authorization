@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'spec_helper'
 
 RSpec.describe 'Relationship operations', type: :request do
@@ -78,14 +80,14 @@ RSpec.describe 'Relationship operations', type: :request do
   describe 'POST /articles/:id/relationships/comments' do
     let(:new_comments) { Array.new(2) { Comment.new }.each(&:save) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": [
           { "type": "comments", "id": "#{new_comments.first.id}" },
           { "type": "comments", "id": "#{new_comments.last.id}" }
         ]
       }
-      EOS
+      JSON
     end
     subject(:last_response) { post("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }
@@ -96,26 +98,26 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'unauthorized for create_to_many_relationship' do
-      before {
+      before do
         disallow_operation(
           'create_to_many_relationship',
           source_record: article,
           new_related_records: new_comments,
           relationship_type: :comments
         )
-      }
+      end
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_to_many_relationship' do
-      before {
+      before do
         allow_operation(
           'create_to_many_relationship',
           source_record: article,
           new_related_records: new_comments,
           relationship_type: :comments
         )
-      }
+      end
       it { is_expected.to be_successful }
 
       context 'limited by policy scope on comments' do
@@ -136,14 +138,14 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:article) { articles(:article_with_comments) }
     let(:new_comments) { Array.new(2) { Comment.new }.each(&:save) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": [
           { "type": "comments", "id": "#{new_comments.first.id}" },
           { "type": "comments", "id": "#{new_comments.last.id}" }
         ]
       }
-      EOS
+      JSON
     end
     subject(:last_response) { patch("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }
@@ -214,14 +216,14 @@ RSpec.describe 'Relationship operations', type: :request do
     describe 'when replacing with a new author' do
       let(:new_author) { User.create }
       let(:json) do
-        <<-EOS.strip_heredoc
+        <<-JSON.strip_heredoc
         {
           "data": {
             "type": "users",
             "id": "#{new_author.id}"
           }
         }
-        EOS
+        JSON
       end
 
       context 'unauthorized for replace_to_one_relationship' do
@@ -296,37 +298,37 @@ RSpec.describe 'Relationship operations', type: :request do
     describe 'when replacing with a new taggable' do
       let!(:new_taggable) { Article.create(external_id: 'new-article-id') }
       let(:json) do
-        <<-EOS.strip_heredoc
+        <<-JSON.strip_heredoc
         {
           "data": {
             "type": "articles",
             "id": "#{new_taggable.external_id}"
           }
         }
-        EOS
+        JSON
       end
 
       context 'unauthorized for replace_to_one_relationship' do
-        before {
+        before do
           disallow_operation(
             'replace_to_one_relationship',
             source_record: tag,
             new_related_record: new_taggable,
             relationship_type: :taggable
           )
-        }
+        end
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for replace_to_one_relationship' do
-        before {
+        before do
           allow_operation(
             'replace_to_one_relationship',
             source_record: tag,
             new_related_record: new_taggable,
             relationship_type: :taggable
           )
-        }
+        end
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on taggable', skip: 'DISCUSS' do
@@ -376,14 +378,14 @@ RSpec.describe 'Relationship operations', type: :request do
     let(:article) { articles(:article_with_comments) }
     let(:comments_to_remove) { article.comments.limit(2) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": [
           { "type": "comments", "id": "#{comments_to_remove.first.id}" },
           { "type": "comments", "id": "#{comments_to_remove.last.id}" }
         ]
       }
-      EOS
+      JSON
     end
     subject(:last_response) { delete("/articles/#{article.external_id}/relationships/comments", json) }
     let(:policy_scope) { Article.all }

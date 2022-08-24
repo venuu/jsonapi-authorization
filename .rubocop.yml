@@ -1,113 +1,46 @@
+inherit_from: .rubocop_todo.yml
+
 AllCops:
-  TargetRubyVersion: 2.1
+  TargetRubyVersion: 2.7
+  NewCops: enable
+  SuggestExtensions: false
   Exclude:
     - 'bin/*'
+    - 'gemfiles/*'
     - 'spec/dummy/db/schema.rb'
     - 'vendor/bundle/**/*'
     - 'tmp/**/*'
 
-Style/FileName:
+# TODO: Define a spec.required_ruby_version when shipping a new version
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
+Naming/FileName:
   Exclude:
     - lib/jsonapi-authorization.rb
     - Appraisals
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: true
   Max: 100
   Exclude:
     - spec/requests/**/*.rb
     - jsonapi-authorization.gemspec
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
-Metrics/ClassLength:
+# We don't want rubocop to enforce splitting methods and stuff like that.
+Metrics:
   Enabled: false
 
-Style/Documentation:
-  Enabled: false
-
-Style/ExtraSpacing:
-  AllowForAlignment: true
-
-Metrics/MethodLength:
-  Enabled: false
-
-Style/Next:
-  Enabled: false
-
-Metrics/AbcSize:
-  Enabled: false
-
-Style/DoubleNegation:
-  Enabled: false
-
-Style/SignalException:
-  Enabled: false
-
+# We don't care what kind of quotes you use
 Style/StringLiterals:
   Enabled: false
 
-Style/SpaceInsideHashLiteralBraces:
+# It's up to us how much we want to document the code
+Style/Documentation:
   Enabled: false
-  EnforcedStyle: space
-
-Style/IndentHash:
-  EnforcedStyle: consistent
-
-Style/IndentArray:
-  EnforcedStyle: consistent
-
-Style/ClassAndModuleChildren:
-  Enabled: false
-
-Style/PercentLiteralDelimiters:
-  Enabled: false
-
-Style/BlockDelimiters:
-  Enabled: false
-
-Style/GuardClause:
-  Enabled: false
-
-Style/ClosingParenthesisIndentation:
-  Enabled: false
-
-Style/IfUnlessModifier:
-  Enabled: false
-
-Style/NumericLiterals:
-  Enabled: false
-
-Style/AsciiComments:
-  Enabled: false
-
-Style/StructInheritance:
-  Enabled: false
-
-Style/MultilineBlockChain:
-  Enabled: false
-
-Metrics/ParameterLists:
-  Enabled: false
-
-Style/WordArray:
-  MinSize: 2
-
-Metrics/ModuleLength:
-  Enabled: false
-
-Style/SingleLineBlockParams:
-  Methods:
-    - reduce:
-        - acc
-        - obj
-    - inject:
-        - acc
-        - obj
-
-Style/Alias:
-  EnforcedStyle: prefer_alias_method
