@@ -10,6 +10,10 @@ AllCops:
     - 'vendor/bundle/**/*'
     - 'tmp/**/*'
 
+# TODO: Define a spec.required_ruby_version when shipping a new version
+Gemspec/RequiredRubyVersion:
+  Enabled: false
+
 Naming/FileName:
   Exclude:
     - lib/jsonapi-authorization.rb
