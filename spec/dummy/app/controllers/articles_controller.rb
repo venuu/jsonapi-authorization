@@ -5,7 +5,7 @@ class ArticlesController < ApplicationController
   private
 
   def context
-    {user: nil}
+    { user: nil }
   end
 
   # https://github.com/cerebris/jsonapi-resources/pull/573
