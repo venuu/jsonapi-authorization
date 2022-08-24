@@ -38,16 +38,14 @@ module JSONAPI
       def authorize_include_directive
         return if result.is_a?(::JSONAPI::ErrorsOperationResult)
 
-        resources = Array.wrap(
-          if result.respond_to?(:resources)
-            result.resources
-          elsif result.respond_to?(:resource)
-            result.resource
-          end
-        )
+        resources = result.resource_set.resource_klasses[@resource_klass]
+        return if resources.nil?
+        return unless params[:include_directives]
 
-        resources.each do |resource|
-          authorize_model_includes(resource._model)
+        include_params = params[:include_directives].include_directives
+        resources.each do |_id, current_resource|
+          source_record = current_resource[:resource]._model
+          authorize_include_directives(resource_klass, source_record, include_params)
         end
       end
 
@@ -329,11 +327,12 @@ module JSONAPI
         end
       end
 
-      def authorize_model_includes(source_record)
-        return unless params[:include_directives]
+      def authorize_include_directives(current_resource_klass, source_record, include_directives)
+        include_directives[:include_related].each do |include_item, deep|
+          authorize_include_item(current_resource_klass, source_record, include_item)
 
-        params[:include_directives].model_includes.each do |include_item|
-          authorize_include_item(@resource_klass, source_record, include_item)
+          next_resource_klass = current_resource_klass._relationship(include_item).resource_klass
+          authorize_include_directives(next_resource_klass, source_record, deep)
         end
       end
 
