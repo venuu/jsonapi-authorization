@@ -47,8 +47,8 @@ def debug_text_for_failure(expected, response:, last_request:)
   debug_text = "expected response to be #{expected} but HTTP code was #{response.status}."
   debug_text += " Last request was #{last_request.request_method} to #{last_request.fullpath}"
   unless last_request.get?
-    debug_text += " with body:\n" + last_request.body.read
+    debug_text += " with body:\n#{last_request.body.read}"
   end
-  debug_text += "\nResponse body was:\n" + response.body
+  debug_text += "\nResponse body was:\n#{response.body}"
   debug_text
 end
