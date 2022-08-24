@@ -1,5 +1,5 @@
 class UserPolicy
-  class Scope < Struct.new(:user, :scope)
+  Scope = Struct.new(:user, :scope) do
     def resolve
       raise NotImplementedError
     end
