@@ -221,7 +221,7 @@ module JSONAPI
         related_records = related_resources.map(&:_model)
 
         if related_records.size != params[:associated_keys].uniq.size
-          fail JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
+          raise JSONAPI::Exceptions::RecordNotFound, params[:associated_keys]
         end
 
         authorizer.remove_to_many_relationship(
@@ -322,7 +322,7 @@ module JSONAPI
                 resources.map(&:_model).tap do |scoped_records|
                   related_ids = Array.wrap(assoc_value).uniq
                   if scoped_records.count != related_ids.count
-                    fail JSONAPI::Exceptions::RecordNotFound, related_ids
+                    raise JSONAPI::Exceptions::RecordNotFound, related_ids
                   end
                 end
               else
