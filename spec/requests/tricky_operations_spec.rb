@@ -21,7 +21,7 @@ RSpec.describe 'Tricky operations', type: :request do
   describe 'POST /comments (with relationships link to articles)' do
     subject(:last_response) { post("/comments", json) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "comments",
@@ -35,7 +35,7 @@ RSpec.describe 'Tricky operations', type: :request do
           }
         }
       }
-      EOS
+      JSON
     end
     let(:related_records_with_context) do
       [{
@@ -83,7 +83,7 @@ RSpec.describe 'Tricky operations', type: :request do
     end
 
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "id": "new-article-id",
@@ -98,7 +98,7 @@ RSpec.describe 'Tricky operations', type: :request do
           }
         }
       }
-      EOS
+      JSON
     end
     subject(:last_response) { post("/articles", json) }
 
@@ -120,7 +120,7 @@ RSpec.describe 'Tricky operations', type: :request do
   describe 'POST /tags (with polymorphic relationship link to article)' do
     subject(:last_response) { post("/tags", json) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "tags",
@@ -134,7 +134,7 @@ RSpec.describe 'Tricky operations', type: :request do
           }
         }
       }
-      EOS
+      JSON
     end
 
     let(:related_records_with_context) do
@@ -184,7 +184,7 @@ RSpec.describe 'Tricky operations', type: :request do
     end
 
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "id": "#{article.external_id}",
@@ -199,7 +199,7 @@ RSpec.describe 'Tricky operations', type: :request do
           }
         }
       }
-      EOS
+      JSON
     end
     subject(:last_response) { patch("/articles/#{article.external_id}", json) }
 
@@ -234,7 +234,7 @@ RSpec.describe 'Tricky operations', type: :request do
   describe 'PATCH /articles/:id (nullifying to-one relationship)' do
     let(:article) { articles(:article_with_author) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "id": "#{article.external_id}",
@@ -242,7 +242,7 @@ RSpec.describe 'Tricky operations', type: :request do
           "relationships": { "author": null }
         }
       }
-      EOS
+      JSON
     end
     let(:policy_scope) { Article.all }
     subject(:last_response) { patch("/articles/#{article.external_id}", json) }

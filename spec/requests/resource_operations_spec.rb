@@ -72,14 +72,14 @@ describe 'Resource operations', type: :request do
   describe 'POST /articles' do
     subject(:last_response) { post("/articles", json) }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "id": "external_id",
           "type": "articles"
         }
       }
-      EOS
+      JSON
     end
 
     context 'unauthorized for create_resource' do
@@ -95,14 +95,14 @@ describe 'Resource operations', type: :request do
 
   describe 'PATCH /articles/:id' do
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "id": "#{article.external_id}",
           "type": "articles"
         }
       }
-      EOS
+      JSON
     end
 
     subject(:last_response) { patch("/articles/#{article.external_id}", json) }

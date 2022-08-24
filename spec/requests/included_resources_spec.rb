@@ -407,7 +407,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:attributes_json) { '{}' }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "articles",
@@ -415,7 +415,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           "attributes": #{attributes_json}
         }
       }
-      EOS
+      JSON
     end
     subject(:last_response) { patch("/articles/#{article.external_id}?include=#{include_query}", json) }
     let!(:chained_authorizer) { allow_operation('replace_fields', source_record: article, related_records_with_context: []) }
@@ -464,7 +464,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
 
     let(:attributes_json) { '{}' }
     let(:json) do
-      <<-EOS.strip_heredoc
+      <<-JSON.strip_heredoc
       {
         "data": {
           "type": "articles",
@@ -485,7 +485,7 @@ RSpec.describe 'including resources alongside normal operations', type: :request
           }
         }
       }
-      EOS
+      JSON
     end
     let(:article) { existing_author.articles.first }
 
