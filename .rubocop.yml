@@ -7,22 +7,22 @@ AllCops:
     - 'vendor/bundle/**/*'
     - 'tmp/**/*'
 
-Style/FileName:
+Naming/FileName:
   Exclude:
     - lib/jsonapi-authorization.rb
     - Appraisals
 
-Metrics/LineLength:
+Layout/LineLength:
   Enabled: true
   Max: 100
   Exclude:
     - spec/requests/**/*.rb
     - jsonapi-authorization.gemspec
 
-Style/MultilineOperationIndentation:
+Layout/MultilineOperationIndentation:
   EnforcedStyle: indented
 
-Style/MultilineMethodCallIndentation:
+Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
 
 Metrics/ClassLength:
@@ -31,7 +31,7 @@ Metrics/ClassLength:
 Style/Documentation:
   Enabled: false
 
-Style/ExtraSpacing:
+Layout/ExtraSpacing:
   AllowForAlignment: true
 
 Metrics/MethodLength:
@@ -52,7 +52,7 @@ Style/SignalException:
 Style/StringLiterals:
   Enabled: false
 
-Style/SpaceInsideHashLiteralBraces:
+Layout/SpaceInsideHashLiteralBraces:
   Enabled: false
   EnforcedStyle: space
 
@@ -74,7 +74,7 @@ Style/BlockDelimiters:
 Style/GuardClause:
   Enabled: false
 
-Style/ClosingParenthesisIndentation:
+Layout/ClosingParenthesisIndentation:
   Enabled: false
 
 Style/IfUnlessModifier:
