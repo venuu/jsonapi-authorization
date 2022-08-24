@@ -35,3 +35,7 @@ Layout/MultilineMethodCallIndentation:
 # We don't want rubocop to enforce splitting methods and stuff like that.
 Metrics:
   Enabled: false
+
+# We don't care what kind of quotes you use
+Style/StringLiterals:
+  Enabled: false
