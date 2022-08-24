@@ -22,14 +22,14 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency "appraisal"
   spec.add_development_dependency "bundler", ">= 1.11"
-  spec.add_development_dependency "rake", "~> 12.0"
-  spec.add_development_dependency "rspec", "~> 3.8"
-  spec.add_development_dependency "rspec-rails", "~> 3.8"
+  spec.add_development_dependency "rake", "~> 13.0"
+  spec.add_development_dependency "rspec", "~> 3.11"
+  spec.add_development_dependency "rspec-rails", "~> 5.1"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "pry-byebug"
   spec.add_development_dependency "pry-doc"
   spec.add_development_dependency "pry-rails"
   spec.add_development_dependency "rubocop", "~> 0.36.0"
-  spec.add_development_dependency "phare", "~> 0.7.1"
+  spec.add_development_dependency "phare", "~> 1.0.1"
   spec.add_development_dependency "sqlite3", "~> 1.3"
 end
