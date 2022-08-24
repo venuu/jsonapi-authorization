@@ -22,13 +22,13 @@ module JSONAPI
         :authorize_replace_polymorphic_to_one_relationship
       )
 
-      [
-        :find,
-        :show,
-        :show_related_resource,
-        :show_related_resources,
-        :create_resource,
-        :replace_fields
+      %i[
+        find
+        show
+        show_related_resource
+        show_related_resources
+        create_resource
+        replace_fields
       ].each do |op_name|
         set_callback op_name, :after, :authorize_include_directive
       end
@@ -307,7 +307,7 @@ module JSONAPI
         data = params[:data]
         return { relationship: nil, relation_name: nil, records: nil } if data.nil?
 
-        [:to_one, :to_many].flat_map do |rel_type|
+        %i[to_one to_many].flat_map do |rel_type|
           data[rel_type].flat_map do |assoc_name, assoc_value|
             related_models =
               case assoc_value
