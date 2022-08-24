@@ -40,3 +40,7 @@ Metrics:
 # We don't care what kind of quotes you use
 Style/StringLiterals:
   Enabled: false
+
+# It's up to us how much we want to document the code
+Style/Documentation:
+  Enabled: false
