@@ -342,10 +342,10 @@ module JSONAPI
       end
 
       def authorize_model_includes(source_record)
-        if params[:include_directives]
-          params[:include_directives].model_includes.each do |include_item|
-            authorize_include_item(@resource_klass, source_record, include_item)
-          end
+        return unless params[:include_directives]
+
+        params[:include_directives].model_includes.each do |include_item|
+          authorize_include_item(@resource_klass, source_record, include_item)
         end
       end
 

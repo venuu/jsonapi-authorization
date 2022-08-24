@@ -14,9 +14,9 @@ class UsersController < ApplicationController
   def handle_exceptions(e)
     if JSONAPI.configuration.exception_class_whitelist.any? { |k| e.class.ancestors.include?(k) }
       raise e
-    else
-      super
     end
+
+    super
   end
 
   def user_not_authorized
