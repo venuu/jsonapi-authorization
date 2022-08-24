@@ -55,10 +55,10 @@ Style/SpaceInsideHashLiteralBraces:
   Enabled: false
   EnforcedStyle: space
 
-Style/IndentHash:
+Layout/FirstHashElementIndentation:
   EnforcedStyle: consistent
 
-Style/IndentArray:
+Layout/FirstArrayElementIndentation:
   EnforcedStyle: consistent
 
 Style/ClassAndModuleChildren:
