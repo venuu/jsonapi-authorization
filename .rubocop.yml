@@ -31,3 +31,7 @@ Layout/MultilineOperationIndentation:
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented
+
+# We don't want rubocop to enforce splitting methods and stuff like that.
+Metrics:
+  Enabled: false
