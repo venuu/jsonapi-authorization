@@ -35,6 +35,7 @@ module JSONAPI
 
       def authorize_include_directive
         return if result.is_a?(::JSONAPI::ErrorsOperationResult)
+
         resources = Array.wrap(
           if result.respond_to?(:resources)
             result.resources
@@ -376,6 +377,7 @@ module JSONAPI
               relationship.relation_name(context: context)
             )
             return if related_record.nil?
+
             authorizer.include_has_one_resource(
               source_record: source_record, related_record: related_record
             )
