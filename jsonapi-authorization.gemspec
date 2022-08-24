@@ -32,4 +32,5 @@ Gem::Specification.new do |spec|
   spec.add_development_dependency "rspec-rails", "~> 5.1"
   spec.add_development_dependency "rubocop", "~> 1.35.1"
   spec.add_development_dependency "sqlite3", "~> 1.3"
+  spec.metadata['rubygems_mfa_required'] = 'true'
 end
