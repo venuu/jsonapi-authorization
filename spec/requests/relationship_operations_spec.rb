@@ -96,26 +96,26 @@ RSpec.describe 'Relationship operations', type: :request do
     end
 
     context 'unauthorized for create_to_many_relationship' do
-      before {
+      before do
         disallow_operation(
           'create_to_many_relationship',
           source_record: article,
           new_related_records: new_comments,
           relationship_type: :comments
         )
-      }
+      end
       it { is_expected.to be_forbidden }
     end
 
     context 'authorized for create_to_many_relationship' do
-      before {
+      before do
         allow_operation(
           'create_to_many_relationship',
           source_record: article,
           new_related_records: new_comments,
           relationship_type: :comments
         )
-      }
+      end
       it { is_expected.to be_successful }
 
       context 'limited by policy scope on comments' do
@@ -307,26 +307,26 @@ RSpec.describe 'Relationship operations', type: :request do
       end
 
       context 'unauthorized for replace_to_one_relationship' do
-        before {
+        before do
           disallow_operation(
             'replace_to_one_relationship',
             source_record: tag,
             new_related_record: new_taggable,
             relationship_type: :taggable
           )
-        }
+        end
         it { is_expected.to be_forbidden }
       end
 
       context 'authorized for replace_to_one_relationship' do
-        before {
+        before do
           allow_operation(
             'replace_to_one_relationship',
             source_record: tag,
             new_related_record: new_taggable,
             relationship_type: :taggable
           )
-        }
+        end
         it { is_expected.to be_successful }
 
         context 'limited by policy scope on taggable', skip: 'DISCUSS' do
