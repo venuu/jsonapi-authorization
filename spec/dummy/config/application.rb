@@ -1,10 +1,10 @@
-require File.expand_path('../boot', __FILE__)
+require File.expand_path('boot', __dir__)
 
 require "rails/all"
 Bundler.require(:default, Rails.env)
 
 class Application < Rails::Application
-  config.root = File.expand_path("../..", __FILE__)
+  config.root = File.expand_path('..', __dir__)
   config.cache_classes = true
 
   config.eager_load = false
