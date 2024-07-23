@@ -326,7 +326,11 @@ module JSONAPI
                 end
               else
                 resource_class = resource_class_for_relationship(assoc_name)
-                resource_class.find_by_key(assoc_value, context: context)._model
+                begin
+                  resource_class.find_by_key(assoc_value, context: context)._model
+                rescue JSONAPI::Exceptions::RecordNotFound
+                  nil
+                end
               end
 
             {
